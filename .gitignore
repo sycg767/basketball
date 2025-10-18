@@ -1,0 +1,35 @@
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Java / Maven
+/basketball-system/target/
+**/target/
+
+# Node / Vite
+/basketball-web/node_modules/
+/basketball-web/dist/
+**/node_modules/
+**/dist/
+
+# Env files
+*.env
+.env
+.env.*
+
+# Build artifacts
+*.jar
+*.war
+
+# Misc
+.cache/
+.tmp/
