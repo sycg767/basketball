@@ -1,0 +1,1 @@
+import{s as t}from"./request-fDvtbK_n.js";function r(e){return t({url:"/api/venue/list",method:"get",params:e})}function u(e){return t({url:`/api/venue/${e}`,method:"get"})}function i(e){return t({url:`/api/venue/${e}/prices`,method:"get"})}export{u as a,i as b,r as g};

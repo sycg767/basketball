@@ -1,0 +1,1 @@
+function n(t){return/^1[3-9]\d{9}$/.test(t)}function a(t){return/^[a-zA-Z0-9_]{3,20}$/.test(t)}function r(t){return t&&t.length>=6&&t.length<=20}function i(t){return/^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/.test(t)}export{r as a,a as b,i as c,n as v};

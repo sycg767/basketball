@@ -1,0 +1,43 @@
+spring:
+  profiles:
+    active: dev
+  application:
+    name: basketball-system
+
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+# 日志配置
+logging:
+  level:
+    com.basketball: info
+    com.basketball.mapper: debug
+  pattern:
+    console: '%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{50} - %msg%n'
+
+# 微信支付配置 (生产环境需配置真实参数)
+wechat:
+  pay:
+    enabled: false  # 默认关闭,避免未配置时启动报错
+    merchant-id: 1234567890  # 商户号 (示例)
+    private-key-path: /path/to/apiclient_key.pem  # 商户私钥路径
+    merchant-serial-number: SERIAL_NUMBER_HERE  # 商户证书序列号
+    api-v3-key: YOUR_API_V3_KEY_HERE  # APIv3密钥
+    app-id: wx1234567890abcdef  # 公众号/小程序AppID
+    notify-url: https://yourdomain.com/api/payment/callback/wechat  # 回调地址
+
+# 支付宝支付配置 (生产环境需配置真实参数)
+alipay:
+  enabled: false  # 默认关闭,避免未配置时启动报错
+  gateway-url: https://openapi.alipay.com/gateway.do  # 支付宝网关 (正式环境)
+  # gateway-url: https://openapi.alipaydev.com/gateway.do  # 支付宝网关 (沙箱环境)
+  app-id: 2021000000000000  # 应用ID (示例)
+  private-key: YOUR_PRIVATE_KEY_HERE  # 商户私钥
+  alipay-public-key: YOUR_ALIPAY_PUBLIC_KEY_HERE  # 支付宝公钥
+  sign-type: RSA2  # 签名类型
+  charset: UTF-8  # 字符编码
+  format: json  # 返回格式
+  return-url: https://yourdomain.com/api/payment/alipay/return  # 同步回调
+  notify-url: https://yourdomain.com/api/payment/callback/alipay  # 异步通知

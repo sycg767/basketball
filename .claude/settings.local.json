@@ -1,0 +1,36 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Users/X/xwechat_files/wxid_eph33mauy8u322_b8b0/temp/RWTemp/2025-10/9e20f478899dc29eb19741386f9343c8/**)",
+      "Bash(npm run dev:*)",
+      "Bash(mvn clean:*)",
+      "Bash(dir:*)",
+      "Bash(mvn:*)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(taskkill:*)",
+      "Bash(curl -s \"http://localhost:8080/api/venue/list?page=1&size=3\")",
+      "Bash(python:*)",
+      "Bash(curl -s \"http://localhost:8080/api/admin/booking/list?page=1&pageSize=5\")",
+      "Bash(find:*)",
+      "Bash(curl -s \"http://localhost:8080/api/course?page=1&size=3\")",
+      "Bash(curl -s \"http://localhost:8080/api/course?page=1&size=12\")",
+      "Bash(curl -s \"http://localhost:8080/api/admin/course?page=1&pageSize=10\" -H \"Authorization: Bearer test\")",
+      "Bash(curl -s \"http://localhost:8080/api/admin/course?page=1&pageSize=5\")",
+      "Bash(curl -s \"http://localhost:8080/api/admin/coach/list\")",
+      "Bash(curl -s \"http://localhost:8080/api/member/card-types\")",
+      "Bash(curl -s \"http://localhost:8080/api/member/points\" -H \"Authorization: Bearer test\")",
+      "Bash(move \"C:\\Users\\X\\Desktop\\basketball\\basketball-web\\src\\views\\admin\\course\\CourseManage.vue\" \"C:\\Users\\X\\Desktop\\basketball\\basketball-web\\src\\views\\admin\\CourseManage.vue\")",
+      "Bash(curl -s \"http://localhost:8080/api/member/card/my?page=1&pageSize=10\" -H \"Authorization: Bearer test\")",
+      "Bash(cat:*)",
+      "Bash(curl -s \"http://localhost:8080/api/admin/statistics\" -H \"Authorization: Bearer test\")",
+      "Bash(curl -s \"http://localhost:8080/api/admin/statistics/recent-bookings?limit=10\" -H \"Authorization: Bearer test\")",
+      "Bash(curl -s \"http://localhost:8080/api/admin/statistics/booking-trend?days=7\" -H \"Authorization: Bearer test\")",
+      "Bash(curl -s \"http://localhost:8080/api/admin/statistics/venue-usage\" -H \"Authorization: Bearer test\")",
+      "Bash(npm install:*)",
+      "Bash(npm run build:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

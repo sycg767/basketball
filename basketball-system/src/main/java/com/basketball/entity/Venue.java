@@ -1,0 +1,66 @@
+package com.basketball.entity;
+
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+import java.math.BigDecimal;
+
+/**
+ * 场地实体类
+ *
+ * @author Basketball Team
+ * @date 2025-10-01
+ */
+@Data
+@EqualsAndHashCode(callSuper = true)
+@TableName("venue")
+@Schema(description = "场地实体")
+public class Venue extends BaseEntity {
+
+    @TableId(type = IdType.AUTO)
+    @Schema(description = "场地ID")
+    private Long id;
+
+    @Schema(description = "场地名称")
+    private String venueName;
+
+    @Schema(description = "场地编码")
+    private String venueCode;
+
+    @Schema(description = "场地类型: 1-室内全场, 2-室内半场, 3-室外全场, 4-室外半场")
+    private Integer venueType;
+
+    @Schema(description = "场地面积(平方米)")
+    private BigDecimal area;
+
+    @Schema(description = "容纳人数")
+    private Integer capacity;
+
+    @Schema(description = "地板类型")
+    private String floorType;
+
+    @Schema(description = "设施")
+    private String facilities;
+
+    @Schema(description = "状态：0-维护中，1-可用，2-已预订")
+    private Integer status;
+
+    @Schema(description = "主图URL")
+    private String imageUrl;
+
+    @Schema(description = "场地图片（多张，逗号分隔）")
+    private String images;
+
+    @Schema(description = "场地描述")
+    private String description;
+
+    @Schema(description = "位置")
+    private String location;
+
+    @Schema(description = "排序")
+    private Integer sortOrder;
+}
