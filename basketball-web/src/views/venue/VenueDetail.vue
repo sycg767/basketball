@@ -97,6 +97,61 @@
 
                 <el-divider />
 
+                <!-- 预订面板 -->
+                <div v-if="userStore.isLogin && venueDetail.status === 1" class="booking-panel">
+                  <h3 class="panel-title">立即预订</h3>
+
+                  <!-- 日期选择 -->
+                  <div class="booking-form">
+                    <el-form :model="bookingForm" label-width="80px">
+                      <el-form-item label="选择日期">
+                        <el-date-picker
+                          v-model="bookingForm.date"
+                          type="date"
+                          placeholder="请选择日期"
+                          :disabled-date="disabledDate"
+                          style="width: 100%"
+                        />
+                      </el-form-item>
+
+                      <el-form-item label="时间段">
+                        <el-time-picker
+                          v-model="bookingForm.startTime"
+                          placeholder="开始时间"
+                          format="HH:mm"
+                          value-format="HH:mm"
+                          style="width: 48%; margin-right: 4%"
+                        />
+                        <span style="margin: 0 4px">至</span>
+                        <el-time-picker
+                          v-model="bookingForm.endTime"
+                          placeholder="结束时间"
+                          format="HH:mm"
+                          value-format="HH:mm"
+                          style="width: 48%"
+                          :disabled="!bookingForm.startTime"
+                        />
+                      </el-form-item>
+
+                      <el-form-item label="预订备注">
+                        <el-input
+                          v-model="bookingForm.remark"
+                          type="textarea"
+                          :rows="2"
+                          placeholder="请输入特殊要求（选填）"
+                        />
+                      </el-form-item>
+
+                      <el-form-item>
+                        <el-button type="primary" @click="confirmBooking" :loading="bookingLoading">
+                          确认预订
+                        </el-button>
+                        <el-button @click="resetBookingForm">重置</el-button>
+                      </el-form-item>
+                    </el-form>
+                  </div>
+                </div>
+
                 <div class="action-buttons">
                   <el-button
                     v-if="venueDetail.status === 1"
@@ -166,9 +221,13 @@ import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import { getVenueDetail, getVenuePrices } from '@/api/venue';
+import { useUserStore } from '@/store/modules/user';
+import request from '@/utils/request';
+import { getMyBookingList, checkVenueAvailable } from '@/api/booking';
 
 const route = useRoute();
 const router = useRouter();
+const userStore = useUserStore();
 
 // 数据
 const loading = ref(false);
@@ -253,6 +312,93 @@ const fetchVenuePrices = async (venueId) => {
   } finally {
     priceLoading.value = false;
   }
+};
+
+// 预订表单
+const bookingForm = reactive({
+  date: '',
+  startTime: '',
+  endTime: '',
+  remark: ''
+});
+
+const bookingLoading = ref(false);
+
+// 禁用过去的日期
+const disabledDate = (time) => {
+  return time.getTime() < Date.now() - 24 * 60 * 60 * 1000;
+};
+
+// 重置预订表单
+const resetBookingForm = () => {
+  bookingForm.date = '';
+  bookingForm.startTime = '';
+  bookingForm.endTime = '';
+  bookingForm.remark = '';
+};
+
+// 确认预订
+const confirmBooking = async () => {
+  if (!bookingForm.date || !bookingForm.startTime || !bookingForm.endTime) {
+    ElMessage.warning('请选择预订日期和时间段');
+    return;
+  }
+
+  if (bookingForm.startTime >= bookingForm.endTime) {
+    ElMessage.warning('结束时间必须晚于开始时间');
+    return;
+  }
+
+  bookingLoading.value = true;
+  try {
+    const bookingData = {
+      venueId: venueDetail.value.id,
+      venueName: venueDetail.value.venueName,
+      date: bookingForm.date,
+      startTime: bookingForm.startTime,
+      endTime: bookingForm.endTime,
+      remark: bookingForm.remark || '',
+      totalPrice: calculateTotalPrice(bookingForm.startTime, bookingForm.endTime, priceList.value)
+    };
+
+    const res = await request.post('/api/booking', bookingData);
+    if (res.code === 200) {
+      ElMessage.success('预订成功');
+      resetBookingForm();
+      router.push(`/booking/list`);
+    } else {
+      ElMessage.error(res.msg || '预订失败');
+    }
+  } catch (error) {
+    console.error('预订失败：', error);
+    ElMessage.error('预订失败');
+  } finally {
+    bookingLoading.value = false;
+  }
+};
+
+// 计算总价格
+const calculateTotalPrice = (startTime, endTime, priceList) => {
+  if (!priceList || priceList.length === 0) return 0;
+
+  // 简化价格计算逻辑：根据时间段匹配价格
+  const hourStart = parseInt(startTime.split(':')[0]);
+  const hourEnd = parseInt(endTime.split(':')[0]);
+
+  let total = 0;
+  for (let hour = hourStart; hour < hourEnd; hour++) {
+    // 查找对应时段的价格（简化处理）
+    const priceItem = priceList.find(item => {
+      const itemHourStart = parseInt(item.startTime.split(':')[0]);
+      return itemHourStart === hour;
+    });
+    if (priceItem) {
+      // 判断是否为会员
+      const memberPrice = userStore.isMember ? priceItem.memberPrice : priceItem.price;
+      total += memberPrice;
+    }
+  }
+  return total;
 };
 
 // 返回

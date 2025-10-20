@@ -44,6 +44,7 @@ C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\ser
 C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\service\IStatisticsService.java
 C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\entity\SystemConfig.java
 C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\controller\admin\AdminCoachController.java
+C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\enums\UserRoleEnum.java
 C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\config\SwaggerConfig.java
 C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\controller\WechatController.java
 C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\mapper\CoursePopularityAnalysisMapper.java

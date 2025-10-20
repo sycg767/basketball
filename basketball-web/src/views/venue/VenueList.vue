@@ -48,6 +48,37 @@
           </el-select>
         </el-form-item>
 
+        <el-form-item label="价格范围">
+          <el-select
+            v-model="queryForm.priceRange"
+            placeholder="请选择"
+            clearable
+            @change="handleSearch"
+          >
+            <el-option label="0-50元" :value="1" />
+            <el-option label="50-100元" :value="2" />
+            <el-option label="100-200元" :value="3" />
+            <el-option label="200元以上" :value="4" />
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="设施">
+          <el-select
+            v-model="queryForm.facilities"
+            placeholder="请选择"
+            clearable
+            multiple
+            collapse-tags
+            @change="handleSearch"
+          >
+            <el-option label="空调" :value="1" />
+            <el-option label="更衣室" :value="2" />
+            <el-option label="淋浴" :value="3" />
+            <el-option label="停车场" :value="4" />
+            <el-option label="餐饮" :value="5" />
+          </el-select>
+        </el-form-item>
+
         <el-form-item>
           <el-button type="primary" :icon="Search" @click="handleSearch">
             搜索
@@ -88,7 +119,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue';
+import { ref, reactive, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import { Search, Refresh } from '@element-plus/icons-vue';
@@ -102,6 +133,9 @@ const queryForm = reactive({
   keyword: '',
   venueType: null,
   status: null,
+  // 以下为前端临时筛选条件，后端暂不支持
+  priceRange: null,
+  facilities: [],
   page: 1,
   size: 6
 });
@@ -115,7 +149,24 @@ const total = ref(0);
 const fetchVenueList = async () => {
   loading.value = true;
   try {
-    const res = await getVenueList(queryForm);
+    // 构建API参数，只传递后端支持的筛选条件
+    const apiParams = {
+      page: queryForm.page,
+      size: queryForm.size
+    };
+
+    // 只添加非空的筛选条件
+    if (queryForm.keyword) {
+      apiParams.keyword = queryForm.keyword;
+    }
+    if (queryForm.venueType) {
+      apiParams.venueType = queryForm.venueType.toString();
+    }
+    if (queryForm.status !== null) {
+      apiParams.status = queryForm.status;
+    }
+
+    const res = await getVenueList(apiParams);
     if (res.code === 200) {
       venueList.value = res.data.records || [];
       total.value = res.data.total || 0;
@@ -139,6 +190,8 @@ const handleReset = () => {
   queryForm.keyword = '';
   queryForm.venueType = null;
   queryForm.status = null;
+  queryForm.priceRange = null;
+  queryForm.facilities = [];
   queryForm.page = 1;
   fetchVenueList();
 };

@@ -13,6 +13,10 @@
           </el-avatar>
           <span class="username">{{ userStore.realName || userStore.username || '用户' }}</span>
           <el-button type="primary" link @click="goProfile">个人中心</el-button>
+          <el-button type="info" link @click="refreshData">
+            <el-icon :size="14"><Refresh /></el-icon>
+            刷新
+          </el-button>
           <el-button type="danger" link @click="handleLogout">退出</el-button>
         </div>
       </div>
@@ -35,6 +39,25 @@
               </span>
               <span class="user-id">ID: {{ userStore.userId }}</span>
             </div>
+            <!-- 会员权益说明 -->
+            <div class="member-benefits" v-if="userStore.memberLevel > 0">
+              <p>✨ 会员专享权益：场地预订折扣、优先选场、积分加倍</p>
+            </div>
+          </div>
+        </div>
+        <!-- 账户信息面板 -->
+        <div class="account-panel">
+          <div class="account-item">
+            <div class="account-label">积分余额</div>
+            <div class="account-value">{{ userPoints }}</div>
+          </div>
+          <div class="account-item">
+            <div class="account-label">账户余额</div>
+            <div class="account-value">¥{{ userBalance.toFixed(2) }}</div>
+          </div>
+          <div class="account-item">
+            <div class="account-label">会员到期</div>
+            <div class="account-value">{{ memberExpireDate || '永久有效' }}</div>
           </div>
         </div>
       </div>
@@ -165,9 +188,11 @@
 </template>
 
 <script setup>
+import { ref, reactive, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { useUserStore } from '@/store/modules/user';
+import { getMyPoints, getUserBalance, getMyCards } from '@/api/member';
 import AnnouncementSection from '@/components/AnnouncementSection.vue';
 import {
   Basketball,
@@ -177,11 +202,77 @@ import {
   Star,
   Money,
   Bell,
-  ArrowRight
+  ArrowRight,
+  Refresh
 } from '@element-plus/icons-vue';
 
 const router = useRouter();
 const userStore = useUserStore();
+
+// 用户数据响应式变量
+const userPoints = ref(0);
+const userBalance = ref(0.00);
+const memberExpireDate = ref('');
+const userCards = ref([]);
+
+// 页面加载时获取用户数据
+onMounted(async () => {
+  await loadUserData();
+});
+
+// 加载用户数据
+const loadUserData = async () => {
+  try {
+    // 获取积分和余额
+    const [pointsRes, balanceRes, cardsRes] = await Promise.all([
+      getMyPoints(),
+      getUserBalance(),
+      getMyCards({ current: 1, size: 10 })
+    ]);
+
+    if (pointsRes.code === 200) {
+      userPoints.value = pointsRes.data || 0;
+    }
+    if (balanceRes.code === 200) {
+      userBalance.value = balanceRes.data || 0;
+    }
+    if (cardsRes.code === 200) {
+      userCards.value = cardsRes.data?.records || [];
+      // 设置会员到期时间（取最早的有效会员卡）
+      const validCard = userCards.value.find(card => card.status === 1);
+      if (validCard && validCard.expireTime) {
+        memberExpireDate.value = new Date(validCard.expireTime).toLocaleDateString('zh-CN');
+      }
+    }
+  } catch (error) {
+    console.error('获取用户数据失败:', error);
+    ElMessage.error('获取用户数据失败');
+  }
+};
+
+// 刷新数据
+const refreshData = async () => {
+  ElMessage.info('正在刷新数据...');
+  await loadUserData();
+  ElMessage.success('数据已更新');
+};
+
+// 退出登录
+const handleLogout = async () => {
+  try {
+    await ElMessageBox.confirm('确定要退出登录吗？', '提示', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    });
+
+    userStore.logout();
+    router.push('/login');
+    ElMessage.success('已退出登录');
+  } catch {
+    // 用户取消操作
+  }
+};
 
 // 获取用户名首字母
 const getUserInitial = () => {
@@ -197,22 +288,6 @@ const getMemberLevelText = () => {
     3: '钻石会员'
   };
   return levels[userStore.memberLevel] || '普通会员';
-};
-
-const goProfile = () => {
-  router.push('/profile');
-};
-
-const handleLogout = () => {
-  ElMessageBox.confirm('确定要退出登录吗？', '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning'
-  }).then(() => {
-    userStore.logout();
-    ElMessage.success('已退出登录');
-    router.push('/login');
-  }).catch(() => {});
 };
 
 // 快捷功能导航
@@ -254,40 +329,75 @@ const goToNotifications = () => {
     z-index: 100;
 
     .header-content {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 16px 40px;
+      max-width: 100%;
+      margin: 0;
+      padding: 12px 16px;
       display: flex;
-      justify-content: space-between;
-      align-items: center;
+      flex-direction: column;
+      gap: 12px;
+
+      @media (min-width: 768px) {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 16px 40px;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+      }
 
       .logo-section {
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: 8px;
+
+        @media (min-width: 768px) {
+          gap: 12px;
+        }
 
         h1 {
-          font-size: 24px;
+          font-size: 18px;
           font-weight: 700;
           color: #ffffff;
           margin: 0;
           letter-spacing: 1px;
+
+          @media (min-width: 768px) {
+            font-size: 24px;
+          }
         }
       }
 
       .user-info {
         display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
         align-items: center;
-        gap: 12px;
+        gap: 8px;
+
+        @media (min-width: 768px) {
+          flex-wrap: nowrap;
+          gap: 12px;
+        }
 
         .username {
           color: #ffffff;
           font-weight: 500;
-          margin-right: 8px;
+          font-size: 14px;
+          margin-right: 4px;
+
+          @media (min-width: 768px) {
+            font-size: 16px;
+            margin-right: 8px;
+          }
         }
 
         :deep(.el-button) {
           color: #ffffff;
+          font-size: 12px;
+
+          @media (min-width: 768px) {
+            font-size: 14px;
+          }
 
           &:hover {
             color: #e0e7ff;
@@ -316,20 +426,21 @@ const goToNotifications = () => {
   .user-content {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 40px;
+    padding: 20px;
 
     // 用户信息卡片
     .user-info-card {
       background: #ffffff;
       border-radius: 16px;
-      padding: 32px;
-      margin-bottom: 40px;
+      padding: 24px;
+      margin-bottom: 24px;
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
 
       .card-content {
         display: flex;
+        flex-direction: column;
         align-items: center;
-        gap: 24px;
+        gap: 16px;
 
         .user-avatar {
           flex-shrink: 0;
@@ -337,31 +448,102 @@ const goToNotifications = () => {
 
         .user-details {
           flex: 1;
+          text-align: center;
 
           h2 {
-            font-size: 28px;
+            font-size: 24px;
             font-weight: 700;
             color: #1a202c;
-            margin: 0 0 8px 0;
+            margin: 0 0 12px 0;
           }
 
           .user-meta {
             display: flex;
-            gap: 16px;
+            flex-direction: column;
+            gap: 8px;
             align-items: center;
+            margin-bottom: 12px;
 
             .member-level {
+              background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+              color: #8b4513;
               padding: 4px 12px;
-              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-              color: #ffffff;
               border-radius: 20px;
-              font-size: 14px;
-              font-weight: 500;
+              font-size: 12px;
+              font-weight: 600;
             }
 
             .user-id {
               color: #718096;
+              font-size: 12px;
+            }
+          }
+
+          .member-benefits {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            border-radius: 12px;
+            padding: 12px;
+            margin-top: 12px;
+
+            p {
+              margin: 0;
+              color: #4a5568;
+              font-size: 12px;
+              line-height: 1.4;
+            }
+          }
+        }
+      }
+
+      // 账户信息面板
+      .account-panel {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 12px;
+        padding: 16px;
+        color: #ffffff;
+        text-align: center;
+
+        .account-item {
+          margin-bottom: 16px;
+
+          &:last-child {
+            margin-bottom: 0;
+          }
+
+          .account-label {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-bottom: 6px;
+          }
+
+          .account-value {
+            font-size: 20px;
+            font-weight: 700;
+            line-height: 1;
+          }
+        }
+      }
+
+      // 账户信息面板桌面端横排布局
+      @media (min-width: 768px) {
+        .account-panel {
+          text-align: left;
+          min-width: 280px;
+
+          .account-item {
+            margin-bottom: 20px;
+
+            &:last-child {
+              margin-bottom: 0;
+            }
+
+            .account-label {
               font-size: 14px;
+              margin-bottom: 8px;
+            }
+
+            .account-value {
+              font-size: 24px;
             }
           }
         }
@@ -391,26 +573,61 @@ const goToNotifications = () => {
 
     // 快捷功能
     .quick-actions {
-      margin-bottom: 40px;
+      margin-bottom: 24px;
+
+      .section-title {
+        font-size: 20px;
+        font-weight: 700;
+        color: #1a202c;
+        margin: 0 0 16px 0;
+        position: relative;
+        padding-bottom: 8px;
+
+        &::after {
+          content: '';
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          width: 36px;
+          height: 2px;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          border-radius: 2px;
+        }
+      }
 
       .actions-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-        gap: 24px;
+        grid-template-columns: 1fr;
+        gap: 16px;
+
+        @media (min-width: 640px) {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        @media (min-width: 1024px) {
+          grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        }
 
         .action-card {
           background: #ffffff;
-          border-radius: 16px;
-          padding: 24px;
+          border-radius: 12px;
+          padding: 16px;
           display: flex;
+          flex-direction: column;
           align-items: center;
-          gap: 16px;
+          gap: 12px;
           cursor: pointer;
           transition: all 0.3s ease;
           box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
 
+          @media (min-width: 640px) {
+            flex-direction: row;
+            align-items: center;
+            padding: 20px;
+          }
+
           &:hover {
-            transform: translateY(-4px);
+            transform: translateY(-2px);
             box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
 
             .arrow-icon {
@@ -419,13 +636,18 @@ const goToNotifications = () => {
           }
 
           .action-icon {
-            width: 56px;
-            height: 56px;
-            border-radius: 12px;
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
+
+            @media (min-width: 640px) {
+              width: 56px;
+              height: 56px;
+            }
 
             &.blue {
               background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -462,23 +684,34 @@ const goToNotifications = () => {
             flex: 1;
 
             h4 {
-              font-size: 18px;
+              font-size: 16px;
               font-weight: 600;
               color: #1a202c;
               margin: 0 0 4px 0;
             }
 
             p {
-              font-size: 14px;
+              font-size: 12px;
               color: #718096;
               margin: 0;
+            }
+
+            @media (min-width: 640px) {
+              p {
+                font-size: 14px;
+              }
             }
           }
 
           .arrow-icon {
-            font-size: 16px;
+            font-size: 14px;
             color: #a0aec0;
             transition: all 0.3s ease;
+            display: none;
+
+            @media (min-width: 640px) {
+              display: block;
+            }
           }
         }
       }
@@ -486,44 +719,70 @@ const goToNotifications = () => {
 
     // 公告区域样式
     .announcement-section {
-      margin-bottom: 40px;
+      margin-bottom: 24px;
+
+      @media (min-width: 768px) {
+        margin-bottom: 40px;
+      }
 
       .section-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 20px;
+        margin-bottom: 16px;
+
+        @media (min-width: 768px) {
+          margin-bottom: 20px;
+        }
 
         .section-title {
           display: flex;
           align-items: center;
           gap: 8px;
-          font-size: 18px;
+          font-size: 16px;
           font-weight: 600;
           color: #1a202c;
           margin: 0;
+
+          @media (min-width: 768px) {
+            font-size: 18px;
+          }
         }
       }
 
       .announcement-list {
         .empty-announcements {
-          padding: 40px 20px;
+          padding: 32px 16px;
           text-align: center;
+
+          @media (min-width: 768px) {
+            padding: 40px 20px;
+          }
 
           .empty-text {
             color: #a0aec0;
-            font-size: 14px;
+            font-size: 12px;
+
+            @media (min-width: 768px) {
+              font-size: 14px;
+            }
           }
         }
 
         .announcement-item {
           background: #ffffff;
-          border-radius: 12px;
-          padding: 20px;
-          margin-bottom: 12px;
+          border-radius: 10px;
+          padding: 16px;
+          margin-bottom: 10px;
           border: 1px solid #e2e8f0;
           cursor: pointer;
           transition: all 0.3s ease;
+
+          @media (min-width: 768px) {
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 12px;
+          }
 
           &:hover {
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
@@ -534,18 +793,31 @@ const goToNotifications = () => {
           .announcement-content {
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 6px;
+
+            @media (min-width: 768px) {
+              gap: 8px;
+            }
 
             .announcement-type {
-              margin-bottom: 4px;
+              margin-bottom: 2px;
+
+              @media (min-width: 768px) {
+                margin-bottom: 4px;
+              }
             }
 
             .announcement-title {
-              font-size: 16px;
+              font-size: 14px;
               font-weight: 600;
               color: #1a202c;
-              margin: 0 0 8px 0;
+              margin: 0 0 6px 0;
               line-height: 1.4;
+
+              @media (min-width: 768px) {
+                font-size: 16px;
+                margin: 0 0 8px 0;
+              }
 
               &:hover {
                 color: #667eea;
@@ -553,33 +825,53 @@ const goToNotifications = () => {
             }
 
             .announcement-desc {
-              font-size: 14px;
+              font-size: 12px;
               color: #718096;
-              line-height: 1.5;
+              line-height: 1.4;
               margin: 0;
+
+              @media (min-width: 768px) {
+                font-size: 14px;
+                line-height: 1.5;
+              }
             }
 
             .announcement-meta {
               display: flex;
-              gap: 16px;
-              align-items: center;
-              margin-top: 8px;
+              flex-direction: column;
+              gap: 8px;
+              align-items: flex-start;
+              margin-top: 6px;
+
+              @media (min-width: 768px) {
+                flex-direction: row;
+                gap: 16px;
+                margin-top: 8px;
+              }
 
               .publish-time,
               .view-count {
                 display: flex;
                 align-items: center;
                 gap: 4px;
-                font-size: 12px;
+                font-size: 10px;
                 color: #a0aec0;
+
+                @media (min-width: 768px) {
+                  font-size: 12px;
+                }
               }
             }
           }
 
           .announcement-actions {
-            margin-top: 12px;
+            margin-top: 8px;
             display: flex;
             justify-content: flex-end;
+
+            @media (min-width: 768px) {
+              margin-top: 12px;
+            }
           }
         }
       }
@@ -587,28 +879,71 @@ const goToNotifications = () => {
 
     // 最近活动
     .recent-activities {
+      .section-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: #1a202c;
+        margin: 0 0 16px 0;
+        position: relative;
+        padding-bottom: 8px;
+
+        @media (min-width: 768px) {
+          font-size: 18px;
+        }
+
+        &::after {
+          content: '';
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          width: 24px;
+          height: 2px;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          border-radius: 2px;
+        }
+      }
+
       .activity-list {
         display: flex;
         flex-direction: column;
-        gap: 16px;
+        gap: 12px;
+
+        @media (min-width: 768px) {
+          gap: 16px;
+        }
 
         .activity-item {
           background: #ffffff;
-          border-radius: 12px;
-          padding: 20px;
+          border-radius: 10px;
+          padding: 16px;
           display: flex;
+          flex-direction: column;
           align-items: center;
-          gap: 16px;
+          gap: 12px;
           box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 
+          @media (min-width: 768px) {
+            border-radius: 12px;
+            padding: 20px;
+            flex-direction: row;
+            align-items: center;
+            gap: 16px;
+          }
+
           .activity-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 10px;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
+
+            @media (min-width: 768px) {
+              width: 48px;
+              height: 48px;
+              border-radius: 10px;
+            }
 
             &.blue {
               background: rgba(102, 126, 234, 0.1);
@@ -628,23 +963,41 @@ const goToNotifications = () => {
 
           .activity-content {
             flex: 1;
+            text-align: center;
+
+            @media (min-width: 768px) {
+              text-align: left;
+            }
 
             h4 {
-              font-size: 16px;
+              font-size: 14px;
               font-weight: 600;
               color: #1a202c;
               margin: 0 0 4px 0;
+
+              @media (min-width: 768px) {
+                font-size: 16px;
+              }
             }
 
             .activity-time {
-              font-size: 14px;
+              font-size: 10px;
               color: #a0aec0;
               margin: 0;
+
+              @media (min-width: 768px) {
+                font-size: 14px;
+              }
             }
           }
 
           .activity-status {
             flex-shrink: 0;
+            display: none;
+
+            @media (min-width: 768px) {
+              display: block;
+            }
           }
         }
       }

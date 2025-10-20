@@ -74,3 +74,13 @@ export const getPointsRecords = (params) => {
     params
   })
 }
+
+/**
+ * 获取账户余额
+ */
+export const getUserBalance = () => {
+  return request({
+    url: '/api/member/balance',
+    method: 'get'
+  })
+}

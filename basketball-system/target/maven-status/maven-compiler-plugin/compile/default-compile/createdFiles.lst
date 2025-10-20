@@ -227,6 +227,7 @@ com\basketball\service\impl\VenueServiceImpl.class
 com\basketball\service\IVenueUsageService.class
 com\basketball\mapper\PaymentConfigMapper.class
 com\basketball\service\IMemberService.class
+com\basketball\enums\UserRoleEnum.class
 com\basketball\entity\UserSession.class
 com\basketball\mapper\MemberCardMapper.class
 com\basketball\mapper\VenuePriceMapper.class

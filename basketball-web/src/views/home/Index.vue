@@ -182,7 +182,7 @@ import { ref, reactive, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { useUserStore } from '@/store/modules/user';
-import { getMyPoints } from '@/api/member';
+import { getMyPoints, getUserBalance } from '@/api/member';
 import NotificationCenter from '@/components/NotificationCenter.vue';
 import AnnouncementSection from '@/components/AnnouncementSection.vue';
 import {
@@ -211,9 +211,11 @@ const loadUserStats = async () => {
         pointsBalance.value = pointsResponse.data || 0;
       }
 
-      // 临时设置账户余额为0（需要等待后端提供余额API）
-      // TODO: 待添加获取账户余额的API
-      accountBalance.value = 0.00;
+      // 获取账户余额
+      const balanceResponse = await getUserBalance();
+      if (balanceResponse.code === 200) {
+        accountBalance.value = balanceResponse.data || 0;
+      }
     } catch (error) {
       console.error('获取用户统计数据失败:', error);
     }

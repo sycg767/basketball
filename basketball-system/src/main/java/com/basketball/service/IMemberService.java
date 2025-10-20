@@ -79,6 +79,14 @@ public interface IMemberService {
     Integer getMyPoints(Long userId);
 
     /**
+     * 获取用户账户余额
+     *
+     * @param userId 用户ID
+     * @return 账户余额
+     */
+    java.math.BigDecimal getUserBalance(Long userId);
+
+    /**
      * 获取积分明细
      *
      * @param userId 用户ID

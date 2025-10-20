@@ -387,4 +387,13 @@ public class MemberServiceImpl implements IMemberService {
         BeanUtils.copyProperties(record, vo);
         return vo;
     }
+
+    @Override
+    public java.math.BigDecimal getUserBalance(Long userId) {
+        User user = userMapper.selectById(userId);
+        if (user == null) {
+            return java.math.BigDecimal.ZERO;
+        }
+        return user.getBalance() != null ? user.getBalance() : java.math.BigDecimal.ZERO;
+    }
 }

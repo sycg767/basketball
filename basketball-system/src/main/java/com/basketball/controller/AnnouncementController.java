@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/announcement")
+@RequestMapping("/api/announcement")
 @CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 public class AnnouncementController {
 

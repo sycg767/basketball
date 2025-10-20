@@ -93,6 +93,13 @@ public class MemberController {
         return Result.success(memberService.getMyPoints(userId));
     }
 
+    @GetMapping("/balance")
+    @Operation(summary = "获取账户余额")
+    public Result<java.math.BigDecimal> getBalance(HttpServletRequest request) {
+        Long userId = jwtTokenProvider.getUserIdFromRequest(request);
+        return Result.success(memberService.getUserBalance(userId));
+    }
+
     @GetMapping("/points/records")
     @Operation(summary = "积分明细")
     public Result<PageResult<PointsRecordVO>> getPointsRecords(

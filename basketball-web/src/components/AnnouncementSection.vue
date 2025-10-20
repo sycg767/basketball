@@ -150,7 +150,7 @@ const typeMap = {
 const getAnnouncements = async () => {
   try {
     loading.value = true
-    const response = await request.get('/api/admin/announcement/page', {
+    const response = await request.get('/api/announcement/page', {
       params: {
         current: 1,
         size: 5,
@@ -233,7 +233,7 @@ const viewAnnouncement = (announcement) => {
 // 标记公告为已读
 const markAsRead = async (announcement) => {
   try {
-    const response = await request.post(`/api/admin/announcement/read/${announcement.id}`)
+    const response = await request.post(`/api/announcement/read/${announcement.id}`)
     if (response.code === 200) {
       announcement.isRead = true
       ElMessage.success('已标记为已读')

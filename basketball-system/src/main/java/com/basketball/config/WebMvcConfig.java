@@ -34,6 +34,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 .excludePathPatterns(
                         "/api/auth/**",           // 认证相关接口
                         "/api/wechat/auth/**",    // 微信认证
+                        "/api/announcement/**",   // 公告接口（允许未登录用户查看）
                         "/swagger-ui/**",         // Swagger UI
                         "/swagger-ui.html",
                         "/v3/api-docs/**",

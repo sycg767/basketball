@@ -11,7 +11,7 @@
  Target Server Version : 80040 (8.0.40)
  File Encoding         : 65001
 
- Date: 20/10/2025 18:17:55
+ Date: 21/10/2025 02:31:33
 */
 
 SET NAMES utf8mb4;
@@ -49,11 +49,11 @@ CREATE TABLE `announcement`  (
 -- ----------------------------
 -- Records of announcement
 -- ----------------------------
-INSERT INTO `announcement` VALUES (1, '系统上线通知', '篮球场馆预约系统正式上线运营，欢迎各位用户使用！', 1, 1, 1, 1, 0, 0, NULL, 1, 0, '2025-10-20 18:12:28', NULL, '2025-10-20 18:12:28', '2025-10-20 18:12:28');
-INSERT INTO `announcement` VALUES (2, '系统维护通知', '系统将于2025年10月25日凌晨2:00-4:00进行维护，期间服务可能受到影响。', 2, 1, 1, 1, 0, 0, NULL, 1, 0, '2025-10-20 18:12:28', NULL, '2025-10-20 18:12:28', '2025-10-20 18:12:28');
-INSERT INTO `announcement` VALUES (3, '新功能发布', '系统新增了会员管理、课程预约等功能，体验更丰富的服务！', 1, 1, 1, 1, 0, 0, NULL, 1, 0, '2025-10-20 18:12:28', NULL, '2025-10-20 18:12:28', '2025-10-20 18:12:28');
-INSERT INTO `announcement` VALUES (4, '价格调整通知', '由于场地维护成本上升，部分场地价格将于下月1日起调整。', 2, 1, 1, 1, 0, 0, NULL, 1, 0, '2025-10-20 18:12:28', NULL, '2025-10-20 18:12:28', '2025-10-20 18:12:28');
-INSERT INTO `announcement` VALUES (5, '节日放假通知', '国庆节期间场馆开放时间调整，请各位用户注意。', 3, 1, 1, 1, 0, 0, NULL, 1, 0, '2025-10-20 18:12:28', NULL, '2025-10-20 18:12:28', '2025-10-20 18:12:28');
+INSERT INTO `announcement` VALUES (1, '系统上线通知', '篮球场馆预约系统正式上线运营，欢迎各位用户使用！', 1, 1, 1, 1, 0, 0, NULL, 1, 1, '2025-10-20 18:12:28', NULL, '2025-10-20 18:12:28', '2025-10-20 18:12:28');
+INSERT INTO `announcement` VALUES (2, '系统维护通知', '系统将于2025年10月25日凌晨2:00-4:00进行维护，期间服务可能受到影响。', 2, 1, 1, 1, 0, 0, NULL, 1, 1, '2025-10-20 18:12:28', NULL, '2025-10-20 18:12:28', '2025-10-20 18:12:28');
+INSERT INTO `announcement` VALUES (3, '新功能发布', '系统新增了会员管理、课程预约等功能，体验更丰富的服务！', 1, 1, 1, 1, 0, 0, NULL, 1, 1, '2025-10-20 18:12:28', NULL, '2025-10-20 18:12:28', '2025-10-20 18:12:28');
+INSERT INTO `announcement` VALUES (4, '价格调整通知', '由于场地维护成本上升，部分场地价格将于下月1日起调整。', 2, 1, 1, 1, 0, 0, NULL, 1, 1, '2025-10-20 18:12:28', NULL, '2025-10-20 18:12:28', '2025-10-20 18:12:28');
+INSERT INTO `announcement` VALUES (5, '节日放假通知', '国庆节期间场馆开放时间调整，请各位用户注意。', 3, 1, 1, 1, 0, 0, NULL, 1, 1, '2025-10-20 18:12:28', NULL, '2025-10-20 18:12:28', '2025-10-20 18:12:28');
 
 -- ----------------------------
 -- Table structure for announcement_read
@@ -1598,6 +1598,7 @@ CREATE TABLE `user`  (
   `member_level` int NULL DEFAULT 0 COMMENT '会员等级: 0-普通, 1-银卡, 2-金卡, 3-钻石',
   `points` int NULL DEFAULT 0 COMMENT '积分',
   `balance` decimal(10, 2) NULL DEFAULT 0.00 COMMENT '账户余额',
+  `role` int NULL DEFAULT 0 COMMENT '用户角色：0-普通用户，1-管理员',
   `create_time` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time` datetime NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   `last_login_time` datetime NULL DEFAULT NULL COMMENT '最后登录时间',
@@ -1607,20 +1608,21 @@ CREATE TABLE `user`  (
   INDEX `idx_phone`(`phone` ASC) USING BTREE,
   INDEX `idx_username`(`username` ASC) USING BTREE,
   INDEX `idx_status`(`status` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 10 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '用户表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 11 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '用户表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of user
 -- ----------------------------
-INSERT INTO `user` VALUES (1, 'admin', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVKIUi', '13800138000', NULL, '系统管理员', 0, NULL, 1, 3, 0, 0.00, '2025-10-01 00:25:39', '2025-10-01 00:25:39', '2025-10-18 02:35:57');
-INSERT INTO `user` VALUES (2, 'zhangsan', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVKIUi', '13800138001', 'zhangsan@basketball.com', '张三', 1, NULL, 1, 2, 500, 200.00, '2025-10-02 14:35:38', '2025-10-02 14:35:38', '2025-10-02 18:37:46');
-INSERT INTO `user` VALUES (3, 'admin123', '$2a$10$5P3OronOqu5fwZwn1.0zCORFIavq7a/Qg/idkf96be9e9lFl75tye', '15555555555', NULL, NULL, 0, NULL, 1, 0, 0, 0.00, '2025-10-01 00:31:35', '2025-10-01 00:31:35', '2025-10-01 00:57:32');
-INSERT INTO `user` VALUES (4, 'wangwu', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVKIUi', '13800138003', 'wangwu@basketball.com', '王五', 2, NULL, 1, 0, 50, 0.00, '2025-10-02 14:35:38', '2025-10-02 14:35:38', NULL);
-INSERT INTO `user` VALUES (5, 'coach_wang', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVKIUi', '13900139001', 'wang@basketball.com', '王教练', 1, NULL, 1, 3, 0, 0.00, '2025-10-02 20:42:29', '2025-10-02 20:42:29', NULL);
-INSERT INTO `user` VALUES (6, 'coach_li', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVKIUi', '13900139002', 'li@basketball.com', '李教练', 1, NULL, 1, 3, 0, 0.00, '2025-10-02 20:42:29', '2025-10-02 20:42:29', NULL);
-INSERT INTO `user` VALUES (7, 'coach_zhao', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVKIUi', '13900139003', 'zhao@basketball.com', '赵教练', 2, NULL, 1, 3, 0, 0.00, '2025-10-02 20:42:29', '2025-10-02 20:42:29', NULL);
-INSERT INTO `user` VALUES (8, 'coach_sun', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVKIUi', '13900139004', 'sun@basketball.com', '孙教练', 1, NULL, 1, 3, 0, 0.00, '2025-10-02 20:42:29', '2025-10-02 20:42:29', NULL);
-INSERT INTO `user` VALUES (9, 'aqq', '$2a$10$YWeI4lnYXpwLxCYLHFS2SuCZy5G202M6BhqRGJIAPAtjVbBLc/W9q', '17512345678', NULL, NULL, 0, NULL, 1, 0, 0, 0.00, '2025-10-18 02:24:36', '2025-10-18 02:24:36', '2025-10-18 02:55:50');
+INSERT INTO `user` VALUES (1, 'admin', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVKIUi', '13800138000', NULL, '系统管理员', 0, NULL, 1, 3, 0, 0.00, 1, '2025-10-01 00:25:39', '2025-10-21 00:56:21', '2025-10-20 22:47:28');
+INSERT INTO `user` VALUES (2, 'zhangsan', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVKIUi', '13800138001', 'zhangsan@basketball.com', '张三', 1, NULL, 1, 2, 500, 200.00, 0, '2025-10-02 14:35:38', '2025-10-02 14:35:38', '2025-10-02 18:37:46');
+INSERT INTO `user` VALUES (3, 'admin123', '$2a$10$5P3OronOqu5fwZwn1.0zCORFIavq7a/Qg/idkf96be9e9lFl75tye', '15555555555', NULL, NULL, 0, NULL, 1, 0, 0, 0.00, 0, '2025-10-01 00:31:35', '2025-10-01 00:31:35', '2025-10-01 00:57:32');
+INSERT INTO `user` VALUES (4, 'wangwu', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVKIUi', '13800138003', 'wangwu@basketball.com', '王五', 2, NULL, 1, 0, 50, 0.00, 0, '2025-10-02 14:35:38', '2025-10-02 14:35:38', NULL);
+INSERT INTO `user` VALUES (5, 'coach_wang', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVKIUi', '13900139001', 'wang@basketball.com', '王教练', 1, NULL, 1, 3, 0, 0.00, 0, '2025-10-02 20:42:29', '2025-10-02 20:42:29', NULL);
+INSERT INTO `user` VALUES (6, 'coach_li', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVKIUi', '13900139002', 'li@basketball.com', '李教练', 1, NULL, 1, 3, 0, 0.00, 0, '2025-10-02 20:42:29', '2025-10-02 20:42:29', NULL);
+INSERT INTO `user` VALUES (7, 'coach_zhao', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVKIUi', '13900139003', 'zhao@basketball.com', '赵教练', 2, NULL, 1, 3, 0, 0.00, 0, '2025-10-02 20:42:29', '2025-10-02 20:42:29', NULL);
+INSERT INTO `user` VALUES (8, 'coach_sun', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVKIUi', '13900139004', 'sun@basketball.com', '孙教练', 1, NULL, 1, 3, 0, 0.00, 0, '2025-10-02 20:42:29', '2025-10-02 20:42:29', NULL);
+INSERT INTO `user` VALUES (9, 'aqq', '$2a$10$YWeI4lnYXpwLxCYLHFS2SuCZy5G202M6BhqRGJIAPAtjVbBLc/W9q', '17512345678', NULL, NULL, 0, NULL, 1, 0, 0, 0.00, 0, '2025-10-18 02:24:36', '2025-10-18 02:24:36', '2025-10-18 02:55:50');
+INSERT INTO `user` VALUES (10, 'qqq', '$2a$10$z18LiSHAMQ6eOu2dIjGmzOa/Stl2FSIsLbTwD6uV1K6WwjzzTZIyG', '15555555556', NULL, NULL, 0, NULL, 1, 0, 0, 0.00, 0, '2025-10-20 23:55:45', '2025-10-20 23:55:45', '2025-10-21 00:27:45');
 
 -- ----------------------------
 -- Table structure for user_behavior_log
@@ -1931,7 +1933,7 @@ CREATE TABLE `user_role`  (
   INDEX `role_id`(`role_id` ASC) USING BTREE,
   CONSTRAINT `user_role_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
   CONSTRAINT `user_role_ibfk_2` FOREIGN KEY (`role_id`) REFERENCES `role` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 21 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '用户角色关联表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 22 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '用户角色关联表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of user_role
@@ -1946,6 +1948,7 @@ INSERT INTO `user_role` VALUES (12, 6, 3, '2025-10-02 20:42:29');
 INSERT INTO `user_role` VALUES (13, 7, 3, '2025-10-02 20:42:29');
 INSERT INTO `user_role` VALUES (14, 8, 3, '2025-10-02 20:42:29');
 INSERT INTO `user_role` VALUES (20, 9, 3, '2025-10-18 02:24:36');
+INSERT INTO `user_role` VALUES (21, 10, 3, '2025-10-20 23:55:45');
 
 -- ----------------------------
 -- Table structure for user_session
@@ -2178,22 +2181,22 @@ INSERT INTO `venue_usage_analysis` VALUES (5, 5, '2025-10-17', 0, 0, 0, 0, 0.00,
 INSERT INTO `venue_usage_analysis` VALUES (6, 6, '2025-10-17', 0, 0, 0, 0, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠', '2025-10-18 03:00:00', '2025-10-20 10:37:59');
 INSERT INTO `venue_usage_analysis` VALUES (7, 7, '2025-10-17', 0, 0, 0, 0, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠', '2025-10-18 03:00:00', '2025-10-20 10:37:59');
 INSERT INTO `venue_usage_analysis` VALUES (8, 8, '2025-10-17', 0, 0, 0, 0, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠', '2025-10-18 03:00:00', '2025-10-20 10:37:59');
-INSERT INTO `venue_usage_analysis` VALUES (9, 1, '2025-10-19', 0, 0, 0, 0, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'down', -17, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠', '2025-10-20 10:36:34', '2025-10-20 18:15:00');
-INSERT INTO `venue_usage_analysis` VALUES (10, 2, '2025-10-19', 1, 0, 1, 1, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠; 取消率较高,建议分析取消原因并改进服务', '2025-10-20 10:36:34', '2025-10-20 18:15:00');
-INSERT INTO `venue_usage_analysis` VALUES (11, 3, '2025-10-19', 1, 0, 1, 1, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠; 取消率较高,建议分析取消原因并改进服务', '2025-10-20 10:36:34', '2025-10-20 18:15:00');
-INSERT INTO `venue_usage_analysis` VALUES (12, 4, '2025-10-19', 1, 1, 0, 1, 100.00, 10, 1, 10.00, 110.00, 110.00, 'afternoon', 1, 0.00, 0, 32, 'up', 32, '使用率较低,建议增加营销推广或调整价格策略', '2025-10-20 10:36:34', '2025-10-20 18:15:00');
-INSERT INTO `venue_usage_analysis` VALUES (13, 5, '2025-10-19', 0, 0, 0, 0, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠', '2025-10-20 10:36:34', '2025-10-20 18:15:00');
-INSERT INTO `venue_usage_analysis` VALUES (14, 6, '2025-10-19', 0, 0, 0, 0, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠', '2025-10-20 10:36:34', '2025-10-20 18:15:00');
-INSERT INTO `venue_usage_analysis` VALUES (15, 7, '2025-10-19', 0, 0, 0, 0, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠', '2025-10-20 10:36:34', '2025-10-20 18:15:00');
-INSERT INTO `venue_usage_analysis` VALUES (16, 8, '2025-10-19', 0, 0, 0, 0, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠', '2025-10-20 10:36:34', '2025-10-20 18:15:00');
-INSERT INTO `venue_usage_analysis` VALUES (17, 1, '2025-10-20', 7, 1, 0, 1, 14.29, 10, 1, 10.00, 400.00, 400.00, 'morning', 1, 0.00, 0, 18, 'up', 18, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠; 上午时段最受欢迎,可考虑推出早鸟优惠', '2025-10-20 10:36:34', '2025-10-20 11:09:25');
-INSERT INTO `venue_usage_analysis` VALUES (18, 2, '2025-10-20', 2, 0, 0, 1, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠', '2025-10-20 10:36:34', '2025-10-20 11:09:25');
-INSERT INTO `venue_usage_analysis` VALUES (19, 3, '2025-10-20', 4, 2, 0, 1, 50.00, 10, 2, 20.00, 300.00, 150.00, 'morning', 2, 0.00, 0, 29, 'up', 29, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠; 上午时段最受欢迎,可考虑推出早鸟优惠', '2025-10-20 10:36:34', '2025-10-20 11:09:25');
-INSERT INTO `venue_usage_analysis` VALUES (20, 4, '2025-10-20', 1, 1, 0, 1, 100.00, 10, 1, 10.00, 165.00, 165.00, 'morning', 1, 0.00, 0, 34, 'stable', 2, '使用率较低,建议增加营销推广或调整价格策略; 上午时段最受欢迎,可考虑推出早鸟优惠', '2025-10-20 10:36:34', '2025-10-20 11:09:25');
-INSERT INTO `venue_usage_analysis` VALUES (21, 5, '2025-10-20', 0, 0, 0, 0, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠', '2025-10-20 10:36:34', '2025-10-20 11:09:25');
-INSERT INTO `venue_usage_analysis` VALUES (22, 6, '2025-10-20', 1, 1, 0, 1, 100.00, 10, 1, 10.00, 130.00, 130.00, 'morning', 1, 0.00, 0, 33, 'up', 33, '使用率较低,建议增加营销推广或调整价格策略; 上午时段最受欢迎,可考虑推出早鸟优惠', '2025-10-20 10:36:34', '2025-10-20 11:09:25');
-INSERT INTO `venue_usage_analysis` VALUES (23, 7, '2025-10-20', 0, 0, 0, 0, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠', '2025-10-20 10:36:34', '2025-10-20 11:09:25');
-INSERT INTO `venue_usage_analysis` VALUES (24, 8, '2025-10-20', 0, 0, 0, 0, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠', '2025-10-20 10:36:34', '2025-10-20 11:09:25');
+INSERT INTO `venue_usage_analysis` VALUES (9, 1, '2025-10-19', 0, 0, 0, 0, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'down', -17, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠', '2025-10-20 10:36:34', '2025-10-20 23:55:00');
+INSERT INTO `venue_usage_analysis` VALUES (10, 2, '2025-10-19', 1, 0, 1, 1, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠; 取消率较高,建议分析取消原因并改进服务', '2025-10-20 10:36:34', '2025-10-20 23:55:00');
+INSERT INTO `venue_usage_analysis` VALUES (11, 3, '2025-10-19', 1, 0, 1, 1, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠; 取消率较高,建议分析取消原因并改进服务', '2025-10-20 10:36:34', '2025-10-20 23:55:00');
+INSERT INTO `venue_usage_analysis` VALUES (12, 4, '2025-10-19', 1, 1, 0, 1, 100.00, 10, 1, 10.00, 110.00, 110.00, 'afternoon', 1, 0.00, 0, 32, 'up', 32, '使用率较低,建议增加营销推广或调整价格策略', '2025-10-20 10:36:34', '2025-10-20 23:55:00');
+INSERT INTO `venue_usage_analysis` VALUES (13, 5, '2025-10-19', 0, 0, 0, 0, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠', '2025-10-20 10:36:34', '2025-10-20 23:55:00');
+INSERT INTO `venue_usage_analysis` VALUES (14, 6, '2025-10-19', 0, 0, 0, 0, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠', '2025-10-20 10:36:34', '2025-10-20 23:55:00');
+INSERT INTO `venue_usage_analysis` VALUES (15, 7, '2025-10-19', 0, 0, 0, 0, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠', '2025-10-20 10:36:34', '2025-10-20 23:55:00');
+INSERT INTO `venue_usage_analysis` VALUES (16, 8, '2025-10-19', 0, 0, 0, 0, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠', '2025-10-20 10:36:34', '2025-10-20 23:55:00');
+INSERT INTO `venue_usage_analysis` VALUES (17, 1, '2025-10-20', 7, 1, 0, 1, 14.29, 10, 1, 10.00, 400.00, 400.00, 'morning', 1, 0.00, 0, 18, 'up', 18, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠; 上午时段最受欢迎,可考虑推出早鸟优惠', '2025-10-20 10:36:34', '2025-10-21 02:30:00');
+INSERT INTO `venue_usage_analysis` VALUES (18, 2, '2025-10-20', 2, 0, 0, 1, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠', '2025-10-20 10:36:34', '2025-10-21 02:30:00');
+INSERT INTO `venue_usage_analysis` VALUES (19, 3, '2025-10-20', 4, 2, 0, 1, 50.00, 10, 2, 20.00, 300.00, 150.00, 'morning', 2, 0.00, 0, 29, 'up', 29, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠; 上午时段最受欢迎,可考虑推出早鸟优惠', '2025-10-20 10:36:34', '2025-10-21 02:30:00');
+INSERT INTO `venue_usage_analysis` VALUES (20, 4, '2025-10-20', 1, 1, 0, 1, 100.00, 10, 1, 10.00, 165.00, 165.00, 'morning', 1, 0.00, 0, 34, 'stable', 2, '使用率较低,建议增加营销推广或调整价格策略; 上午时段最受欢迎,可考虑推出早鸟优惠', '2025-10-20 10:36:34', '2025-10-21 02:30:00');
+INSERT INTO `venue_usage_analysis` VALUES (21, 5, '2025-10-20', 0, 0, 0, 0, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠', '2025-10-20 10:36:34', '2025-10-21 02:30:00');
+INSERT INTO `venue_usage_analysis` VALUES (22, 6, '2025-10-20', 1, 1, 0, 1, 100.00, 10, 1, 10.00, 130.00, 130.00, 'morning', 1, 0.00, 0, 33, 'up', 33, '使用率较低,建议增加营销推广或调整价格策略; 上午时段最受欢迎,可考虑推出早鸟优惠', '2025-10-20 10:36:34', '2025-10-21 02:30:00');
+INSERT INTO `venue_usage_analysis` VALUES (23, 7, '2025-10-20', 0, 0, 0, 0, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠', '2025-10-20 10:36:34', '2025-10-21 02:30:00');
+INSERT INTO `venue_usage_analysis` VALUES (24, 8, '2025-10-20', 0, 0, 0, 0, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠', '2025-10-20 10:36:34', '2025-10-21 02:30:00');
 INSERT INTO `venue_usage_analysis` VALUES (25, 1, '2025-10-13', 0, 0, 0, 0, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠', '2025-10-20 10:37:57', '2025-10-20 10:37:57');
 INSERT INTO `venue_usage_analysis` VALUES (26, 2, '2025-10-13', 0, 0, 0, 0, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠', '2025-10-20 10:37:57', '2025-10-20 10:37:57');
 INSERT INTO `venue_usage_analysis` VALUES (27, 3, '2025-10-13', 0, 0, 0, 0, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠', '2025-10-20 10:37:57', '2025-10-20 10:37:57');
