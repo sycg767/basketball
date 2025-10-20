@@ -1,5 +1,15 @@
 <template>
   <div class="course-list-container">
+    <!-- 页面头部 -->
+    <div class="page-header">
+      <h2>课程列表</h2>
+      <el-breadcrumb separator="/">
+        <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+        <el-breadcrumb-item>课程管理</el-breadcrumb-item>
+        <el-breadcrumb-item>课程列表</el-breadcrumb-item>
+      </el-breadcrumb>
+    </div>
+
     <el-card class="filter-card">
       <el-form :inline="true" :model="searchForm" class="search-form">
         <el-form-item label="课程名称">

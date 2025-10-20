@@ -28,7 +28,16 @@
       "Bash(curl -s \"http://localhost:8080/api/admin/statistics/booking-trend?days=7\" -H \"Authorization: Bearer test\")",
       "Bash(curl -s \"http://localhost:8080/api/admin/statistics/venue-usage\" -H \"Authorization: Bearer test\")",
       "Bash(npm install:*)",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "mcp__playwright__playwright_navigate",
+      "mcp__playwright__playwright_screenshot",
+      "mcp__playwright__playwright_get_visible_text",
+      "Bash(curl:*)",
+      "Bash(mysql:*)",
+      "Bash(where:*)",
+      "Bash(grep:*)",
+      "Bash(echo:*)",
+      "Bash(sed:*)"
     ],
     "deny": [],
     "ask": []

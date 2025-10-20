@@ -90,19 +90,28 @@ onMounted(() => {
 const loadRanking = async () => {
   loading.value = true;
   try {
-    const res = await getCoursePopularityRanking({ days: rankingDays.value, limit: 10 });
+    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - rankingDays.value);
+
+    const res = await getCoursePopularityRanking({
+      startDate: startDate.toISOString().split('T')[0],
+      endDate: endDate.toISOString().split('T')[0],
+      limit: 10
+    });
     if (res.code === 200 && res.data && res.data.length > 0) {
       rankingData.value = {
         xAxisData: res.data.map(item => item.courseName),
         series: [
           {
             name: '热度分数',
-            data: res.data.map(item => item.popularityScore || 0)
+            data: res.data.map(item => item.popularityScore || item.score || 0)
           }
         ]
       };
     }
   } catch (error) {
+    console.error('获取课程排行榜失败:', error);
     ElMessage.error('获取课程排行榜失败');
   } finally {
     loading.value = false;
@@ -111,9 +120,19 @@ const loadRanking = async () => {
 
 const loadHotColdCourses = async () => {
   try {
+    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - 30);
+
+    const params = {
+      startDate: startDate.toISOString().split('T')[0],
+      endDate: endDate.toISOString().split('T')[0],
+      limit: 5
+    };
+
     const [hotRes, coldRes] = await Promise.all([
-      getHotCourses({ limit: 5 }),
-      getColdCourses({ limit: 5 })
+      getHotCourses(params),
+      getColdCourses(params)
     ]);
 
     if (hotRes.code === 200) {

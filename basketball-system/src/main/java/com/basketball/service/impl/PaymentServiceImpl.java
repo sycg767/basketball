@@ -11,6 +11,8 @@ import com.basketball.entity.PaymentOrder;
 import com.basketball.mapper.PaymentConfigMapper;
 import com.basketball.mapper.PaymentNotifyLogMapper;
 import com.basketball.mapper.PaymentOrderMapper;
+import com.basketball.mapper.BookingMapper;
+import com.basketball.entity.Booking;
 import com.basketball.service.IPaymentService;
 import com.basketball.service.INotificationService;
 import com.basketball.dto.request.NotificationSendDTO;
@@ -49,6 +51,9 @@ public class PaymentServiceImpl implements IPaymentService {
 
     @Resource
     private INotificationService notificationService;
+
+    @Resource
+    private BookingMapper bookingMapper;
 
     /**
      * 创建支付订单
@@ -105,7 +110,7 @@ public class PaymentServiceImpl implements IPaymentService {
         // 4. 模拟调用支付接口
         if (createDTO.getPaymentType().startsWith("wechat_native")) {
             // 微信扫码支付 - 生成模拟二维码URL
-            order.setQrCodeUrl("https://api.mch.weixin.qq.com/pay/qrcode?data=mock_" + order.getPaymentNo());
+            order.setQrCodeUrl("https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=mock_wechat_" + order.getPaymentNo());
             order.setThirdPartyOrderNo("MOCK_WX_" + System.currentTimeMillis());
             log.info("生成微信扫码支付二维码: qrCodeUrl={}", order.getQrCodeUrl());
 
@@ -115,11 +120,11 @@ public class PaymentServiceImpl implements IPaymentService {
             order.setThirdPartyOrderNo("MOCK_WX_H5_" + System.currentTimeMillis());
             log.info("生成微信H5支付链接: paymentUrl={}", order.getPaymentUrl());
 
-        } else if (createDTO.getPaymentType().startsWith("alipay_pc")) {
-            // 支付宝PC支付 - 生成模拟跳转URL
-            order.setPaymentUrl("https://openapi.alipay.com/gateway.do?trade_no=mock_" + order.getPaymentNo());
+        } else if (createDTO.getPaymentType().startsWith("alipay_page") || createDTO.getPaymentType().startsWith("alipay_pc")) {
+            // 支付宝PC/页面支付 - 生成模拟二维码URL（像微信一样扫码支付）
+            order.setQrCodeUrl("https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=mock_alipay_" + order.getPaymentNo());
             order.setThirdPartyOrderNo("MOCK_ALIPAY_" + System.currentTimeMillis());
-            log.info("生成支付宝PC支付链接: paymentUrl={}", order.getPaymentUrl());
+            log.info("生成支付宝扫码支付二维码: qrCodeUrl={}", order.getQrCodeUrl());
 
         } else if (createDTO.getPaymentType().startsWith("alipay_wap")) {
             // 支付宝WAP支付 - 生成模拟跳转URL
@@ -128,7 +133,7 @@ public class PaymentServiceImpl implements IPaymentService {
             log.info("生成支付宝WAP支付链接: paymentUrl={}", order.getPaymentUrl());
 
         } else {
-            throw new BusinessException("不支持的支付方式");
+            throw new BusinessException("不支持的支付方式: " + createDTO.getPaymentType());
         }
 
         // 5. 保存支付订单
@@ -170,10 +175,10 @@ public class PaymentServiceImpl implements IPaymentService {
         try {
             // 1. 记录回调日志
             PaymentNotifyLog notifyLog = new PaymentNotifyLog();
-            notifyLog.setPaymentNo(callbackData.getOrDefault("out_trade_no", ""));
+            notifyLog.setOrderNo(callbackData.getOrDefault("out_trade_no", ""));
             notifyLog.setNotifyType("callback");
             notifyLog.setNotifyData(callbackData.toString());
-            notifyLog.setStatus(0); // 待处理
+            notifyLog.setProcessStatus(0); // 待处理
             notifyLog.setRetryCount(0);
             notifyLog.setCreateTime(LocalDateTime.now());
             paymentNotifyLogMapper.insert(notifyLog);
@@ -184,7 +189,7 @@ public class PaymentServiceImpl implements IPaymentService {
             String tradeStatus = callbackData.getOrDefault("trade_status", "TRADE_SUCCESS");
 
             if (paymentNo == null) {
-                notifyLog.setStatus(2);
+                notifyLog.setProcessStatus(2);
                 notifyLog.setErrorMsg("缺少订单号");
                 paymentNotifyLogMapper.updateById(notifyLog);
                 return "fail";
@@ -196,7 +201,7 @@ public class PaymentServiceImpl implements IPaymentService {
             PaymentOrder order = paymentOrderMapper.selectOne(query);
 
             if (order == null) {
-                notifyLog.setStatus(2);
+                notifyLog.setProcessStatus(2);
                 notifyLog.setErrorMsg("订单不存在");
                 paymentNotifyLogMapper.updateById(notifyLog);
                 return "fail";
@@ -205,8 +210,8 @@ public class PaymentServiceImpl implements IPaymentService {
             // 4. 检查订单状态
             if (order.getStatus() == 2) {
                 log.info("订单已支付,忽略回调: paymentNo={}", paymentNo);
-                notifyLog.setStatus(1);
-                notifyLog.setResult("订单已支付");
+                notifyLog.setProcessStatus(1);
+                notifyLog.setProcessResult("订单已支付");
                 paymentNotifyLogMapper.updateById(notifyLog);
                 return "success";
             }
@@ -220,6 +225,22 @@ public class PaymentServiceImpl implements IPaymentService {
                 paymentOrderMapper.updateById(order);
 
                 // TODO: 更新业务订单状态 (预订订单、会员卡订单等)
+                // 更新预订订单状态为已支付
+                LambdaQueryWrapper<Booking> bookingQuery = new LambdaQueryWrapper<>();
+                bookingQuery.eq(Booking::getBookingNo, order.getBusinessNo());
+                Booking booking = bookingMapper.selectOne(bookingQuery);
+
+                if (booking != null) {
+                    booking.setStatus(1); // 已支付
+                    booking.setPayTime(LocalDateTime.now());
+                    booking.setUpdateTime(LocalDateTime.now());
+                    bookingMapper.updateById(booking);
+
+                    log.info("预订订单状态更新成功: bookingId={}, bookingNo={}, status=1",
+                            booking.getId(), booking.getBookingNo());
+                } else {
+                    log.warn("未找到对应的预订订单: businessNo={}", order.getBusinessNo());
+                }
 
                 log.info("支付成功: paymentNo={}, tradeNo={}", paymentNo, tradeNo);
 
@@ -233,9 +254,8 @@ public class PaymentServiceImpl implements IPaymentService {
                     notificationDTO.setNotificationType("system");
 
                     Map<String, Object> params = new HashMap<>();
-                    params.put("paymentNo", paymentNo);
                     params.put("amount", order.getActualAmount().toString());
-                    params.put("businessNo", order.getBusinessNo());
+                    params.put("orderNo", order.getBusinessNo());
                     notificationDTO.setParams(params);
 
                     notificationService.sendNotification(notificationDTO);
@@ -243,8 +263,8 @@ public class PaymentServiceImpl implements IPaymentService {
                     log.error("发送支付成功通知失败: paymentNo={}", paymentNo, e);
                 }
 
-                notifyLog.setStatus(1);
-                notifyLog.setResult("处理成功");
+                notifyLog.setProcessStatus(1);
+                notifyLog.setProcessResult("处理成功");
                 paymentNotifyLogMapper.updateById(notifyLog);
 
                 return "success";
@@ -254,8 +274,8 @@ public class PaymentServiceImpl implements IPaymentService {
                 order.setUpdateTime(LocalDateTime.now());
                 paymentOrderMapper.updateById(order);
 
-                notifyLog.setStatus(1);
-                notifyLog.setResult("支付失败");
+                notifyLog.setProcessStatus(1);
+                notifyLog.setProcessResult("支付失败");
                 paymentNotifyLogMapper.updateById(notifyLog);
 
                 return "fail";

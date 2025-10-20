@@ -1,0 +1,129 @@
+/**
+ * 页面通用样式
+ * 用于统一所有页面的布局和样式
+ */
+
+// 页面容器统一样式
+.page-container,
+.booking-create-container,
+.venue-detail-container,
+.booking-detail-container,
+.payment-method-container,
+.notification-list-container,
+.course-list-container,
+.venue-list-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+// 页面标题统一样式
+.page-title {
+  font-size: 18px;
+  font-weight: 500;
+  color: #303133;
+}
+
+// 页面头部统一样式
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+
+  h2 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 500;
+    color: #303133;
+  }
+
+  .el-breadcrumb {
+    font-size: 14px;
+  }
+}
+
+// 卡片统一间距
+.el-card {
+  margin-bottom: 20px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+// 卡片头部统一样式
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  span, h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 500;
+    color: #303133;
+  }
+}
+
+// 内容区域统一样式
+.detail-content,
+.create-content {
+  .el-card {
+    margin-bottom: 20px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+// 分页容器统一样式
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  padding: 20px 0;
+}
+
+// 操作按钮区域统一样式
+.action-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #EBEEF5;
+}
+
+// 响应式布局
+@media (max-width: 768px) {
+  .page-container,
+  .booking-create-container,
+  .venue-detail-container,
+  .booking-detail-container,
+  .payment-method-container,
+  .notification-list-container,
+  .course-list-container,
+  .venue-list-container {
+    padding: 10px;
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+
+    h2 {
+      font-size: 20px;
+    }
+  }
+
+  .action-buttons {
+    flex-direction: column;
+
+    .el-button {
+      width: 100%;
+    }
+  }
+}

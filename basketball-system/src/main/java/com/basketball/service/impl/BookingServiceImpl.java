@@ -391,9 +391,11 @@ public class BookingServiceImpl extends ServiceImpl<BookingMapper, Booking> impl
             notificationDTO.setNotificationType("system");
 
             Map<String, Object> params = new HashMap<>();
-            params.put("bookingNo", booking.getBookingNo());
+            params.put("orderNo", booking.getBookingNo());
             params.put("venueName", venue != null ? venue.getVenueName() : "场地");
-            params.put("bookingDate", booking.getBookingDate().toString());
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+            String bookingTime = booking.getBookingDate() + " " + booking.getStartTime().format(DateTimeFormatter.ofPattern("HH:mm")) + "-" + booking.getEndTime().format(DateTimeFormatter.ofPattern("HH:mm"));
+            params.put("bookingTime", bookingTime);
             notificationDTO.setParams(params);
 
             notificationService.sendNotification(notificationDTO);

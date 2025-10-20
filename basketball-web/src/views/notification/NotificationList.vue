@@ -1,6 +1,12 @@
 <template>
   <div class="notification-list-container">
-    <el-card>
+    <el-page-header @back="goBack" title="返回">
+      <template #content>
+        <span class="page-title">通知中心</span>
+      </template>
+    </el-page-header>
+
+    <el-card class="notification-card">
       <!-- 头部 -->
       <template #header>
         <div class="card-header">
@@ -184,6 +190,10 @@ const handleSizeChange = () => {
   loadNotifications();
 };
 
+const goBack = () => {
+  router.back();
+};
+
 const handleNotificationClick = (item) => {
   router.push(`/notification/${item.id}`);
 };
@@ -322,7 +332,18 @@ const formatTime = (time) => {
 
 <style lang="scss" scoped>
 .notification-list-container {
+  max-width: 1200px;
+  margin: 0 auto;
   padding: 20px;
+
+  .page-title {
+    font-size: 18px;
+    font-weight: 500;
+  }
+
+  .notification-card {
+    margin-top: 20px;
+  }
 
   .card-header {
     display: flex;

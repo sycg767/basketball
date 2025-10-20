@@ -35,7 +35,7 @@ public class JwtAuthenticationInterceptor implements HandlerInterceptor {
                 if (jwtTokenProvider.validateToken(token)) {
                     Long userId = jwtTokenProvider.getUserIdFromToken(token);
                     // 将用户ID存储到 ThreadLocal
-                    UserContext.setUserId(userId);
+                    UserContext.setCurrentUserId(userId);
                     log.debug("用户 {} 通过JWT认证", userId);
                 }
             } catch (Exception e) {

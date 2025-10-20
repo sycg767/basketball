@@ -22,9 +22,9 @@ public class CoursePopularityScheduledTask {
     private ICoursePopularityService coursePopularityService;
 
     /**
-     * 每天凌晨2:00执行课程热度分析
+     * 每5分钟执行课程热度分析（测试用）
      */
-    @Scheduled(cron = "0 0 2 * * ?")
+    @Scheduled(cron = "0 */5 * * * ?")
     public void analyzeDailyCoursePopularity() {
         try {
             log.info("开始执行课程热度分析定时任务");

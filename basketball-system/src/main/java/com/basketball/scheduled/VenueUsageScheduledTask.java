@@ -22,9 +22,9 @@ public class VenueUsageScheduledTask {
     private IVenueUsageService venueUsageService;
 
     /**
-     * 每天凌晨3:00执行场地使用分析
+     * 每5分钟执行场地使用分析（测试用）
      */
-    @Scheduled(cron = "0 0 3 * * ?")
+    @Scheduled(cron = "0 */5 * * * ?")
     public void analyzeDailyVenueUsage() {
         try {
             log.info("开始执行场地使用分析定时任务");

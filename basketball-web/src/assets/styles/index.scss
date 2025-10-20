@@ -27,3 +27,6 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background-color: #c0c4cc;
 }
+
+// 引入页面通用样式
+@import '@/styles/page-common.scss';

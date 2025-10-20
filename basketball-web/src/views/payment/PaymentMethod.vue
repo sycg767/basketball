@@ -1,5 +1,11 @@
 <template>
   <div class="payment-method-container">
+    <el-page-header @back="handleCancel" title="返回">
+      <template #content>
+        <span class="page-title">选择支付方式</span>
+      </template>
+    </el-page-header>
+
     <el-card class="payment-card">
       <!-- 订单信息 -->
       <div class="order-info">
@@ -218,11 +224,20 @@ const handleCancel = () => {
 
 <style lang="scss" scoped>
 .payment-method-container {
-  max-width: 800px;
-  margin: 40px auto;
+  max-width: 1200px;
+  margin: 0 auto;
   padding: 20px;
 
+  .page-title {
+    font-size: 18px;
+    font-weight: 500;
+  }
+
   .payment-card {
+    margin-top: 20px;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
     .section-title {
       margin: 0 0 20px 0;
       font-size: 18px;

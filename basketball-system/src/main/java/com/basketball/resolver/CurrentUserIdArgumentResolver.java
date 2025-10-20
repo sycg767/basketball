@@ -30,7 +30,7 @@ public class CurrentUserIdArgumentResolver implements HandlerMethodArgumentResol
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
                                    NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
-        Long userId = UserContext.getUserId();
+        Long userId = UserContext.getCurrentUserId();
         
         CurrentUserId annotation = parameter.getParameterAnnotation(CurrentUserId.class);
         

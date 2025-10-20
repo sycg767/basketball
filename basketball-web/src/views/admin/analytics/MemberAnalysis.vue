@@ -134,20 +134,28 @@ onMounted(() => {
 
 const loadActivityTrend = async () => {
   try {
-    const res = await getMemberActivityTrend({ days: trendDays.value });
+    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - trendDays.value);
+
+    const res = await getMemberActivityTrend({
+      startDate: startDate.toISOString().split('T')[0],
+      endDate: endDate.toISOString().split('T')[0]
+    });
     if (res.code === 200 && res.data && res.data.length > 0) {
       activityTrendData.value = {
-        xAxisData: res.data.map(item => item.analysisDate),
+        xAxisData: res.data.map(item => item.analysisDate || item.date),
         series: [
           {
             name: '活跃用户数',
-            data: res.data.map(item => item.loginCount || 0)
+            data: res.data.map(item => item.loginCount || item.activeCount || 0)
           }
         ]
       };
     }
   } catch (error) {
     console.error('获取活跃度趋势失败:', error);
+    ElMessage.error('获取活跃度趋势失败');
   }
 };
 

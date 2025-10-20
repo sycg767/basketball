@@ -22,10 +22,10 @@ public class MemberActivityScheduledTask {
     private IMemberActivityService memberActivityService;
 
     /**
-     * 每天凌晨1:30执行
+     * 每5分钟执行一次（测试用）
      * 统计前一天的会员活跃度
      */
-    @Scheduled(cron = "0 30 1 * * ?")
+    @Scheduled(cron = "0 */5 * * * ?")
     public void analyzeDailyActivity() {
         log.info("开始执行会员活跃度统计定时任务...");
 

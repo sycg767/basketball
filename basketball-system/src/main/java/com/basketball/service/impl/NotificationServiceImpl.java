@@ -308,7 +308,7 @@ public class NotificationServiceImpl implements INotificationService {
 
         String result = template;
         for (Map.Entry<String, Object> entry : params.entrySet()) {
-            String placeholder = "{" + entry.getKey() + "}";
+            String placeholder = "{{" + entry.getKey() + "}}";
             String value = String.valueOf(entry.getValue());
             result = result.replace(placeholder, value);
         }

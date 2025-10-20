@@ -21,6 +21,16 @@
             <template #title>数据统计</template>
           </el-menu-item>
 
+          <el-sub-menu index="analytics">
+            <template #title>
+              <el-icon><TrendCharts /></el-icon>
+              <span>数据分析</span>
+            </template>
+            <el-menu-item index="/admin/analytics/member">会员活跃度</el-menu-item>
+            <el-menu-item index="/admin/analytics/course">课程热度</el-menu-item>
+            <el-menu-item index="/admin/analytics/venue">场地使用</el-menu-item>
+          </el-sub-menu>
+
           <el-menu-item index="/admin/venues">
             <el-icon><House /></el-icon>
             <template #title>场地管理</template>
@@ -107,6 +117,7 @@ import { ElMessage, ElMessageBox } from 'element-plus';
 import {
   Basketball,
   DataAnalysis,
+  TrendCharts,
   House,
   Calendar,
   Reading,
@@ -133,9 +144,14 @@ const activeMenu = computed(() => route.path);
 const breadcrumb = computed(() => {
   const titleMap = {
     '/admin/dashboard': '数据统计',
+    '/admin/analytics/member': '会员活跃度分析',
+    '/admin/analytics/course': '课程热度分析',
+    '/admin/analytics/venue': '场地使用分析',
     '/admin/venues': '场地管理',
     '/admin/bookings': '预订管理',
+    '/admin/courses': '课程管理',
     '/admin/users': '用户管理',
+    '/admin/member': '会员管理',
     '/admin/settings': '系统设置'
   };
   return titleMap[route.path];

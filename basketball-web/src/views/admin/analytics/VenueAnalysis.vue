@@ -90,19 +90,28 @@ onMounted(() => {
 const loadRanking = async () => {
   loading.value = true;
   try {
-    const res = await getVenueUsageRanking({ days: rankingDays.value, limit: 10 });
+    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - rankingDays.value);
+
+    const res = await getVenueUsageRanking({
+      startDate: startDate.toISOString().split('T')[0],
+      endDate: endDate.toISOString().split('T')[0],
+      limit: 10
+    });
     if (res.code === 200 && res.data && res.data.length > 0) {
       rankingData.value = {
         xAxisData: res.data.map(item => item.venueName),
         series: [
           {
             name: '使用率',
-            data: res.data.map(item => item.usageRate || 0)
+            data: res.data.map(item => item.usageRate || item.rate || 0)
           }
         ]
       };
     }
   } catch (error) {
+    console.error('获取场地排行榜失败:', error);
     ElMessage.error('获取场地排行榜失败');
   } finally {
     loading.value = false;
@@ -111,14 +120,21 @@ const loadRanking = async () => {
 
 const loadRevenueAnalysis = async () => {
   try {
-    const res = await getVenueRevenueAnalysis({ days: 30 });
+    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - 30);
+
+    const res = await getVenueRevenueAnalysis({
+      startDate: startDate.toISOString().split('T')[0],
+      endDate: endDate.toISOString().split('T')[0]
+    });
     if (res.code === 200 && res.data && res.data.length > 0) {
       revenueData.value = {
-        xAxisData: res.data.map(item => item.analysisDate),
+        xAxisData: res.data.map(item => item.analysisDate || item.date),
         series: [
           {
             name: '总收入',
-            data: res.data.map(item => item.totalRevenue || 0)
+            data: res.data.map(item => item.totalRevenue || item.revenue || 0)
           }
         ]
       };
@@ -130,7 +146,14 @@ const loadRevenueAnalysis = async () => {
 
 const loadPeakPeriods = async () => {
   try {
-    const res = await getPeakPeriodAnalysis({ days: 7 });
+    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - 7);
+
+    const res = await getPeakPeriodAnalysis({
+      startDate: startDate.toISOString().split('T')[0],
+      endDate: endDate.toISOString().split('T')[0]
+    });
     if (res.code === 200 && res.data) {
       peakPeriods.value = res.data || [];
     }
