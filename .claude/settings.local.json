@@ -37,7 +37,14 @@
       "Bash(where:*)",
       "Bash(grep:*)",
       "Bash(echo:*)",
-      "Bash(sed:*)"
+      "Bash(sed:*)",
+      "mcp__shrimp-task-manager__plan_task",
+      "mcp__shrimp-task-manager__analyze_task",
+      "Bash(mkdir:*)",
+      "Bash(java -cp target/classes)",
+      "Bash(target/dependency/*)",
+      "Bash(com.basketball.BasketballApplication)",
+      "Bash(java -cp \"target/classes;target/dependency/*\" com.basketball.BasketballApplication)"
     ],
     "deny": [],
     "ask": []

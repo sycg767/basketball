@@ -47,6 +47,9 @@ public class UserVO {
     @Schema(description = "账户余额")
     private BigDecimal balance;
 
+    @Schema(description = "用户角色：0-普通用户，1-管理员")
+    private Integer role;
+
     @Schema(description = "创建时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;

@@ -1,5 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import { getToken } from '@/utils/auth';
+import { useUserStore } from '@/store/modules/user';
+import { ElMessage } from 'element-plus';
 
 const routes = [
   {
@@ -19,6 +21,12 @@ const routes = [
     name: 'Home',
     component: () => import('@/views/home/Index.vue'),
     meta: { title: '首页' }
+  },
+  {
+    path: '/user-center',
+    name: 'UserCenter',
+    component: () => import('@/views/home/UserCenter.vue'),
+    meta: { title: '用户中心', requireAuth: true }
   },
   {
     path: '/profile',
@@ -182,6 +190,34 @@ const routes = [
         component: () => import('@/views/admin/MemberManage.vue'),
         meta: { title: '会员管理', requireAuth: true, requireAdmin: true }
       },
+      // 公告管理路由
+      {
+        path: 'announcements',
+        name: 'AdminAnnouncements',
+        component: () => import('@/views/admin/announcement/AnnouncementManage.vue'),
+        meta: { title: '公告管理', requireAuth: true, requireAdmin: true }
+      },
+      // 财务管理路由
+      {
+        path: 'financial',
+        name: 'AdminFinancial',
+        component: () => import('@/views/admin/financial/FinancialManage.vue'),
+        meta: { title: '财务管理', requireAuth: true, requireAdmin: true }
+      },
+      // 日志管理路由
+      {
+        path: 'logs',
+        name: 'AdminLogs',
+        component: () => import('@/views/admin/logs/LogManage.vue'),
+        meta: { title: '日志管理', requireAuth: true, requireAdmin: true }
+      },
+      // 系统设置路由
+      {
+        path: 'settings',
+        name: 'AdminSettings',
+        component: () => import('@/views/admin/settings/SettingsManage.vue'),
+        meta: { title: '系统设置', requireAuth: true, requireAdmin: true }
+      },
       // 数据分析路由
       {
         path: 'analytics/member',
@@ -222,6 +258,35 @@ router.beforeEach((to, from, next) => {
       next('/login');
       return;
     }
+
+    // 判断是否需要管理员权限
+    if (to.meta.requireAdmin) {
+      const userStore = useUserStore();
+      if (!userStore.isAdmin) {
+        // 非管理员用户访问管理员页面，跳转到用户中心
+        ElMessage.warning('您没有访问管理员页面的权限');
+        next('/user-center');
+        return;
+      }
+    }
+  }
+
+  // 角色区分逻辑：根路径 '/' 根据用户角色跳转
+  if (to.path === '/') {
+    const token = getToken();
+    if (token) {
+      // 已登录用户，根据角色跳转
+      const userStore = useUserStore();
+      if (userStore.isAdmin) {
+        next('/admin/dashboard');
+      } else {
+        next('/user-center');
+      }
+    } else {
+      // 未登录用户跳转到首页
+      next();
+    }
+    return;
   }
 
   next();

@@ -1,7 +1,7 @@
 <template>
   <div class="login-container">
     <div class="login-box">
-      <h1 class="title">篮球馆管理系统</h1>
+      <h1 class="title">篮球馆场地预约</h1>
 
       <!-- Tab切换 -->
       <el-tabs v-model="activeTab" class="login-tabs">
@@ -220,7 +220,13 @@ const handleAccountLogin = () => {
       try {
         await userStore.login(accountForm);
         ElMessage.success('登录成功');
-        router.push('/');
+
+        // 使用角色字段判断用户类型
+        if (userStore.isAdmin) {
+          router.push('/admin/dashboard');
+        } else {
+          router.push('/user-center');
+        }
       } catch (error) {
         console.error('登录失败', error);
       } finally {
@@ -282,7 +288,13 @@ const handlePhoneLogin = () => {
           userStore.setUserInfo(user);
 
           ElMessage.success('登录成功');
-          router.push('/');
+
+          // 使用角色字段判断用户类型
+          if (userStore.isAdmin) {
+            router.push('/admin/dashboard');
+          } else {
+            router.push('/user-center');
+          }
         } else {
           ElMessage.error(res.message || '登录失败');
         }
@@ -308,7 +320,13 @@ const handleWechatLoginSuccess = (data) => {
   userStore.setUserInfo(user);
 
   ElMessage.success('微信登录成功');
-  router.push('/');
+
+  // 使用角色字段判断用户类型
+  if (userStore.isAdmin) {
+    router.push('/admin/dashboard');
+  } else {
+    router.push('/user-center');
+  }
 };
 
 const goRegister = () => {

@@ -29,7 +29,7 @@
 
     <div class="home-content">
       <!-- Hero区域 -->
-      <div class="hero-section">
+      <div class="hero-section" v-if="!userStore.isLogin">
         <div class="hero-content">
           <h2 class="hero-title">欢迎来到篮球场馆预约系统</h2>
           <p class="hero-subtitle">在这里轻松预订心仪的篮球场地，享受专业的运动体验</p>
@@ -38,9 +38,9 @@
               <el-icon><House /></el-icon>
               <span>浏览场地</span>
             </el-button>
-            <el-button type="success" size="large" plain @click="goToBooking">
-              <el-icon><Calendar /></el-icon>
-              <span>我的预订</span>
+            <el-button type="success" size="large" plain @click="goToLogin">
+              <el-icon><User /></el-icon>
+              <span>立即登录</span>
             </el-button>
           </div>
           <div class="features">
@@ -67,6 +67,35 @@
             <el-icon :size="120" color="#409eff"><Basketball /></el-icon>
           </div>
         </div>
+      </div>
+
+      <!-- 已登录用户的个性化欢迎区域 -->
+      <div class="user-welcome-section" v-else>
+        <div class="welcome-content">
+          <div class="welcome-text">
+            <h2>欢迎回来，{{ userStore.realName || userStore.username || '用户' }}！</h2>
+            <p>今天是美好的一天，开始您的运动之旅吧！</p>
+          </div>
+          <div class="user-stats">
+            <div class="stat-item">
+              <div class="stat-value">{{ getMemberLevelText() }}</div>
+              <div class="stat-label">会员等级</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">{{ pointsBalance }}</div>
+              <div class="stat-label">积分余额</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">¥{{ accountBalance.toFixed(2) }}</div>
+              <div class="stat-label">账户余额</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 系统公告 (仅已登录用户显示) -->
+      <div class="announcement-section" v-if="userStore.isLogin">
+        <AnnouncementSection />
       </div>
 
       <!-- 快捷功能入口 -->
@@ -149,10 +178,13 @@
 </template>
 
 <script setup>
+import { ref, reactive, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { useUserStore } from '@/store/modules/user';
+import { getMyPoints } from '@/api/member';
 import NotificationCenter from '@/components/NotificationCenter.vue';
+import AnnouncementSection from '@/components/AnnouncementSection.vue';
 import {
   House,
   Calendar,
@@ -165,6 +197,34 @@ import {
 const router = useRouter();
 const userStore = useUserStore();
 
+// 用户统计数据
+const pointsBalance = ref(0);
+const accountBalance = ref(0.00);
+
+// 获取用户统计数据
+const loadUserStats = async () => {
+  if (userStore.isLogin) {
+    try {
+      // 获取积分余额
+      const pointsResponse = await getMyPoints();
+      if (pointsResponse.code === 200) {
+        pointsBalance.value = pointsResponse.data || 0;
+      }
+
+      // 临时设置账户余额为0（需要等待后端提供余额API）
+      // TODO: 待添加获取账户余额的API
+      accountBalance.value = 0.00;
+    } catch (error) {
+      console.error('获取用户统计数据失败:', error);
+    }
+  }
+};
+
+// 页面加载时获取统计数据
+onMounted(() => {
+  loadUserStats();
+});
+
 // 获取用户名首字母
 const getUserInitial = () => {
   const name = userStore.realName || userStore.username || '用户';
@@ -173,6 +233,16 @@ const getUserInitial = () => {
 
 const goLogin = () => {
   router.push('/login');
+};
+
+// 获取会员等级文本
+const getMemberLevelText = () => {
+  const levels = {
+    1: '银卡会员',
+    2: '金卡会员',
+    3: '钻石会员'
+  };
+  return levels[userStore.memberLevel] || '普通会员';
 };
 
 const goRegister = () => {
@@ -206,7 +276,7 @@ const goToBooking = () => {
     router.push('/login');
     return;
   }
-  router.push('/booking');
+  router.push('/user-center');
 };
 
 const goToCourse = () => {
@@ -558,6 +628,100 @@ const goToMember = () => {
             color: #718096;
             line-height: 1.7;
             margin: 0;
+          }
+        }
+      }
+    }
+
+    // 公告区域样式
+    .announcement-section {
+      margin: 60px 0;
+
+      .section-title {
+        font-size: 24px;
+        font-weight: 700;
+        color: #1a202c;
+        margin: 0 0 24px 0;
+        position: relative;
+        padding-bottom: 12px;
+
+        &::after {
+          content: '';
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          width: 48px;
+          height: 3px;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          border-radius: 2px;
+        }
+      }
+    }
+
+    // 用户欢迎区域样式
+    .user-welcome-section {
+      margin: 40px 0;
+
+      .welcome-content {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 40px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 40px;
+
+        @media (max-width: 768px) {
+          flex-direction: column;
+          gap: 24px;
+          padding: 32px;
+        }
+
+        .welcome-text {
+          flex: 1;
+
+          h2 {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1a202c;
+            margin: 0 0 12px 0;
+            line-height: 1.2;
+          }
+
+          p {
+            font-size: 16px;
+            color: #718096;
+            margin: 0;
+            line-height: 1.6;
+          }
+        }
+
+        .user-stats {
+          display: flex;
+          gap: 40px;
+          align-items: center;
+
+          @media (max-width: 768px) {
+            gap: 24px;
+          }
+
+          .stat-item {
+            text-align: center;
+
+            .stat-value {
+              font-size: 32px;
+              font-weight: 700;
+              color: #667eea;
+              margin-bottom: 8px;
+              line-height: 1;
+            }
+
+            .stat-label {
+              font-size: 14px;
+              color: #718096;
+              font-weight: 500;
+            }
           }
         }
       }

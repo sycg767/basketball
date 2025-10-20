@@ -11,7 +11,7 @@
  Target Server Version : 80040 (8.0.40)
  File Encoding         : 65001
 
- Date: 20/10/2025 11:08:31
+ Date: 20/10/2025 18:17:55
 */
 
 SET NAMES utf8mb4;
@@ -44,11 +44,16 @@ CREATE TABLE `announcement`  (
   INDEX `idx_status`(`status` ASC) USING BTREE,
   INDEX `idx_publish_time`(`publish_time` ASC) USING BTREE,
   CONSTRAINT `announcement_ibfk_1` FOREIGN KEY (`publisher_id`) REFERENCES `user` (`id`) ON DELETE SET NULL ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '公告表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 6 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '公告表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of announcement
 -- ----------------------------
+INSERT INTO `announcement` VALUES (1, '系统上线通知', '篮球场馆预约系统正式上线运营，欢迎各位用户使用！', 1, 1, 1, 1, 0, 0, NULL, 1, 0, '2025-10-20 18:12:28', NULL, '2025-10-20 18:12:28', '2025-10-20 18:12:28');
+INSERT INTO `announcement` VALUES (2, '系统维护通知', '系统将于2025年10月25日凌晨2:00-4:00进行维护，期间服务可能受到影响。', 2, 1, 1, 1, 0, 0, NULL, 1, 0, '2025-10-20 18:12:28', NULL, '2025-10-20 18:12:28', '2025-10-20 18:12:28');
+INSERT INTO `announcement` VALUES (3, '新功能发布', '系统新增了会员管理、课程预约等功能，体验更丰富的服务！', 1, 1, 1, 1, 0, 0, NULL, 1, 0, '2025-10-20 18:12:28', NULL, '2025-10-20 18:12:28', '2025-10-20 18:12:28');
+INSERT INTO `announcement` VALUES (4, '价格调整通知', '由于场地维护成本上升，部分场地价格将于下月1日起调整。', 2, 1, 1, 1, 0, 0, NULL, 1, 0, '2025-10-20 18:12:28', NULL, '2025-10-20 18:12:28', '2025-10-20 18:12:28');
+INSERT INTO `announcement` VALUES (5, '节日放假通知', '国庆节期间场馆开放时间调整，请各位用户注意。', 3, 1, 1, 1, 0, 0, NULL, 1, 0, '2025-10-20 18:12:28', NULL, '2025-10-20 18:12:28', '2025-10-20 18:12:28');
 
 -- ----------------------------
 -- Table structure for announcement_read
@@ -520,7 +525,7 @@ CREATE TABLE `dictionary`  (
   `create_time` datetime NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_dict_type`(`dict_type` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 76 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '数据字典表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 100 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '数据字典表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of dictionary
@@ -600,6 +605,30 @@ INSERT INTO `dictionary` VALUES (72, 'difficulty_level', '入门', '1', 1, 0, 1,
 INSERT INTO `dictionary` VALUES (73, 'difficulty_level', '初级', '2', 2, 0, 1, NULL, '2025-10-02 20:49:48');
 INSERT INTO `dictionary` VALUES (74, 'difficulty_level', '中级', '3', 3, 0, 1, NULL, '2025-10-02 20:49:48');
 INSERT INTO `dictionary` VALUES (75, 'difficulty_level', '高级', '4', 4, 0, 1, NULL, '2025-10-02 20:49:48');
+INSERT INTO `dictionary` VALUES (76, 'user_status', '正常', '1', 1, 0, 1, '用户正常状态', '2025-10-20 17:55:13');
+INSERT INTO `dictionary` VALUES (77, 'user_status', '禁用', '2', 2, 0, 1, '用户禁用状态', '2025-10-20 17:55:13');
+INSERT INTO `dictionary` VALUES (78, 'booking_status', '待支付', '0', 1, 0, 1, '预订待支付', '2025-10-20 17:55:13');
+INSERT INTO `dictionary` VALUES (79, 'booking_status', '已支付', '1', 2, 0, 1, '预订已支付', '2025-10-20 17:55:13');
+INSERT INTO `dictionary` VALUES (80, 'booking_status', '已取消', '2', 3, 0, 1, '预订已取消', '2025-10-20 17:55:13');
+INSERT INTO `dictionary` VALUES (81, 'booking_status', '已完成', '3', 4, 0, 1, '预订已完成', '2025-10-20 17:55:13');
+INSERT INTO `dictionary` VALUES (82, 'payment_method', '微信支付', 'wechat', 1, 0, 1, '微信支付方式', '2025-10-20 17:55:13');
+INSERT INTO `dictionary` VALUES (83, 'payment_method', '支付宝', 'alipay', 2, 0, 1, '支付宝支付方式', '2025-10-20 17:55:13');
+INSERT INTO `dictionary` VALUES (84, 'payment_method', '现金支付', 'cash', 3, 0, 1, '现金支付方式', '2025-10-20 17:55:13');
+INSERT INTO `dictionary` VALUES (85, 'venue_type', '标准篮球场', 'standard', 1, 0, 1, '标准篮球场地', '2025-10-20 17:55:13');
+INSERT INTO `dictionary` VALUES (86, 'venue_type', 'VIP篮球场', 'vip', 2, 0, 1, 'VIP篮球场地', '2025-10-20 17:55:13');
+INSERT INTO `dictionary` VALUES (87, 'venue_type', '综合运动场', 'complex', 3, 0, 1, '综合运动场地', '2025-10-20 17:55:13');
+INSERT INTO `dictionary` VALUES (88, 'member_type', '普通会员', 'normal', 1, 0, 1, '普通会员类型', '2025-10-20 17:55:13');
+INSERT INTO `dictionary` VALUES (89, 'member_type', '银卡会员', 'silver', 2, 0, 1, '银卡会员类型', '2025-10-20 17:55:13');
+INSERT INTO `dictionary` VALUES (90, 'member_type', '金卡会员', 'gold', 3, 0, 1, '金卡会员类型', '2025-10-20 17:55:13');
+INSERT INTO `dictionary` VALUES (91, 'member_type', '钻石会员', 'diamond', 4, 0, 1, '钻石会员类型', '2025-10-20 17:55:13');
+INSERT INTO `dictionary` VALUES (92, 'log_type', '登录日志', 'login', 1, 0, 1, '用户登录日志', '2025-10-20 17:55:13');
+INSERT INTO `dictionary` VALUES (93, 'log_type', '操作日志', 'operation', 2, 0, 1, '用户操作日志', '2025-10-20 17:55:13');
+INSERT INTO `dictionary` VALUES (94, 'log_type', '预订日志', 'booking', 3, 0, 1, '预订相关日志', '2025-10-20 17:55:13');
+INSERT INTO `dictionary` VALUES (95, 'log_type', '支付日志', 'payment', 4, 0, 1, '支付相关日志', '2025-10-20 17:55:13');
+INSERT INTO `dictionary` VALUES (96, 'config_type', '字符串', '1', 1, 0, 1, '字符串类型配置', '2025-10-20 17:55:13');
+INSERT INTO `dictionary` VALUES (97, 'config_type', '数字', '2', 2, 0, 1, '数字类型配置', '2025-10-20 17:55:13');
+INSERT INTO `dictionary` VALUES (98, 'config_type', '布尔值', '3', 3, 0, 1, '布尔类型配置', '2025-10-20 17:55:13');
+INSERT INTO `dictionary` VALUES (99, 'config_type', 'JSON', '4', 4, 0, 1, 'JSON类型配置', '2025-10-20 17:55:13');
 
 -- ----------------------------
 -- Table structure for equipment
@@ -651,11 +680,21 @@ CREATE TABLE `financial_record`  (
   INDEX `idx_type`(`record_type` ASC, `business_type` ASC) USING BTREE,
   INDEX `idx_user_id`(`user_id` ASC) USING BTREE,
   INDEX `idx_create_time`(`create_time` ASC) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '财务流水表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 11 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '财务流水表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of financial_record
 -- ----------------------------
+INSERT INTO `financial_record` VALUES (1, 'REC202510200001', 1, 3, 'ORD202510200001', 1, 500.00, 0.00, 500.00, 1, '用户充值会员卡500元', 1, '2025-10-20 18:17:03');
+INSERT INTO `financial_record` VALUES (2, 'REC202510200002', 1, 1, 'ORD202510200002', 2, 200.00, 0.00, 200.00, 1, '预订标准场地2小时费用', 2, '2025-10-20 18:17:03');
+INSERT INTO `financial_record` VALUES (3, 'REC202510200003', 1, 2, 'ORD202510200003', 3, 300.00, 0.00, 300.00, 1, '预约篮球课程1小时费用', 3, '2025-10-20 18:17:03');
+INSERT INTO `financial_record` VALUES (4, 'REC202510200004', 1, 3, 'ORD202510200004', 4, 1000.00, 0.00, 1000.00, 1, '用户续费会员卡1000元', 4, '2025-10-20 18:17:03');
+INSERT INTO `financial_record` VALUES (5, 'REC202510200005', 1, 4, 'ORD202510200005', 5, 800.00, 0.00, 800.00, 1, '预约教练培训课程费用', 5, '2025-10-20 18:17:03');
+INSERT INTO `financial_record` VALUES (6, 'REC202510200006', 3, 1, 'ORD202510200006', 2, -150.00, 200.00, 50.00, 1, '用户取消预订退款', 2, '2025-10-20 18:17:03');
+INSERT INTO `financial_record` VALUES (7, 'REC202510200007', 2, 4, 'ORD202510200007', 1, -500.00, 800.00, 300.00, 3, '场地设备维护费用', 1, '2025-10-20 18:17:03');
+INSERT INTO `financial_record` VALUES (8, 'REC202510200008', 2, 4, 'ORD202510200008', 1, -200.00, 300.00, 100.00, 3, '购买运动器材用品', 1, '2025-10-20 18:17:03');
+INSERT INTO `financial_record` VALUES (9, 'REC202510200009', 2, 4, 'ORD202510200009', 1, -300.00, 100.00, -200.00, 3, '推广营销活动费用', 1, '2025-10-20 18:17:03');
+INSERT INTO `financial_record` VALUES (10, 'REC202510200010', 2, 3, 'ORD202510200010', 1, -50.00, -200.00, -250.00, 3, '会员卡制作费用', 1, '2025-10-20 18:17:03');
 
 -- ----------------------------
 -- Table structure for login_log
@@ -1358,7 +1397,7 @@ CREATE TABLE `scheduled_reminder`  (
   INDEX `idx_user`(`target_user_id` ASC) USING BTREE,
   INDEX `idx_status`(`status` ASC) USING BTREE,
   CONSTRAINT `scheduled_reminder_ibfk_1` FOREIGN KEY (`target_user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '定时提醒任务表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 8 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '定时提醒任务表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of scheduled_reminder
@@ -1367,6 +1406,9 @@ INSERT INTO `scheduled_reminder` VALUES (1, 'booking_start', 9, 'booking', '12',
 INSERT INTO `scheduled_reminder` VALUES (2, 'booking_start', 9, 'booking', '19', '2025-10-20 10:00:00', '预订开始提醒', '您的场地预订将在1小时后开始，请准时到场', 0, NULL, NULL, 0, '2025-10-20 10:00:00', '2025-10-20 10:00:00');
 INSERT INTO `scheduled_reminder` VALUES (3, 'booking_start', 9, 'booking', '20', '2025-10-20 10:00:00', '预订开始提醒', '您的场地预订将在1小时后开始，请准时到场', 0, NULL, NULL, 0, '2025-10-20 10:00:00', '2025-10-20 10:00:00');
 INSERT INTO `scheduled_reminder` VALUES (4, 'booking_start', 9, 'booking', '17', '2025-10-20 11:00:00', '预订开始提醒', '您的场地预订将在1小时后开始，请准时到场', 0, NULL, NULL, 0, '2025-10-20 11:00:00', '2025-10-20 11:00:00');
+INSERT INTO `scheduled_reminder` VALUES (5, 'booking_start', 2, 'booking', '4', '2025-10-20 13:00:00', '预订开始提醒', '您的场地预订将在1小时后开始，请准时到场', 0, NULL, NULL, 0, '2025-10-20 13:00:00', '2025-10-20 13:00:00');
+INSERT INTO `scheduled_reminder` VALUES (6, 'booking_start', 3, 'booking', '8', '2025-10-20 14:00:00', '预订开始提醒', '您的场地预订将在1小时后开始，请准时到场', 0, NULL, NULL, 0, '2025-10-20 14:00:00', '2025-10-20 14:00:00');
+INSERT INTO `scheduled_reminder` VALUES (7, 'booking_start', 3, 'booking', '5', '2025-10-20 18:00:00', '预订开始提醒', '您的场地预订将在1小时后开始，请准时到场', 0, NULL, NULL, 0, '2025-10-20 18:00:00', '2025-10-20 18:00:00');
 
 -- ----------------------------
 -- Table structure for sms_code
@@ -1460,7 +1502,7 @@ CREATE TABLE `system_config`  (
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `config_key`(`config_key` ASC) USING BTREE,
   INDEX `idx_group`(`group_name` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 32 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '系统配置表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 150 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '系统配置表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of system_config
@@ -1481,6 +1523,63 @@ INSERT INTO `system_config` VALUES (28, 'points.signin_points', '5', 2, '每日�
 INSERT INTO `system_config` VALUES (29, 'member.silver_discount', '0.95', 2, '银卡会员折扣', '会员配置', 1, 1, '2025-10-02 20:49:48', '2025-10-02 20:49:48');
 INSERT INTO `system_config` VALUES (30, 'member.gold_discount', '0.90', 2, '金卡会员折扣', '会员配置', 2, 1, '2025-10-02 20:49:48', '2025-10-02 20:49:48');
 INSERT INTO `system_config` VALUES (31, 'member.diamond_discount', '0.85', 2, '钻石会员折扣', '会员配置', 3, 1, '2025-10-02 20:49:48', '2025-10-02 20:49:48');
+INSERT INTO `system_config` VALUES (91, 'system.company', '篮球场馆管理公司', 1, '所属公司', '系统设置', 3, 1, '2025-10-20 18:05:20', '2025-10-20 18:05:20');
+INSERT INTO `system_config` VALUES (92, 'system.contact.email', 'admin@basketball.com', 1, '联系邮箱', '系统设置', 4, 1, '2025-10-20 18:05:20', '2025-10-20 18:05:20');
+INSERT INTO `system_config` VALUES (93, 'system.contact.phone', '400-123-4567', 1, '联系电话', '系统设置', 5, 1, '2025-10-20 18:05:20', '2025-10-20 18:05:20');
+INSERT INTO `system_config` VALUES (94, 'booking.advance.days', '7', 2, '提前预订天数(天)', '预订设置', 1, 1, '2025-10-20 18:05:20', '2025-10-20 18:05:20');
+INSERT INTO `system_config` VALUES (95, 'booking.cancel.hours', '24', 2, '取消预订提前时间(小时)', '预订设置', 2, 1, '2025-10-20 18:05:20', '2025-10-20 18:05:20');
+INSERT INTO `system_config` VALUES (96, 'booking.min.duration', '60', 2, '最短预订时长(分钟)', '预订设置', 3, 1, '2025-10-20 18:05:20', '2025-10-20 18:05:20');
+INSERT INTO `system_config` VALUES (97, 'booking.max.duration', '480', 2, '最长预订时长(分钟)', '预订设置', 4, 1, '2025-10-20 18:05:20', '2025-10-20 18:05:20');
+INSERT INTO `system_config` VALUES (98, 'price.standard.hour', '100', 2, '标准场地每小时价格(元)', '价格设置', 1, 1, '2025-10-20 18:05:20', '2025-10-20 18:05:20');
+INSERT INTO `system_config` VALUES (99, 'price.vip.hour', '200', 2, 'VIP场地每小时价格(元)', '价格设置', 2, 1, '2025-10-20 18:05:20', '2025-10-20 18:05:20');
+INSERT INTO `system_config` VALUES (100, 'price.complex.hour', '150', 2, '综合场地每小时价格(元)', '价格设置', 3, 1, '2025-10-20 18:05:20', '2025-10-20 18:05:20');
+INSERT INTO `system_config` VALUES (101, 'price.coach.hour', '300', 2, '教练每小时价格(元)', '价格设置', 4, 1, '2025-10-20 18:05:20', '2025-10-20 18:05:20');
+INSERT INTO `system_config` VALUES (102, 'member.normal.discount', '0', 2, '普通会员折扣率(%)', '会员设置', 1, 1, '2025-10-20 18:05:20', '2025-10-20 18:05:20');
+INSERT INTO `system_config` VALUES (103, 'member.silver.discount', '10', 2, '银卡会员折扣率(%)', '会员设置', 2, 1, '2025-10-20 18:05:20', '2025-10-20 18:05:20');
+INSERT INTO `system_config` VALUES (104, 'member.gold.discount', '20', 2, '金卡会员折扣率(%)', '会员设置', 3, 1, '2025-10-20 18:05:20', '2025-10-20 18:05:20');
+INSERT INTO `system_config` VALUES (105, 'member.diamond.discount', '30', 2, '钻石会员折扣率(%)', '会员设置', 4, 1, '2025-10-20 18:05:20', '2025-10-20 18:05:20');
+INSERT INTO `system_config` VALUES (106, 'payment.wechat.enabled', 'true', 3, '启用微信支付', '支付设置', 1, 1, '2025-10-20 18:05:20', '2025-10-20 18:05:20');
+INSERT INTO `system_config` VALUES (107, 'payment.alipay.enabled', 'true', 3, '启用支付宝支付', '支付设置', 2, 1, '2025-10-20 18:05:20', '2025-10-20 18:05:20');
+INSERT INTO `system_config` VALUES (108, 'payment.cash.enabled', 'true', 3, '启用现金支付', '支付设置', 3, 1, '2025-10-20 18:05:20', '2025-10-20 18:05:20');
+INSERT INTO `system_config` VALUES (109, 'payment.auto.cancel.minutes', '15', 2, '自动取消未支付订单时间(分钟)', '支付设置', 4, 1, '2025-10-20 18:05:20', '2025-10-20 18:05:20');
+INSERT INTO `system_config` VALUES (110, 'sms.provider', 'aliyun', 1, '短信服务提供商', '短信设置', 1, 1, '2025-10-20 18:05:20', '2025-10-20 18:05:20');
+INSERT INTO `system_config` VALUES (111, 'sms.app.id', '', 1, '短信应用ID', '短信设置', 2, 1, '2025-10-20 18:05:20', '2025-10-20 18:05:20');
+INSERT INTO `system_config` VALUES (112, 'sms.app.key', '', 1, '短信应用密钥', '短信设置', 3, 1, '2025-10-20 18:05:20', '2025-10-20 18:05:20');
+INSERT INTO `system_config` VALUES (113, 'sms.template.id', '', 1, '短信模板ID', '短信设置', 4, 1, '2025-10-20 18:05:20', '2025-10-20 18:05:20');
+INSERT INTO `system_config` VALUES (114, 'email.smtp.host', 'smtp.qq.com', 1, 'SMTP服务器地址', '邮件设置', 1, 1, '2025-10-20 18:05:20', '2025-10-20 18:05:20');
+INSERT INTO `system_config` VALUES (115, 'email.smtp.port', '587', 2, 'SMTP服务器端口', '邮件设置', 2, 1, '2025-10-20 18:05:20', '2025-10-20 18:05:20');
+INSERT INTO `system_config` VALUES (116, 'email.smtp.username', '', 1, 'SMTP用户名', '邮件设置', 3, 1, '2025-10-20 18:05:20', '2025-10-20 18:05:20');
+INSERT INTO `system_config` VALUES (117, 'email.smtp.password', '', 1, 'SMTP密码', '邮件设置', 4, 1, '2025-10-20 18:05:20', '2025-10-20 18:05:20');
+INSERT INTO `system_config` VALUES (118, 'email.from.address', 'noreply@basketball.com', 1, '发件人邮箱', '邮件设置', 5, 1, '2025-10-20 18:05:20', '2025-10-20 18:05:20');
+INSERT INTO `system_config` VALUES (119, 'email.from.name', '篮球场馆系统', 1, '发件人名称', '邮件设置', 6, 1, '2025-10-20 18:05:20', '2025-10-20 18:05:20');
+INSERT INTO `system_config` VALUES (120, 'system.cache.enabled', 'true', 3, '启用系统缓存', '性能设置', 1, 1, '2025-10-20 18:05:20', '2025-10-20 18:05:20');
+INSERT INTO `system_config` VALUES (121, 'system.cache.expire.minutes', '30', 2, '缓存过期时间(分钟)', '性能设置', 2, 1, '2025-10-20 18:05:20', '2025-10-20 18:05:20');
+INSERT INTO `system_config` VALUES (122, 'system.upload.max.size', '10', 2, '文件上传最大大小(MB)', '性能设置', 3, 1, '2025-10-20 18:05:20', '2025-10-20 18:05:20');
+INSERT INTO `system_config` VALUES (123, 'system.upload.allowed.types', 'jpg,jpeg,png,gif,pdf,doc,docx', 1, '允许上传的文件类型', '性能设置', 4, 1, '2025-10-20 18:05:20', '2025-10-20 18:05:20');
+INSERT INTO `system_config` VALUES (124, 'security.login.max.attempts', '5', 2, '最大登录尝试次数', '安全设置', 1, 1, '2025-10-20 18:05:20', '2025-10-20 18:05:20');
+INSERT INTO `system_config` VALUES (125, 'security.lockout.minutes', '30', 2, '账户锁定时间(分钟)', '安全设置', 2, 1, '2025-10-20 18:05:20', '2025-10-20 18:05:20');
+INSERT INTO `system_config` VALUES (126, 'security.session.timeout', '120', 2, '会话超时时间(分钟)', '安全设置', 3, 1, '2025-10-20 18:05:20', '2025-10-20 18:05:20');
+INSERT INTO `system_config` VALUES (127, 'security.password.min.length', '8', 2, '密码最小长度', '安全设置', 4, 1, '2025-10-20 18:05:20', '2025-10-20 18:05:20');
+INSERT INTO `system_config` VALUES (128, 'security.password.require.special', 'true', 3, '密码要求特殊字符', '安全设置', 5, 1, '2025-10-20 18:05:20', '2025-10-20 18:05:20');
+INSERT INTO `system_config` VALUES (129, 'security.password.require.number', 'true', 3, '密码要求数字', '安全设置', 6, 1, '2025-10-20 18:05:20', '2025-10-20 18:05:20');
+INSERT INTO `system_config` VALUES (130, 'security.password.require.uppercase', 'true', 3, '密码要求大写字母', '安全设置', 7, 1, '2025-10-20 18:05:20', '2025-10-20 18:05:20');
+INSERT INTO `system_config` VALUES (131, 'security.password.require.lowercase', 'true', 3, '密码要求小写字母', '安全设置', 8, 1, '2025-10-20 18:05:20', '2025-10-20 18:05:20');
+INSERT INTO `system_config` VALUES (132, 'logging.level.root', 'INFO', 1, '根日志级别', '日志设置', 1, 1, '2025-10-20 18:05:20', '2025-10-20 18:05:20');
+INSERT INTO `system_config` VALUES (133, 'logging.level.com.basketball', 'DEBUG', 1, '应用日志级别', '日志设置', 2, 1, '2025-10-20 18:05:20', '2025-10-20 18:05:20');
+INSERT INTO `system_config` VALUES (134, 'logging.file.max.size', '50', 2, '日志文件最大大小(MB)', '日志设置', 3, 1, '2025-10-20 18:05:20', '2025-10-20 18:05:20');
+INSERT INTO `system_config` VALUES (135, 'logging.file.max.history', '30', 2, '日志文件保留天数', '日志设置', 4, 1, '2025-10-20 18:05:20', '2025-10-20 18:05:20');
+INSERT INTO `system_config` VALUES (136, 'logging.log.sql.enabled', 'true', 3, '记录SQL日志', '日志设置', 5, 1, '2025-10-20 18:05:20', '2025-10-20 18:05:20');
+INSERT INTO `system_config` VALUES (137, 'analytics.enabled', 'true', 3, '启用统计分析', '分析设置', 1, 1, '2025-10-20 18:05:20', '2025-10-20 18:05:20');
+INSERT INTO `system_config` VALUES (138, 'analytics.cache.hours', '24', 2, '统计数据缓存时间(小时)', '分析设置', 2, 1, '2025-10-20 18:05:20', '2025-10-20 18:05:20');
+INSERT INTO `system_config` VALUES (139, 'analytics.data.retention.days', '90', 2, '数据保留天数', '分析设置', 3, 1, '2025-10-20 18:05:20', '2025-10-20 18:05:20');
+INSERT INTO `system_config` VALUES (140, 'analytics.report.daily.enabled', 'true', 3, '启用日报', '分析设置', 4, 1, '2025-10-20 18:05:20', '2025-10-20 18:05:20');
+INSERT INTO `system_config` VALUES (141, 'analytics.report.weekly.enabled', 'true', 3, '启用周报', '分析设置', 5, 1, '2025-10-20 18:05:20', '2025-10-20 18:05:20');
+INSERT INTO `system_config` VALUES (142, 'analytics.report.monthly.enabled', 'true', 3, '启用月报', '分析设置', 6, 1, '2025-10-20 18:05:20', '2025-10-20 18:05:20');
+INSERT INTO `system_config` VALUES (143, 'backup.enabled', 'true', 3, '启用数据备份', '备份设置', 1, 1, '2025-10-20 18:05:20', '2025-10-20 18:05:20');
+INSERT INTO `system_config` VALUES (144, 'backup.frequency', 'daily', 1, '备份频率(daily/weekly/monthly)', '备份设置', 2, 1, '2025-10-20 18:05:20', '2025-10-20 18:05:20');
+INSERT INTO `system_config` VALUES (145, 'backup.retention.days', '30', 2, '备份保留天数', '备份设置', 3, 1, '2025-10-20 18:05:20', '2025-10-20 18:05:20');
+INSERT INTO `system_config` VALUES (146, 'backup.auto.upload.enabled', 'false', 3, '启用自动上传备份', '备份设置', 4, 1, '2025-10-20 18:05:20', '2025-10-20 18:05:20');
+INSERT INTO `system_config` VALUES (147, 'backup.storage.path', '/backup', 1, '备份存储路径', '备份设置', 5, 1, '2025-10-20 18:05:20', '2025-10-20 18:05:20');
 
 -- ----------------------------
 -- Table structure for user
@@ -1546,7 +1645,7 @@ CREATE TABLE `user_behavior_log`  (
   INDEX `idx_create_time`(`create_time` ASC) USING BTREE,
   INDEX `idx_module_business`(`module` ASC, `business_id` ASC) USING BTREE,
   INDEX `idx_behavior_user_type_time`(`user_id` ASC, `behavior_type` ASC, `behavior_time` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 64 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '用户行为日志表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 284 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '用户行为日志表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of user_behavior_log
@@ -1614,6 +1713,125 @@ INSERT INTO `user_behavior_log` VALUES (60, 9, 'booking', NULL, NULL, NULL, NULL
 INSERT INTO `user_behavior_log` VALUES (61, 9, 'payment', NULL, NULL, NULL, NULL, '192.168.1.100', 'Mozilla/5.0', '支付订单', '2025-10-19 13:35:00', '2025-10-20 11:02:18');
 INSERT INTO `user_behavior_log` VALUES (62, 9, 'login', NULL, NULL, NULL, NULL, '192.168.1.100', 'Mozilla/5.0', '用户登录', '2025-10-20 08:00:00', '2025-10-20 11:02:18');
 INSERT INTO `user_behavior_log` VALUES (63, 9, 'view', NULL, NULL, NULL, NULL, '192.168.1.100', 'Mozilla/5.0', '浏览课程', '2025-10-20 08:10:00', '2025-10-20 11:02:18');
+INSERT INTO `user_behavior_log` VALUES (64, 2, 'login', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '登录', '2025-09-26 13:50:00', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (65, 3, 'login', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '登录', '2025-09-28 10:20:00', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (66, 4, 'login', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '登录', '2025-09-29 15:50:00', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (67, 2, 'login', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '登录', '2025-10-03 08:50:00', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (68, 3, 'login', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '登录', '2025-10-03 09:50:00', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (69, 2, 'login', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '登录', '2025-10-03 10:50:00', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (70, 4, 'login', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '登录', '2025-10-03 11:20:00', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (71, 3, 'login', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '登录', '2025-10-02 13:50:00', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (72, 2, 'login', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '登录', '2025-10-01 15:50:00', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (73, 4, 'login', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '登录', '2025-10-03 11:50:00', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (74, 9, 'login', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '登录', '2025-10-18 02:22:58', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (75, 9, 'login', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '登录', '2025-10-18 02:46:18', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (76, 9, 'login', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '登录', '2025-10-18 06:13:24', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (77, 9, 'login', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '登录', '2025-10-18 23:42:40', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (78, 9, 'login', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '登录', '2025-10-19 00:19:42', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (79, 9, 'login', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '登录', '2025-10-19 00:40:51', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (80, 9, 'login', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '登录', '2025-10-19 00:56:37', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (81, 9, 'login', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '登录', '2025-10-20 09:13:29', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (82, 9, 'login', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '登录', '2025-10-20 09:17:50', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (83, 9, 'login', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '登录', '2025-10-20 09:34:51', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (84, 9, 'login', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '登录', '2025-10-20 09:40:41', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (85, 9, 'login', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '登录', '2025-10-20 09:54:13', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (86, 9, 'login', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '登录', '2025-10-20 10:49:50', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (87, 9, 'login', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '登录', '2025-10-20 10:49:50', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (88, 9, 'login', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '登录', '2025-10-20 10:49:50', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (89, 9, 'login', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '登录', '2025-10-20 10:49:50', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (90, 9, 'login', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '登录', '2025-10-20 10:49:50', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (91, 9, 'login', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '登录', '2025-10-20 10:52:18', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (92, 9, 'login', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '登录', '2025-10-20 10:52:18', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (93, 9, 'login', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '登录', '2025-10-20 10:52:18', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (94, 9, 'login', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '登录', '2025-10-20 10:52:18', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (95, 9, 'login', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '登录', '2025-10-20 10:52:18', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (127, 2, 'view', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '浏览场地', '2025-09-26 13:55:00', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (128, 3, 'view', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '浏览场地', '2025-09-28 10:25:00', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (129, 4, 'view', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '浏览场地', '2025-09-29 15:55:00', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (130, 2, 'view', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '浏览场地', '2025-10-03 08:55:00', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (131, 3, 'view', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '浏览场地', '2025-10-03 09:55:00', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (132, 2, 'view', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '浏览场地', '2025-10-03 10:55:00', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (133, 4, 'view', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '浏览场地', '2025-10-03 11:25:00', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (134, 3, 'view', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '浏览场地', '2025-10-02 13:55:00', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (135, 2, 'view', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '浏览场地', '2025-10-01 15:55:00', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (136, 4, 'view', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '浏览场地', '2025-10-03 11:55:00', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (137, 9, 'view', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '浏览场地', '2025-10-18 02:27:58', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (138, 9, 'view', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '浏览场地', '2025-10-18 02:51:18', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (139, 9, 'view', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '浏览场地', '2025-10-18 06:18:24', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (140, 9, 'view', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '浏览场地', '2025-10-18 23:47:40', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (141, 9, 'view', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '浏览场地', '2025-10-19 00:24:42', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (142, 9, 'view', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '浏览场地', '2025-10-19 00:45:51', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (143, 9, 'view', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '浏览场地', '2025-10-19 01:01:37', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (144, 9, 'view', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '浏览场地', '2025-10-20 09:18:29', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (145, 9, 'view', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '浏览场地', '2025-10-20 09:22:50', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (146, 9, 'view', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '浏览场地', '2025-10-20 09:39:51', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (147, 9, 'view', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '浏览场地', '2025-10-20 09:45:41', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (148, 9, 'view', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '浏览场地', '2025-10-20 09:59:13', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (149, 9, 'view', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '浏览场地', '2025-10-20 10:54:50', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (150, 9, 'view', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '浏览场地', '2025-10-20 10:54:50', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (151, 9, 'view', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '浏览场地', '2025-10-20 10:54:50', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (152, 9, 'view', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '浏览场地', '2025-10-20 10:54:50', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (153, 9, 'view', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '浏览场地', '2025-10-20 10:54:50', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (154, 9, 'view', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '浏览场地', '2025-10-20 10:57:18', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (155, 9, 'view', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '浏览场地', '2025-10-20 10:57:18', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (156, 9, 'view', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '浏览场地', '2025-10-20 10:57:18', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (157, 9, 'view', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '浏览场地', '2025-10-20 10:57:18', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (158, 9, 'view', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '浏览场地', '2025-10-20 10:57:18', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (190, 2, 'booking', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '预订场地', '2025-09-26 14:00:00', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (191, 3, 'booking', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '预订场地', '2025-09-28 10:30:00', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (192, 4, 'booking', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '预订场地', '2025-09-29 16:00:00', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (193, 2, 'booking', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '预订场地', '2025-10-03 09:00:00', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (194, 3, 'booking', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '预订场地', '2025-10-03 10:00:00', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (195, 2, 'booking', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '预订场地', '2025-10-03 11:00:00', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (196, 4, 'booking', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '预订场地', '2025-10-03 11:30:00', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (197, 3, 'booking', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '预订场地', '2025-10-02 14:00:00', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (198, 2, 'booking', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '预订场地', '2025-10-01 16:00:00', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (199, 4, 'booking', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '预订场地', '2025-10-03 12:00:00', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (200, 9, 'booking', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '预订场地', '2025-10-18 02:32:58', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (201, 9, 'booking', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '预订场地', '2025-10-18 02:56:18', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (202, 9, 'booking', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '预订场地', '2025-10-18 06:23:24', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (203, 9, 'booking', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '预订场地', '2025-10-18 23:52:40', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (204, 9, 'booking', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '预订场地', '2025-10-19 00:29:42', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (205, 9, 'booking', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '预订场地', '2025-10-19 00:50:51', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (206, 9, 'booking', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '预订场地', '2025-10-19 01:06:37', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (207, 9, 'booking', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '预订场地', '2025-10-20 09:23:29', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (208, 9, 'booking', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '预订场地', '2025-10-20 09:27:50', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (209, 9, 'booking', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '预订场地', '2025-10-20 09:44:51', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (210, 9, 'booking', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '预订场地', '2025-10-20 09:50:41', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (211, 9, 'booking', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '预订场地', '2025-10-20 10:04:13', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (212, 9, 'booking', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '预订场地', '2025-10-20 10:59:50', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (213, 9, 'booking', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '预订场地', '2025-10-20 10:59:50', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (214, 9, 'booking', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '预订场地', '2025-10-20 10:59:50', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (215, 9, 'booking', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '预订场地', '2025-10-20 10:59:50', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (216, 9, 'booking', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '预订场地', '2025-10-20 10:59:50', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (217, 9, 'booking', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '预订场地', '2025-10-20 11:02:18', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (218, 9, 'booking', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '预订场地', '2025-10-20 11:02:18', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (219, 9, 'booking', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '预订场地', '2025-10-20 11:02:18', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (220, 9, 'booking', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '预订场地', '2025-10-20 11:02:18', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (221, 9, 'booking', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '预订场地', '2025-10-20 11:02:18', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (253, 2, 'payment', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '支付订单', '2025-09-26 14:05:00', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (254, 3, 'payment', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '支付订单', '2025-09-28 10:35:00', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (255, 4, 'payment', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '支付订单', '2025-09-30 18:55:00', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (256, 2, 'payment', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '支付订单', '2025-10-03 09:05:00', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (257, 3, 'payment', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '支付订单', '2025-10-03 10:02:00', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (258, 2, 'payment', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '支付订单', '2025-10-01 16:05:00', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (259, 9, 'payment', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '支付订单', '2025-10-18 03:14:42', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (260, 9, 'payment', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '支付订单', '2025-10-19 01:06:42', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (261, 9, 'payment', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '支付订单', '2025-10-20 09:23:45', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (262, 9, 'payment', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '支付订单', '2025-10-20 09:34:08', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (263, 9, 'payment', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '支付订单', '2025-10-20 09:45:00', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (264, 9, 'payment', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '支付订单', '2025-10-20 09:50:50', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (265, 9, 'payment', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '支付订单', '2025-10-20 10:04:37', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (266, 9, 'payment', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '支付订单', '2025-10-21 13:55:00', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (267, 9, 'payment', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '支付订单', '2025-10-22 09:55:00', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (268, 9, 'payment', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '支付订单', '2025-10-23 15:55:00', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (269, 9, 'payment', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '支付订单', '2025-10-24 08:55:00', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (270, 9, 'payment', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '支付订单', '2025-10-25 13:55:00', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (271, 9, 'payment', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '支付订单', '2025-10-21 13:55:00', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (272, 9, 'payment', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '支付订单', '2025-10-22 09:55:00', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (273, 9, 'payment', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '支付订单', '2025-10-23 15:55:00', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (274, 9, 'payment', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '支付订单', '2025-10-24 08:55:00', '2025-10-20 11:17:35');
+INSERT INTO `user_behavior_log` VALUES (275, 9, 'payment', NULL, NULL, NULL, NULL, '192.168.1.1', 'Mozilla/5.0', '支付订单', '2025-10-25 13:55:00', '2025-10-20 11:17:35');
 
 -- ----------------------------
 -- Table structure for user_coupon
@@ -1960,22 +2178,22 @@ INSERT INTO `venue_usage_analysis` VALUES (5, 5, '2025-10-17', 0, 0, 0, 0, 0.00,
 INSERT INTO `venue_usage_analysis` VALUES (6, 6, '2025-10-17', 0, 0, 0, 0, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠', '2025-10-18 03:00:00', '2025-10-20 10:37:59');
 INSERT INTO `venue_usage_analysis` VALUES (7, 7, '2025-10-17', 0, 0, 0, 0, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠', '2025-10-18 03:00:00', '2025-10-20 10:37:59');
 INSERT INTO `venue_usage_analysis` VALUES (8, 8, '2025-10-17', 0, 0, 0, 0, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠', '2025-10-18 03:00:00', '2025-10-20 10:37:59');
-INSERT INTO `venue_usage_analysis` VALUES (9, 1, '2025-10-19', 0, 0, 0, 0, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'down', -17, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠', '2025-10-20 10:36:34', '2025-10-20 10:37:59');
-INSERT INTO `venue_usage_analysis` VALUES (10, 2, '2025-10-19', 1, 0, 1, 1, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠; 取消率较高,建议分析取消原因并改进服务', '2025-10-20 10:36:34', '2025-10-20 10:37:59');
-INSERT INTO `venue_usage_analysis` VALUES (11, 3, '2025-10-19', 1, 0, 1, 1, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠; 取消率较高,建议分析取消原因并改进服务', '2025-10-20 10:36:34', '2025-10-20 10:37:59');
-INSERT INTO `venue_usage_analysis` VALUES (12, 4, '2025-10-19', 1, 1, 0, 1, 100.00, 10, 1, 10.00, 110.00, 110.00, 'afternoon', 1, 0.00, 0, 32, 'up', 32, '使用率较低,建议增加营销推广或调整价格策略', '2025-10-20 10:36:34', '2025-10-20 10:37:59');
-INSERT INTO `venue_usage_analysis` VALUES (13, 5, '2025-10-19', 0, 0, 0, 0, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠', '2025-10-20 10:36:34', '2025-10-20 10:37:59');
-INSERT INTO `venue_usage_analysis` VALUES (14, 6, '2025-10-19', 0, 0, 0, 0, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠', '2025-10-20 10:36:34', '2025-10-20 10:37:59');
-INSERT INTO `venue_usage_analysis` VALUES (15, 7, '2025-10-19', 0, 0, 0, 0, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠', '2025-10-20 10:36:34', '2025-10-20 10:37:59');
-INSERT INTO `venue_usage_analysis` VALUES (16, 8, '2025-10-19', 0, 0, 0, 0, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠', '2025-10-20 10:36:34', '2025-10-20 10:37:59');
-INSERT INTO `venue_usage_analysis` VALUES (17, 1, '2025-10-20', 1, 1, 0, 1, 100.00, 10, 1, 10.00, 400.00, 400.00, 'morning', 1, 0.00, 0, 40, 'up', 40, '使用率较低,建议增加营销推广或调整价格策略; 上午时段最受欢迎,可考虑推出早鸟优惠', '2025-10-20 10:36:34', '2025-10-20 10:38:00');
-INSERT INTO `venue_usage_analysis` VALUES (18, 2, '2025-10-20', 0, 0, 0, 0, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠', '2025-10-20 10:36:34', '2025-10-20 10:38:00');
-INSERT INTO `venue_usage_analysis` VALUES (19, 3, '2025-10-20', 2, 2, 0, 1, 100.00, 10, 2, 20.00, 300.00, 150.00, 'morning', 2, 0.00, 0, 42, 'up', 42, '使用率较低,建议增加营销推广或调整价格策略; 上午时段最受欢迎,可考虑推出早鸟优惠', '2025-10-20 10:36:34', '2025-10-20 10:38:00');
-INSERT INTO `venue_usage_analysis` VALUES (20, 4, '2025-10-20', 1, 1, 0, 1, 100.00, 10, 1, 10.00, 165.00, 165.00, 'morning', 1, 0.00, 0, 34, 'stable', 2, '使用率较低,建议增加营销推广或调整价格策略; 上午时段最受欢迎,可考虑推出早鸟优惠', '2025-10-20 10:36:34', '2025-10-20 10:38:00');
-INSERT INTO `venue_usage_analysis` VALUES (21, 5, '2025-10-20', 0, 0, 0, 0, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠', '2025-10-20 10:36:34', '2025-10-20 10:38:00');
-INSERT INTO `venue_usage_analysis` VALUES (22, 6, '2025-10-20', 1, 1, 0, 1, 100.00, 10, 1, 10.00, 130.00, 130.00, 'morning', 1, 0.00, 0, 33, 'up', 33, '使用率较低,建议增加营销推广或调整价格策略; 上午时段最受欢迎,可考虑推出早鸟优惠', '2025-10-20 10:36:34', '2025-10-20 10:38:00');
-INSERT INTO `venue_usage_analysis` VALUES (23, 7, '2025-10-20', 0, 0, 0, 0, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠', '2025-10-20 10:36:34', '2025-10-20 10:38:00');
-INSERT INTO `venue_usage_analysis` VALUES (24, 8, '2025-10-20', 0, 0, 0, 0, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠', '2025-10-20 10:36:34', '2025-10-20 10:38:00');
+INSERT INTO `venue_usage_analysis` VALUES (9, 1, '2025-10-19', 0, 0, 0, 0, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'down', -17, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠', '2025-10-20 10:36:34', '2025-10-20 18:15:00');
+INSERT INTO `venue_usage_analysis` VALUES (10, 2, '2025-10-19', 1, 0, 1, 1, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠; 取消率较高,建议分析取消原因并改进服务', '2025-10-20 10:36:34', '2025-10-20 18:15:00');
+INSERT INTO `venue_usage_analysis` VALUES (11, 3, '2025-10-19', 1, 0, 1, 1, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠; 取消率较高,建议分析取消原因并改进服务', '2025-10-20 10:36:34', '2025-10-20 18:15:00');
+INSERT INTO `venue_usage_analysis` VALUES (12, 4, '2025-10-19', 1, 1, 0, 1, 100.00, 10, 1, 10.00, 110.00, 110.00, 'afternoon', 1, 0.00, 0, 32, 'up', 32, '使用率较低,建议增加营销推广或调整价格策略', '2025-10-20 10:36:34', '2025-10-20 18:15:00');
+INSERT INTO `venue_usage_analysis` VALUES (13, 5, '2025-10-19', 0, 0, 0, 0, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠', '2025-10-20 10:36:34', '2025-10-20 18:15:00');
+INSERT INTO `venue_usage_analysis` VALUES (14, 6, '2025-10-19', 0, 0, 0, 0, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠', '2025-10-20 10:36:34', '2025-10-20 18:15:00');
+INSERT INTO `venue_usage_analysis` VALUES (15, 7, '2025-10-19', 0, 0, 0, 0, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠', '2025-10-20 10:36:34', '2025-10-20 18:15:00');
+INSERT INTO `venue_usage_analysis` VALUES (16, 8, '2025-10-19', 0, 0, 0, 0, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠', '2025-10-20 10:36:34', '2025-10-20 18:15:00');
+INSERT INTO `venue_usage_analysis` VALUES (17, 1, '2025-10-20', 7, 1, 0, 1, 14.29, 10, 1, 10.00, 400.00, 400.00, 'morning', 1, 0.00, 0, 18, 'up', 18, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠; 上午时段最受欢迎,可考虑推出早鸟优惠', '2025-10-20 10:36:34', '2025-10-20 11:09:25');
+INSERT INTO `venue_usage_analysis` VALUES (18, 2, '2025-10-20', 2, 0, 0, 1, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠', '2025-10-20 10:36:34', '2025-10-20 11:09:25');
+INSERT INTO `venue_usage_analysis` VALUES (19, 3, '2025-10-20', 4, 2, 0, 1, 50.00, 10, 2, 20.00, 300.00, 150.00, 'morning', 2, 0.00, 0, 29, 'up', 29, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠; 上午时段最受欢迎,可考虑推出早鸟优惠', '2025-10-20 10:36:34', '2025-10-20 11:09:25');
+INSERT INTO `venue_usage_analysis` VALUES (20, 4, '2025-10-20', 1, 1, 0, 1, 100.00, 10, 1, 10.00, 165.00, 165.00, 'morning', 1, 0.00, 0, 34, 'stable', 2, '使用率较低,建议增加营销推广或调整价格策略; 上午时段最受欢迎,可考虑推出早鸟优惠', '2025-10-20 10:36:34', '2025-10-20 11:09:25');
+INSERT INTO `venue_usage_analysis` VALUES (21, 5, '2025-10-20', 0, 0, 0, 0, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠', '2025-10-20 10:36:34', '2025-10-20 11:09:25');
+INSERT INTO `venue_usage_analysis` VALUES (22, 6, '2025-10-20', 1, 1, 0, 1, 100.00, 10, 1, 10.00, 130.00, 130.00, 'morning', 1, 0.00, 0, 33, 'up', 33, '使用率较低,建议增加营销推广或调整价格策略; 上午时段最受欢迎,可考虑推出早鸟优惠', '2025-10-20 10:36:34', '2025-10-20 11:09:25');
+INSERT INTO `venue_usage_analysis` VALUES (23, 7, '2025-10-20', 0, 0, 0, 0, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠', '2025-10-20 10:36:34', '2025-10-20 11:09:25');
+INSERT INTO `venue_usage_analysis` VALUES (24, 8, '2025-10-20', 0, 0, 0, 0, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠', '2025-10-20 10:36:34', '2025-10-20 11:09:25');
 INSERT INTO `venue_usage_analysis` VALUES (25, 1, '2025-10-13', 0, 0, 0, 0, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠', '2025-10-20 10:37:57', '2025-10-20 10:37:57');
 INSERT INTO `venue_usage_analysis` VALUES (26, 2, '2025-10-13', 0, 0, 0, 0, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠', '2025-10-20 10:37:57', '2025-10-20 10:37:57');
 INSERT INTO `venue_usage_analysis` VALUES (27, 3, '2025-10-13', 0, 0, 0, 0, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠', '2025-10-20 10:37:57', '2025-10-20 10:37:57');

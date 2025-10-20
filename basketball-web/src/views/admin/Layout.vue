@@ -56,6 +56,21 @@
             <template #title>会员管理</template>
           </el-menu-item>
 
+          <el-menu-item index="/admin/announcements">
+            <el-icon><Bell /></el-icon>
+            <template #title>公告管理</template>
+          </el-menu-item>
+
+          <el-menu-item index="/admin/financial">
+            <el-icon><Money /></el-icon>
+            <template #title>财务管理</template>
+          </el-menu-item>
+
+          <el-menu-item index="/admin/logs">
+            <el-icon><Document /></el-icon>
+            <template #title>日志管理</template>
+          </el-menu-item>
+
           <el-menu-item index="/admin/settings">
             <el-icon><Setting /></el-icon>
             <template #title>系统设置</template>
@@ -123,6 +138,9 @@ import {
   Reading,
   User,
   CreditCard,
+  Bell,
+  Money,
+  Document,
   Setting,
   Fold,
   Expand,
@@ -152,6 +170,9 @@ const breadcrumb = computed(() => {
     '/admin/courses': '课程管理',
     '/admin/users': '用户管理',
     '/admin/member': '会员管理',
+    '/admin/announcements': '公告管理',
+    '/admin/financial': '财务管理',
+    '/admin/logs': '日志管理',
     '/admin/settings': '系统设置'
   };
   return titleMap[route.path];
