@@ -1,10 +1,6 @@
 <template>
   <div class="venue-detail-container">
-    <el-page-header @back="handleBack" title="返回">
-      <template #content>
-        <span class="page-title">场地详情</span>
-      </template>
-    </el-page-header>
+    <BackButton text="返回列表" />
 
     <div v-loading="loading" class="detail-content">
       <template v-if="venueDetail">
@@ -167,6 +163,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import { getVenueDetail, getVenuePrices } from '@/api/venue';
 import { useUserStore } from '@/store/modules/user';
+import BackButton from '@/components/common/BackButton.vue';
 
 const route = useRoute();
 const router = useRouter();
@@ -257,10 +254,6 @@ const fetchVenuePrices = async (venueId) => {
   }
 };
 
-// 返回
-const handleBack = () => {
-  router.back();
-};
 
 // 预订
 const handleBooking = () => {
@@ -282,25 +275,6 @@ onMounted(() => {
   padding: $spacing-8 $spacing-6;
   min-height: 100vh;
   background: $bg-secondary;
-
-  :deep(.el-page-header) {
-    margin-bottom: $spacing-6;
-
-    .el-page-header__back {
-      color: $primary;
-      font-weight: $font-weight-medium;
-      transition: $transition-fast;
-
-      &:hover {
-        color: $primary-hover;
-      }
-    }
-
-    .page-title {
-      @include text-heading-3;
-      font-size: $font-size-xl;
-    }
-  }
 
   .detail-content {
     .info-card,

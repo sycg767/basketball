@@ -1,7 +1,7 @@
 <template>
   <div class="points-container">
     <!-- 页面头部 -->
-    <el-page-header @back="handleBack" content="我的积分" />
+    <BackButton text="返回" />
 
     <!-- 积分展示卡片 - Apple风格 -->
     <div class="points-showcase">
@@ -129,13 +129,10 @@ import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { TrophyBase, Refresh, Coin, Present, Clock, Plus, Minus } from '@element-plus/icons-vue'
 import { getMyPoints, getPointsRecords } from '@/api/member'
+import BackButton from '@/components/common/BackButton.vue'
 
 const router = useRouter()
 
-// 返回上一页
-const handleBack = () => {
-  router.back()
-}
 
 // 我的积分
 const myPoints = ref(0)

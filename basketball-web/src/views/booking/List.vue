@@ -1,5 +1,6 @@
 <template>
   <div class="booking-list-container">
+    <BackButton text="返回" />
     <h2 class="page-title">我的预订</h2>
 
     <!-- 筛选栏 -->
@@ -23,6 +24,10 @@
             <span class="order-no">订单号: {{ booking.bookingNo }}</span>
             <el-tag :type="getStatusType(booking.status)" size="small">
               {{ getStatusText(booking.status) }}
+            </el-tag>
+            <!-- 待支付倒计时 -->
+            <el-tag v-if="booking.status === 0 && booking.expireTime" type="danger" size="small" effect="dark">
+              {{ getCountdown(booking.expireTime) }}
             </el-tag>
           </div>
           <div class="order-time">{{ booking.createTime }}</div>
@@ -67,12 +72,15 @@
             查看详情
           </el-button>
           <el-button
-            v-if="booking.status === 0"
+            v-if="booking.status === 0 && !isExpired(booking.expireTime)"
             type="success"
             @click="handlePay(booking)"
           >
             立即支付
           </el-button>
+          <el-tag v-if="booking.status === 0 && isExpired(booking.expireTime)" type="info" size="large">
+            订单已过期
+          </el-tag>
           <el-button
             v-if="booking.status === 0 || booking.status === 1"
             type="danger"
@@ -308,6 +316,7 @@
 import { ref, reactive, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { ElMessage, ElMessageBox } from 'element-plus';
+import BackButton from '@/components/common/BackButton.vue';
 import {
   Location,
   Calendar,
@@ -330,6 +339,7 @@ const router = useRouter();
 const loading = ref(false);
 const filterStatus = ref('');
 const bookingList = ref([]);
+const countdownTimer = ref(null);
 
 const pagination = reactive({
   page: 1,
@@ -422,6 +432,40 @@ const getStatusText = (status) => {
   return textMap[status] || '未知';
 };
 
+// 判断是否过期
+const isExpired = (expireTime) => {
+  if (!expireTime) return false;
+  return new Date(expireTime) <= new Date();
+};
+
+// 获取倒计时
+const getCountdown = (expireTime) => {
+  if (!expireTime) return '';
+  const now = new Date();
+  const expire = new Date(expireTime);
+  const diff = expire - now;
+
+  if (diff <= 0) return '已过期';
+
+  const minutes = Math.floor(diff / 60000);
+  const seconds = Math.floor((diff % 60000) / 1000);
+
+  if (minutes > 0) {
+    return `${minutes}分${seconds}秒后过期`;
+  }
+  return `${seconds}秒后过期`;
+};
+
+// 启动倒计时更新
+const startCountdownUpdate = () => {
+  if (countdownTimer.value) {
+    clearInterval(countdownTimer.value);
+  }
+  countdownTimer.value = setInterval(() => {
+    bookingList.value = [...bookingList.value];
+  }, 1000);
+};
+
 // 查看详情
 const viewDetail = (id) => {
   router.push(`/booking/detail/${id}`);
@@ -429,6 +473,10 @@ const viewDetail = (id) => {
 
 // 支付
 const handlePay = (booking) => {
+  if (isExpired(booking.expireTime)) {
+    ElMessage.error('订单已过期，无法支付');
+    return;
+  }
   currentBooking.value = booking;
   payForm.paymentMethod = 1;
   payForm.paymentType = 'wechat_native';
@@ -638,12 +686,16 @@ const confirmCancel = async () => {
 
 onMounted(() => {
   fetchBookingList();
+  startCountdownUpdate();
 });
 
 // 组件销毁时清理轮询
 onUnmounted(() => {
   if (paymentPolling.value) {
     clearInterval(paymentPolling.value);
+  }
+  if (countdownTimer.value) {
+    clearInterval(countdownTimer.value);
   }
 });
 </script>

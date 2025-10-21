@@ -1,7 +1,7 @@
 <template>
   <div class="member-card-container">
     <!-- 页面头部 -->
-    <el-page-header @back="handleBack" content="我的会员卡" />
+    <BackButton text="返回" />
 
     <!-- 顶部操作栏 -->
     <div class="header-actions">
@@ -199,6 +199,7 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus, Document, CreditCard } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
 import { getMyCards, rechargeCard, getCardRecords } from '@/api/member'
+import BackButton from '@/components/common/BackButton.vue'
 
 const router = useRouter()
 
@@ -267,10 +268,6 @@ const fetchRecordList = async () => {
 }
 
 // 处理购买
-// 返回上一页
-const handleBack = () => {
-  router.back()
-}
 
 const handlePurchase = () => {
   router.push('/member/card-purchase')

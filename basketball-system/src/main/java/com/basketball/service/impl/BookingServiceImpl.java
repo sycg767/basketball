@@ -14,7 +14,9 @@ import com.basketball.entity.Booking;
 import com.basketball.entity.User;
 import com.basketball.entity.Venue;
 import com.basketball.entity.VenuePrice;
+import com.basketball.entity.PointsRecord;
 import com.basketball.mapper.BookingMapper;
+import com.basketball.mapper.PointsRecordMapper;
 import com.basketball.mapper.UserMapper;
 import com.basketball.mapper.VenueMapper;
 import com.basketball.mapper.VenuePriceMapper;
@@ -71,6 +73,9 @@ public class BookingServiceImpl extends ServiceImpl<BookingMapper, Booking> impl
 
     @Resource
     private IPaymentService paymentService;
+
+    @Resource
+    private PointsRecordMapper pointsRecordMapper;
 
     /**
      * 创建预订
@@ -353,11 +358,18 @@ public class BookingServiceImpl extends ServiceImpl<BookingMapper, Booking> impl
             }
             user.setBalance(user.getBalance().subtract(booking.getActualPrice()));
             userMapper.updateById(user);
-            
+
             booking.setPaymentMethod(payDTO.getPaymentMethod());
             booking.setStatus(1); // 已支付
             booking.setPayTime(LocalDateTime.now());
             log.info("余额支付成功: userId={}, amount={}", booking.getUserId(), booking.getActualPrice());
+
+            // 增加积分：消费金额的1%转换为积分（1元=1积分）
+            try {
+                addPointsForPayment(booking.getUserId(), booking.getActualPrice(), booking.getBookingNo());
+            } catch (Exception e) {
+                log.error("增加积分失败: userId={}, bookingNo={}", booking.getUserId(), booking.getBookingNo(), e);
+            }
             
         } else if (payDTO.getPaymentMethod() == 3) {
             // 会员卡支付
@@ -527,6 +539,51 @@ public class BookingServiceImpl extends ServiceImpl<BookingMapper, Booking> impl
         }
 
         return true;
+    }
+
+    /**
+     * 增加消费积分
+     * 规则：消费金额的1%转换为积分（1元=1积分）
+     */
+    private void addPointsForPayment(Long userId, BigDecimal amount, String orderNo) {
+        // 查询用户
+        User user = userMapper.selectById(userId);
+        if (user == null) {
+            log.warn("用户不存在，无法增加积分: userId={}", userId);
+            return;
+        }
+
+        // 计算积分：1元=1积分
+        int pointsToAdd = amount.intValue();
+        if (pointsToAdd <= 0) {
+            log.info("消费金额太小，不增加积分: amount={}", amount);
+            return;
+        }
+
+        // 记录变动前积分
+        int pointsBefore = user.getPoints() != null ? user.getPoints() : 0;
+        int pointsAfter = pointsBefore + pointsToAdd;
+
+        // 更新用户积分
+        user.setPoints(pointsAfter);
+        user.setUpdateTime(LocalDateTime.now());
+        userMapper.updateById(user);
+
+        // 创建积分记录
+        PointsRecord record = new PointsRecord();
+        record.setUserId(userId);
+        record.setPoints(pointsToAdd);
+        record.setType(1); // 1-消费赠送
+        record.setRelatedOrder(orderNo);
+        record.setPointsBefore(pointsBefore);
+        record.setPointsAfter(pointsAfter);
+        record.setExpireDate(LocalDate.now().plusYears(1)); // 积分1年后过期
+        record.setRemark("消费赠送积分：订单" + orderNo + "，消费" + amount + "元");
+        record.setCreateTime(LocalDateTime.now());
+        pointsRecordMapper.insert(record);
+
+        log.info("增加消费积分成功: userId={}, points=, orderNo={}, amount={}",
+                userId, pointsToAdd, orderNo, amount);
     }
 
     /**

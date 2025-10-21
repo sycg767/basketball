@@ -1,14 +1,8 @@
 <template>
   <div class="course-list-container">
     <!-- 页面头部 -->
-    <div class="page-header">
-      <h2>课程列表</h2>
-      <el-breadcrumb separator="/">
-        <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-        <el-breadcrumb-item>课程管理</el-breadcrumb-item>
-        <el-breadcrumb-item>课程列表</el-breadcrumb-item>
-      </el-breadcrumb>
-    </div>
+    <BackButton text="返回" />
+    <h2 class="page-title">课程列表</h2>
 
     <el-card class="filter-card">
       <el-form :inline="true" :model="searchForm" class="search-form">
@@ -144,6 +138,7 @@ import { useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import { getCourseList } from '@/api/course';
 import { Picture, User, Star, View, Search, Refresh } from '@element-plus/icons-vue';
+import BackButton from '@/components/common/BackButton.vue';
 
 const router = useRouter();
 
@@ -253,33 +248,9 @@ onMounted(() => {
   min-height: 100vh;
   background: $bg-secondary;
 
-  .page-header {
-    margin-bottom: $spacing-8;
-
-    h2 {
-      @include text-heading-2;
-      margin-bottom: $spacing-3;
-    }
-
-    :deep(.el-breadcrumb) {
-      font-size: $font-size-sm;
-
-      .el-breadcrumb__item {
-        .el-breadcrumb__inner {
-          color: $text-secondary;
-          font-weight: $font-weight-medium;
-          transition: $transition-fast;
-
-          &:hover {
-            color: $primary;
-          }
-        }
-
-        &:last-child .el-breadcrumb__inner {
-          color: $text-primary;
-        }
-      }
-    }
+  .page-title {
+    @include text-heading-2;
+    margin: $spacing-6 0 $spacing-8 0;
   }
 
   .filter-card {

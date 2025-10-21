@@ -1,14 +1,8 @@
 <template>
   <div class="notification-detail-container">
-    <el-card v-loading="loading">
-      <!-- 返回按钮 -->
-      <div class="back-button">
-        <el-button @click="handleBack">
-          <el-icon><ArrowLeft /></el-icon>
-          返回列表
-        </el-button>
-      </div>
+    <BackButton text="返回列表" />
 
+    <el-card v-loading="loading">
       <template v-if="notification">
         <!-- 通知头部 -->
         <div class="notification-header">
@@ -118,7 +112,6 @@ import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import {
-  ArrowLeft,
   Clock,
   SuccessFilled,
   InfoFilled,
@@ -130,6 +123,7 @@ import {
   markAsRead,
   deleteNotification
 } from '@/api/notification';
+import BackButton from '@/components/common/BackButton.vue';
 
 const route = useRoute();
 const router = useRouter();
@@ -171,9 +165,6 @@ const loadNotificationDetail = async () => {
   }
 };
 
-const handleBack = () => {
-  router.back();
-};
 
 const handleMarkRead = async () => {
   try {
@@ -305,10 +296,6 @@ const formatFullTime = (time) => {
   max-width: 900px;
   margin: 20px auto;
   padding: 0 20px;
-
-  .back-button {
-    margin-bottom: 20px;
-  }
 
   .notification-header {
     display: flex;

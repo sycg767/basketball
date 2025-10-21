@@ -13,6 +13,10 @@ import com.basketball.mapper.PaymentNotifyLogMapper;
 import com.basketball.mapper.PaymentOrderMapper;
 import com.basketball.mapper.BookingMapper;
 import com.basketball.entity.Booking;
+import com.basketball.mapper.UserMapper;
+import com.basketball.entity.User;
+import com.basketball.mapper.PointsRecordMapper;
+import com.basketball.entity.PointsRecord;
 import com.basketball.service.IPaymentService;
 import com.basketball.service.INotificationService;
 import com.basketball.dto.request.NotificationSendDTO;
@@ -23,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -54,6 +59,12 @@ public class PaymentServiceImpl implements IPaymentService {
 
     @Resource
     private BookingMapper bookingMapper;
+
+    @Resource
+    private UserMapper userMapper;
+
+    @Resource
+    private PointsRecordMapper pointsRecordMapper;
 
     /**
      * 创建支付订单
@@ -186,7 +197,9 @@ public class PaymentServiceImpl implements IPaymentService {
             // 2. 模拟验签 (生产环境需要真实验签)
             String paymentNo = callbackData.get("out_trade_no");
             String tradeNo = callbackData.get("trade_no");
-            String tradeStatus = callbackData.getOrDefault("trade_status", "TRADE_SUCCESS");
+            // 兼容微信(trade_state)和支付宝(trade_status)两种格式
+            String tradeStatus = callbackData.get("trade_status");
+            String tradeState = callbackData.get("trade_state");
 
             if (paymentNo == null) {
                 notifyLog.setProcessStatus(2);
@@ -217,7 +230,7 @@ public class PaymentServiceImpl implements IPaymentService {
             }
 
             // 5. 更新订单状态
-            if ("TRADE_SUCCESS".equals(tradeStatus)) {
+            if ("TRADE_SUCCESS".equals(tradeStatus) || "SUCCESS".equals(tradeState)) {
                 order.setStatus(2); // 支付成功
                 order.setThirdPartyTradeNo(tradeNo);
                 order.setPaidTime(LocalDateTime.now());
@@ -238,6 +251,13 @@ public class PaymentServiceImpl implements IPaymentService {
 
                     log.info("预订订单状态更新成功: bookingId={}, bookingNo={}, status=1",
                             booking.getId(), booking.getBookingNo());
+
+                    // 增加积分：消费金额的1%转换为积分（1元=1积分）
+                    try {
+                        addPointsForPayment(booking.getUserId(), booking.getActualPrice(), booking.getBookingNo());
+                    } catch (Exception e) {
+                        log.error("增加积分失败: userId={}, bookingNo={}", booking.getUserId(), booking.getBookingNo(), e);
+                    }
                 } else {
                     log.warn("未找到对应的预订订单: businessNo={}", order.getBusinessNo());
                 }
@@ -379,6 +399,51 @@ public class PaymentServiceImpl implements IPaymentService {
         String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
         String random = String.format("%06d", (int) (Math.random() * 1000000));
         return "PAY" + timestamp + random;
+    }
+
+    /**
+     * 增加消费积分
+     * 规则：消费金额的1%转换为积分（1元=1积分）
+     */
+    private void addPointsForPayment(Long userId, BigDecimal amount, String orderNo) {
+        // 查询用户
+        User user = userMapper.selectById(userId);
+        if (user == null) {
+            log.warn("用户不存在，无法增加积分: userId={}", userId);
+            return;
+        }
+
+        // 计算积分：消费金额的1%（向下取整）
+        int pointsToAdd = amount.intValue(); // 1元=1积分
+        if (pointsToAdd <= 0) {
+            log.info("消费金额太小，不增加积分: amount={}", amount);
+            return;
+        }
+
+        // 记录变动前积分
+        int pointsBefore = user.getPoints() != null ? user.getPoints() : 0;
+        int pointsAfter = pointsBefore + pointsToAdd;
+
+        // 更新用户积分
+        user.setPoints(pointsAfter);
+        user.setUpdateTime(LocalDateTime.now());
+        userMapper.updateById(user);
+
+        // 创建积分记录
+        PointsRecord record = new PointsRecord();
+        record.setUserId(userId);
+        record.setPoints(pointsToAdd);
+        record.setType(1); // 1-消费赠送
+        record.setRelatedOrder(orderNo);
+        record.setPointsBefore(pointsBefore);
+        record.setPointsAfter(pointsAfter);
+        record.setExpireDate(LocalDate.now().plusYears(1)); // 积分1年后过期
+        record.setRemark("消费赠送积分：订单" + orderNo + "，消费" + amount + "元");
+        record.setCreateTime(LocalDateTime.now());
+        pointsRecordMapper.insert(record);
+
+        log.info("增加消费积分成功: userId={}, points={}, orderNo={}, amount={}",
+                userId, pointsToAdd, orderNo, amount);
     }
 
     /**

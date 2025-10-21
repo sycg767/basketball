@@ -1,5 +1,7 @@
 <template>
   <div class="course-detail-container">
+    <BackButton text="返回列表" />
+
     <el-card v-if="course" class="course-card">
       <div class="course-header">
         <div class="course-cover">
@@ -225,6 +227,7 @@ import {
   Clock,
   Location
 } from '@element-plus/icons-vue';
+import BackButton from '@/components/common/BackButton.vue';
 
 const route = useRoute();
 const router = useRouter();

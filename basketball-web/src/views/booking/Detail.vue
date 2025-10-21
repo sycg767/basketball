@@ -1,10 +1,6 @@
 <template>
   <div class="booking-detail-container">
-    <el-page-header @back="goBack" title="返回">
-      <template #content>
-        <span class="page-title">预订详情</span>
-      </template>
-    </el-page-header>
+    <BackButton text="返回" />
 
     <div v-loading="loading" class="detail-content">
       <el-card class="status-card">
@@ -364,6 +360,7 @@ import {
   payBooking,
   cancelBooking
 } from '@/api/booking';
+import BackButton from '@/components/common/BackButton.vue';
 
 const route = useRoute();
 const router = useRouter();
@@ -416,10 +413,6 @@ const fetchBookingDetail = async () => {
   }
 };
 
-// 返回
-const goBack = () => {
-  router.back();
-};
 
 // 获取状态图标
 const getStatusIcon = (status) => {
@@ -462,7 +455,7 @@ const getStatusText = (status) => {
 
 // 支付
 const handlePay = () => {
-  payFor.paymentMethod = 1;
+  payForm.paymentMethod = 1;
 
   payForm.paymentType = 'wechat_native';
   showQRCode.value = false;
@@ -707,11 +700,6 @@ onUnmounted(() => {
   padding: 20px;
   max-width: 1000px;
   margin: 0 auto;
-
-  .page-title {
-    font-size: 18px;
-    font-weight: 600;
-  }
 
   .detail-content {
     margin-top: 20px;

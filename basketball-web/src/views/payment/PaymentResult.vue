@@ -1,5 +1,7 @@
 <template>
   <div class="payment-result-container">
+    <BackButton text="返回" />
+
     <el-card class="result-card">
       <!-- 支付结果展示 -->
       <div class="result-content">
@@ -91,6 +93,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { SuccessFilled, CircleCloseFilled } from '@element-plus/icons-vue';
+import BackButton from '@/components/common/BackButton.vue';
 
 const route = useRoute();
 const router = useRouter();

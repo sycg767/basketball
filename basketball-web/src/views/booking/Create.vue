@@ -1,10 +1,6 @@
 <template>
   <div class="booking-create-container">
-    <el-page-header @back="goBack" title="返回">
-      <template #content>
-        <span class="page-title">预订场地</span>
-      </template>
-    </el-page-header>
+    <BackButton text="返回" />
 
     <div class="create-content">
       <el-card class="venue-card">
@@ -171,6 +167,7 @@ import { ElMessage } from 'element-plus';
 import { Location } from '@element-plus/icons-vue';
 import { getVenueDetail } from '@/api/venue';
 import { createBooking, checkVenueAvailable } from '@/api/booking';
+import BackButton from '@/components/common/BackButton.vue';
 
 const route = useRoute();
 const router = useRouter();
@@ -271,10 +268,6 @@ const fetchVenueDetail = async () => {
 
 
 
-// 返回
-const goBack = () => {
-  router.back();
-};
 
 // 提交预订
 const handleSubmit = async () => {

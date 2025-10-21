@@ -1,10 +1,6 @@
 <template>
   <div class="notification-list-container">
-    <el-page-header @back="goBack" title="返回">
-      <template #content>
-        <span class="page-title">通知中心</span>
-      </template>
-    </el-page-header>
+    <BackButton text="返回" />
 
     <el-card class="notification-card">
       <!-- 头部 -->
@@ -131,6 +127,7 @@ import {
   markAllAsRead,
   deleteNotification
 } from '@/api/notification';
+import BackButton from '@/components/common/BackButton.vue';
 
 const router = useRouter();
 

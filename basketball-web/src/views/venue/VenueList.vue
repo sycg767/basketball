@@ -1,14 +1,8 @@
 <template>
   <div class="venue-list-container">
     <!-- 头部标题 -->
-    <div class="page-header">
-      <h2>场地列表</h2>
-      <el-breadcrumb separator="/">
-        <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-        <el-breadcrumb-item>场地管理</el-breadcrumb-item>
-        <el-breadcrumb-item>场地列表</el-breadcrumb-item>
-      </el-breadcrumb>
-    </div>
+    <BackButton text="返回" />
+    <h2 class="page-title">场地列表</h2>
 
     <!-- 搜索筛选区 -->
     <el-card class="search-card" shadow="never">
@@ -125,6 +119,7 @@ import { ElMessage } from 'element-plus';
 import { Search, Refresh } from '@element-plus/icons-vue';
 import { getVenueList } from '@/api/venue';
 import VenueCard from '@/components/venue/VenueCard.vue';
+import BackButton from '@/components/common/BackButton.vue';
 
 const router = useRouter();
 
@@ -223,33 +218,9 @@ onMounted(() => {
   min-height: 100vh;
   background: $bg-secondary;
 
-  .page-header {
-    margin-bottom: $spacing-8;
-
-    h2 {
-      @include text-heading-2;
-      margin-bottom: $spacing-3;
-    }
-
-    :deep(.el-breadcrumb) {
-      font-size: $font-size-sm;
-
-      .el-breadcrumb__item {
-        .el-breadcrumb__inner {
-          color: $text-secondary;
-          font-weight: $font-weight-medium;
-          transition: $transition-fast;
-
-          &:hover {
-            color: $primary;
-          }
-        }
-
-        &:last-child .el-breadcrumb__inner {
-          color: $text-primary;
-        }
-      }
-    }
+  .page-title {
+    @include text-heading-2;
+    margin: $spacing-6 0 $spacing-8 0;
   }
 
   .search-card {

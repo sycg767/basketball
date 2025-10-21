@@ -1,6 +1,6 @@
 <template>
   <div class="card-purchase-container">
-    <el-page-header @back="handleBack" content="购买会员卡" />
+    <BackButton text="返回" />
 
     <div class="purchase-content">
       <!-- 会员卡类型列表 - Apple风格 -->
@@ -140,6 +140,7 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { Check, CreditCard, Clock, Tickets, User, Select, Wallet } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
 import { getCardTypes, purchaseCard } from '@/api/member'
+import BackButton from '@/components/common/BackButton.vue'
 
 const router = useRouter()
 
@@ -213,10 +214,6 @@ const handleCancel = () => {
   router.back()
 }
 
-// 返回
-const handleBack = () => {
-  router.back()
-}
 
 // 辅助方法
 const getCardTypeTag = (type) => {
@@ -261,10 +258,6 @@ onMounted(() => {
   padding: 24px;
   max-width: 1400px;
   margin: 0 auto;
-
-  :deep(.el-page-header) {
-    margin-bottom: 32px;
-  }
 
   .purchase-content {
     display: flex;

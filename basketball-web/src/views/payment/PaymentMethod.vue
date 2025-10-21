@@ -1,12 +1,13 @@
 <template>
   <div class="payment-method-container">
-    <el-page-header @back="handleCancel" title="返回">
-      <template #content>
-        <span class="page-title">选择支付方式</span>
-      </template>
-    </el-page-header>
+    <BackButton text="返回" />
+    <h2 class="page-title">支付管理</h2>
 
-    <el-card class="payment-card">
+    <!-- 标签页切换 -->
+    <el-tabs v-model="activeTab" class="payment-tabs">
+      <!-- 支付方式选择 -->
+      <el-tab-pane label="支付方式" name="method" v-if="showPaymentForm">
+        <el-card class="payment-card">
       <!-- 订单信息 -->
       <div class="order-info">
         <h2 class="section-title">订单信息</h2>
@@ -107,21 +108,244 @@
           确认支付 ¥{{ orderInfo.amount || '0.00' }}
         </el-button>
       </div>
-    </el-card>
+        </el-card>
+      </el-tab-pane>
+
+      <!-- 支付记录 -->
+      <el-tab-pane label="支付记录" name="records">
+        <el-card class="records-card">
+          <div class="records-header">
+            <h2 class="section-title">支付记录</h2>
+            <el-button type="primary" :icon="Refresh" @click="loadPaymentRecords">刷新</el-button>
+          </div>
+
+          <el-table
+            v-loading="recordsLoading"
+            :data="paymentRecords"
+            style="width: 100%"
+            stripe
+          >
+            <el-table-column prop="bookingNo" label="订单号" width="180" />
+            <el-table-column prop="venueName" label="场地名称" width="150" />
+            <el-table-column prop="actualPrice" label="支付金额" width="120">
+              <template #default="{ row }">
+                <span class="amount-text">¥{{ row.actualPrice?.toFixed(2) }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="payMethodName" label="支付方式" width="120" />
+            <el-table-column prop="payTime" label="支付时间" width="180" />
+            <el-table-column prop="status" label="状态" width="100">
+              <template #default="{ row }">
+                <el-tag :type="getStatusType(row.status)">
+                  {{ getStatusText(row.status) }}
+                </el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column label="操作" width="150">
+              <template #default="{ row }">
+                <el-button link type="primary" @click="viewDetail(row.id)">查看详情</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+
+          <el-pagination
+            v-if="recordsTotal > 0"
+            v-model:current-page="recordsPage"
+            v-model:page-size="recordsPageSize"
+            :total="recordsTotal"
+            :page-sizes="[10, 20, 50]"
+            layout="total, sizes, prev, pager, next, jumper"
+            @current-change="loadPaymentRecords"
+            @size-change="loadPaymentRecords"
+            style="margin-top: 20px; justify-content: center"
+          />
+
+          <el-empty v-if="!recordsLoading && paymentRecords.length === 0" description="暂无支付记录" />
+        </el-card>
+      </el-tab-pane>
+
+      <!-- 支付方式管理 -->
+      <el-tab-pane label="支付方式管理" name="manage">
+        <el-card class="manage-card">
+          <div class="manage-header">
+            <h2 class="section-title">我的支付方式</h2>
+            <el-button type="primary" @click="showAddDialog = true">添加支付方式</el-button>
+          </div>
+
+          <!-- 支付方式列表 -->
+          <div class="payment-methods-list">
+            <!-- 余额支付 -->
+            <div class="method-card balance-card">
+              <div class="method-header">
+                <div class="method-icon-wrapper">
+                  <el-icon :size="32" color="#F56C6C"><Wallet /></el-icon>
+                </div>
+                <div class="method-info">
+                  <h4>余额支付</h4>
+                  <p>当前余额: ¥{{ userBalance }}</p>
+                </div>
+                <el-tag type="success">已启用</el-tag>
+              </div>
+              <div class="method-actions">
+                <el-button link type="primary" @click="goToRecharge">充值</el-button>
+              </div>
+            </div>
+
+            <!-- 微信支付 -->
+            <div class="method-card" v-for="method in paymentMethods" :key="method.id">
+              <div class="method-header">
+                <div class="method-icon-wrapper" :class="method.type">
+                  <el-icon :size="32" v-if="method.type === 'wechat'" color="#07C160">
+                    <ChatDotRound />
+                  </el-icon>
+                  <el-icon :size="32" v-else-if="method.type === 'alipay'" color="#1677FF">
+                    <Wallet />
+                  </el-icon>
+                  <el-icon :size="32" v-else color="#409EFF">
+                    <CreditCard />
+                  </el-icon>
+                </div>
+                <div class="method-info">
+                  <h4>{{ method.name }}</h4>
+                  <p>{{ method.account }}</p>
+                </div>
+                <el-tag v-if="method.isDefault" type="success">默认</el-tag>
+                <el-tag v-else type="info">备用</el-tag>
+              </div>
+              <div class="method-actions">
+                <el-button link type="primary" v-if="!method.isDefault" @click="setDefault(method.id)">
+                  设为默认
+                </el-button>
+                <el-button link type="danger" @click="removeMethod(method.id)">解绑</el-button>
+              </div>
+            </div>
+
+            <el-empty v-if="paymentMethods.length === 0" description="暂无绑定的支付方式" />
+          </div>
+        </el-card>
+      </el-tab-pane>
+
+      <!-- 账单管理 -->
+      <el-tab-pane label="账单管理" name="bills">
+        <el-card class="bills-card">
+          <div class="bills-header">
+            <h2 class="section-title">账单管理</h2>
+            <div class="filter-group">
+              <el-date-picker
+                v-model="billDateRange"
+                type="daterange"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                @change="loadBills"
+              />
+              <el-button type="primary" @click="loadBills">查询</el-button>
+            </div>
+          </div>
+
+          <!-- 账单统计 -->
+          <div class="bill-summary">
+            <div class="summary-item">
+              <div class="summary-label">总支出</div>
+              <div class="summary-value expense">¥{{ billSummary.totalExpense.toFixed(2) }}</div>
+            </div>
+            <div class="summary-item">
+              <div class="summary-label">总收入</div>
+              <div class="summary-value income">¥{{ billSummary.totalIncome.toFixed(2) }}</div>
+            </div>
+            <div class="summary-item">
+              <div class="summary-label">交易笔数</div>
+              <div class="summary-value">{{ billSummary.totalCount }}</div>
+            </div>
+          </div>
+
+          <el-table
+            v-loading="billsLoading"
+            :data="bills"
+            style="width: 100%; margin-top: 20px"
+            stripe
+          >
+            <el-table-column prop="createTime" label="交易时间" width="180" />
+            <el-table-column prop="description" label="交易说明" min-width="200" />
+            <el-table-column prop="amount" label="金额" width="150">
+              <template #default="{ row }">
+                <span :class="['amount-text', row.type === 'expense' ? 'expense' : 'income']">
+                  {{ row.type === 'expense' ? '-' : '+' }}¥{{ row.amount.toFixed(2) }}
+                </span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="balance" label="余额" width="150">
+              <template #default="{ row }">
+                <span class="balance-text">¥{{ row.balance.toFixed(2) }}</span>
+              </template>
+            </el-table-column>
+          </el-table>
+
+          <el-pagination
+            v-if="billsTotal > 0"
+            v-model:current-page="billsPage"
+            v-model:page-size="billsPageSize"
+            :total="billsTotal"
+            :page-sizes="[10, 20, 50]"
+            layout="total, sizes, prev, pager, next, jumper"
+            @current-change="loadBills"
+            @size-change="loadBills"
+            style="margin-top: 20px; justify-content: center"
+          />
+
+          <el-empty v-if="!billsLoading && bills.length === 0" description="暂无账单记录" />
+        </el-card>
+      </el-tab-pane>
+    </el-tabs>
+
+    <!-- 添加支付方式对话框 -->
+    <el-dialog
+      v-model="showAddDialog"
+      title="添加支付方式"
+      width="500px"
+    >
+      <el-form :model="addForm" label-width="100px">
+        <el-form-item label="支付方式">
+          <el-select v-model="addForm.type" placeholder="请选择支付方式">
+            <el-option label="微信支付" value="wechat" />
+            <el-option label="支付宝支付" value="alipay" />
+            <el-option label="银行卡" value="bankcard" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="账号信息">
+          <el-input v-model="addForm.account" placeholder="请输入账号" />
+        </el-form-item>
+        <el-form-item label="设为默认">
+          <el-switch v-model="addForm.isDefault" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="showAddDialog = false">取消</el-button>
+        <el-button type="primary" @click="addPaymentMethod">确定</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue';
+import { ref, reactive, onMounted, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { ElMessage } from 'element-plus';
-import { Wallet } from '@element-plus/icons-vue';
+import { ElMessage, ElMessageBox } from 'element-plus';
+import { Wallet, Refresh, ChatDotRound, CreditCard } from '@element-plus/icons-vue';
 import { useUserStore } from '@/store/modules/user';
+import { payBooking, getMyBookingList } from '@/api/booking';
+import { getUserBalance } from '@/api/member';
+import BackButton from '@/components/common/BackButton.vue';
 
 const route = useRoute();
 const router = useRouter();
 const userStore = useUserStore();
 
+// 标签页
+const activeTab = ref('records');
+const showPaymentForm = ref(false);
+
+// 支付方式选择
 const loading = ref(false);
 const selectedMethod = ref('wechat');
 const userBalance = ref('0.00');
@@ -134,9 +358,51 @@ const orderInfo = reactive({
   amount: '0.00'
 });
 
+// 支付记录
+const recordsLoading = ref(false);
+const paymentRecords = ref([]);
+const recordsPage = ref(1);
+const recordsPageSize = ref(10);
+const recordsTotal = ref(0);
+
+// 支付方式管理
+const paymentMethods = ref([]);
+const showAddDialog = ref(false);
+const addForm = reactive({
+  type: '',
+  account: '',
+  isDefault: false
+});
+
+// 账单管理
+const billsLoading = ref(false);
+const bills = ref([]);
+const billsPage = ref(1);
+const billsPageSize = ref(10);
+const billsTotal = ref(0);
+const billDateRange = ref([]);
+const billSummary = reactive({
+  totalExpense: 0,
+  totalIncome: 0,
+  totalCount: 0
+});
+
 onMounted(() => {
-  loadOrderInfo();
-  loadUserBalance();
+  // 检查是否有订单信息，决定显示哪个标签页
+  const { orderNo, amount } = route.query;
+  if (orderNo && amount) {
+    showPaymentForm.value = true;
+    activeTab.value = 'method';
+    loadOrderInfo();
+    loadUserBalance();
+  } else {
+    // 没有订单信息，显示支付记录
+    activeTab.value = 'records';
+    loadPaymentRecords();
+  }
+
+  // 加载支付方式列表
+  loadPaymentMethods();
 });
 
 const loadOrderInfo = () => {
@@ -144,8 +410,6 @@ const loadOrderInfo = () => {
   const { orderNo, businessNo, businessName, businessType, amount } = route.query;
 
   if (!orderNo || !amount) {
-    ElMessage.error('订单信息不完整');
-    router.back();
     return;
   }
 
@@ -156,10 +420,110 @@ const loadOrderInfo = () => {
   orderInfo.amount = amount;
 };
 
-const loadUserBalance = () => {
-  // 从用户信息获取余额
-  const balance = userStore.userInfo.balance || 0;
-  userBalance.value = balance.toFixed(2);
+// 加载支付记录
+const loadPaymentRecords = async () => {
+  recordsLoading.value = true;
+  try {
+    const response = await getMyBookingList({
+      page: recordsPage.value,
+      pageSize: recordsPageSize.value,
+      status: 1 // 只查询已支付的订单
+    });
+
+    if (response.code === 200) {
+      paymentRecords.value = response.data.records || [];
+      recordsTotal.value = response.data.total || 0;
+    }
+  } catch (error) {
+    console.error('获取支付记录失败:', error);
+    ElMessage.error('获取支付记录失败');
+  } finally {
+    recordsLoading.value = false;
+  }
+};
+
+// 加载账单
+const loadBills = async () => {
+  billsLoading.value = true;
+  try {
+    // 模拟账单数据（实际应该调用后端API）
+    const response = await getMyBookingList({
+      page: billsPage.value,
+      pageSize: billsPageSize.value
+    });
+
+    if (response.code === 200) {
+      // 转换为账单格式
+      const records = response.data.records || [];
+      bills.value = records.map(record => ({
+        createTime: record.payTime || record.createTime,
+        description: `${record.venueName} - ${record.bookingDate} ${record.timeSlot}`,
+        amount: record.actualPrice || 0,
+        type: 'expense',
+        balance: 0 // 实际应该从后端获取
+      }));
+      billsTotal.value = response.data.total || 0;
+
+      // 计算统计数据
+      billSummary.totalExpense = bills.value.reduce((sum, bill) =>
+        bill.type === 'expense' ? sum + bill.amount : sum, 0
+      );
+      billSummary.totalIncome = bills.value.reduce((sum, bill) =>
+        bill.type === 'income' ? sum + bill.amount : sum, 0
+      );
+      billSummary.totalCount = bills.value.length;
+    }
+  } catch (error) {
+    console.error('获取账单失败:', error);
+    ElMessage.error('获取账单失败');
+  } finally {
+    billsLoading.value = false;
+  }
+};
+
+// 查看详情
+const viewDetail = (id) => {
+  router.push(`/booking/detail/${id}`);
+};
+
+// 获取状态类型
+const getStatusType = (status) => {
+  const typeMap = {
+    0: 'warning',
+    1: 'success',
+    2: 'info',
+    3: 'success',
+    4: 'danger',
+    5: 'info'
+  };
+  return typeMap[status] || 'info';
+};
+
+// 获取状态文本
+const getStatusText = (status) => {
+  const textMap = {
+    0: '待支付',
+    1: '已支付',
+    2: '已取消',
+    3: '已完成',
+    4: '已退款',
+    5: '超时取消'
+  };
+  return textMap[status] || '未知';
+};
+
+const loadUserBalance = async () => {
+  try {
+    const response = await getUserBalance();
+    if (response.code === 200) {
+      userBalance.value = (response.data || 0).toFixed(2);
+    }
+  } catch (error) {
+    console.error('获取用户余额失败:', error);
+    // 降级方案：从用户信息获取余额
+    const balance = userStore.userInfo?.balance || 0;
+    userBalance.value = balance.toFixed(2);
+  }
 };
 
 const handleConfirmPay = () => {
@@ -212,12 +576,171 @@ const goToAlipay = () => {
 };
 
 const payWithBalance = async () => {
-  // TODO: 实现余额支付逻辑
-  ElMessage.info('余额支付功能开发中');
-  loading.value = false;
+  try {
+    // 检查余额是否足够
+    const balance = parseFloat(userBalance.value);
+    const amount = parseFloat(orderInfo.amount);
+
+    if (balance < amount) {
+      ElMessage.error('余额不足，请充值后再试');
+      loading.value = false;
+      return;
+    }
+
+    // 二次确认
+    await ElMessageBox.confirm(
+      `确认使用余额支付 ¥${orderInfo.amount} 吗？`,
+      '确认支付',
+      {
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }
+    );
+
+    // 根据业务类型调用对应的支付接口
+    if (orderInfo.businessType === 'booking') {
+      // 预订订单支付 - 从订单号中提取ID
+      const bookingId = extractBookingId(orderInfo.businessNo);
+
+      const response = await payBooking(bookingId, {
+        paymentMethod: 2, // 余额支付
+        paymentType: ''
+      });
+
+      if (response.code === 200) {
+        ElMessage.success('支付成功！');
+        // 跳转到支付结果页面
+        setTimeout(() => {
+          router.push({
+            path: '/payment/result',
+            query: {
+              status: 'success',
+              orderNo: orderInfo.orderNo,
+              amount: orderInfo.amount,
+              paymentMethod: '余额支付'
+            }
+          });
+        }, 500);
+      } else {
+        ElMessage.error(response.message || '支付失败');
+        loading.value = false;
+      }
+    } else {
+      // 其他业务类型的支付
+      ElMessage.info('该业务类型暂不支持余额支付');
+      loading.value = false;
+    }
+  } catch (error) {
+    if (error === 'cancel') {
+      // 用户取消支付
+      loading.value = false;
+      return;
+    }
+    console.error('余额支付失败:', error);
+    ElMessage.error(error.message || '支付失败，请稍后重试');
+    loading.value = false;
+  }
 };
 
-const handleCancel = () => {
+// 从订单号中提取预订ID
+const extractBookingId = (businessNo) => {
+  // 如果订单号格式是 BK + 时间戳，需要查询获取真实ID
+  // 这里简化处理，假设路由参数中有bookingId
+  return route.query.bookingId || businessNo.replace(/\D/g, '');
+};
+
+// 加载支付方式列表
+const loadPaymentMethods = () => {
+  // 模拟数据（实际应该从后端API获取）
+  paymentMethods.value = [
+    {
+      id: 1,
+      type: 'wechat',
+      name: '微信支付',
+      account: '微信账号: wx***123',
+      isDefault: true
+    },
+    {
+      id: 2,
+      type: 'alipay',
+      name: '支付宝支付',
+      account: '支付宝账号: 138****5678',
+      isDefault: false
+    }
+  ];
+};
+
+// 添加支付方式
+const addPaymentMethod = () => {
+  if (!addForm.type || !addForm.account) {
+    ElMessage.warning('请填写完整信息');
+    return;
+  }
+
+  const typeNames = {
+    wechat: '微信支付',
+    alipay: '支付宝支付',
+    bankcard: '银行卡'
+  };
+
+  const newMethod = {
+    id: Date.now(),
+    type: addForm.type,
+    name: typeNames[addForm.type],
+    account: addForm.account,
+    isDefault: addForm.isDefault
+  };
+
+  // 如果设为默认，取消其他默认
+  if (addForm.isDefault) {
+    paymentMethods.value.forEach(m => m.isDefault = false);
+  }
+
+  paymentMethods.value.push(newMethod);
+  ElMessage.success('添加成功');
+  showAddDialog.value = false;
+
+  // 重置表单
+  addForm.type = '';
+  addForm.account = '';
+  addForm.isDefault = false;
+};
+
+// 设为默认
+const setDefault = (id) => {
+  paymentMethods.value.forEach(method => {
+    method.isDefault = method.id === id;
+  });
+  ElMessage.success('已设为默认支付方式');
+};
+
+// 解绑支付方式
+const removeMethod = async (id) => {
+  try {
+    await ElMessageBox.confirm('确定要解绑此支付方式吗？', '提示', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    });
+
+    const index = paymentMethods.value.findIndex(m => m.id === id);
+    if (index > -1) {
+      paymentMethods.value.splice(index, 1);
+      ElMessage.success('解绑成功');
+    }
+  } catch {
+    // 用户取消
+  }
+};
+
+// 去充值
+const goToRecharge = () => {
+  ElMessage.info('充值功能开发中');
+  // router.push('/member/recharge');
+};
+
+const goBack = () => {
   router.back();
 };
 </script>
@@ -229,12 +752,17 @@ const handleCancel = () => {
   padding: 20px;
 
   .page-title {
-    font-size: 18px;
-    font-weight: 500;
+    font-size: 24px;
+    font-weight: 600;
+    color: #1a202c;
+    margin: 20px 0;
+  }
+
+  .payment-tabs {
+    margin-top: 20px;
   }
 
   .payment-card {
-    margin-top: 20px;
     max-width: 800px;
     margin-left: auto;
     margin-right: auto;
@@ -379,6 +907,179 @@ const handleCancel = () => {
       .el-button {
         min-width: 120px;
       }
+    }
+  }
+
+  // 支付记录样式
+  .records-card {
+    .records-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+
+      .section-title {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 500;
+        color: #303133;
+      }
+    }
+
+    .amount-text {
+      font-weight: 600;
+      color: #F56C6C;
+    }
+  }
+
+  // 支付方式管理样式
+  .manage-card {
+    .manage-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+
+      .section-title {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 500;
+        color: #303133;
+      }
+    }
+
+    .payment-methods-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+
+      .method-card {
+        border: 1px solid #DCDFE6;
+        border-radius: 8px;
+        padding: 20px;
+        transition: all 0.3s;
+
+        &:hover {
+          border-color: #409EFF;
+          box-shadow: 0 2px 12px rgba(64, 158, 255, 0.1);
+        }
+
+        .method-header {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+          margin-bottom: 12px;
+
+          .method-icon-wrapper {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #F5F7FA;
+          }
+
+          .method-info {
+            flex: 1;
+
+            h4 {
+              margin: 0 0 4px 0;
+              font-size: 16px;
+              font-weight: 500;
+              color: #303133;
+            }
+
+            p {
+              margin: 0;
+              font-size: 14px;
+              color: #909399;
+            }
+          }
+        }
+
+        .method-actions {
+          display: flex;
+          gap: 12px;
+          justify-content: flex-end;
+        }
+      }
+    }
+  }
+
+  // 账单管理样式
+  .bills-card {
+    .bills-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 16px;
+
+      .section-title {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 500;
+        color: #303133;
+      }
+
+      .filter-group {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+      }
+    }
+
+    .bill-summary {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 20px;
+
+      .summary-item {
+        background: #F5F7FA;
+        border-radius: 8px;
+        padding: 20px;
+        text-align: center;
+
+        .summary-label {
+          font-size: 14px;
+          color: #909399;
+          margin-bottom: 8px;
+        }
+
+        .summary-value {
+          font-size: 24px;
+          font-weight: bold;
+          color: #303133;
+
+          &.expense {
+            color: #F56C6C;
+          }
+
+          &.income {
+            color: #67C23A;
+          }
+        }
+      }
+    }
+
+    .amount-text {
+      font-weight: 600;
+
+      &.expense {
+        color: #F56C6C;
+      }
+
+      &.income {
+        color: #67C23A;
+      }
+    }
+
+    .balance-text {
+      font-weight: 500;
+      color: #409EFF;
     }
   }
 }

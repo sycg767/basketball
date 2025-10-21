@@ -48,7 +48,10 @@
       "Bash(while:*)",
       "Bash(do sed:*)",
       "Bash(done)",
-      "Bash(node:*)"
+      "Bash(node:*)",
+      "Bash(timeout:*)",
+      "Bash(java:*)",
+      "Bash(TOKEN=\"eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzYxMDIzMzc0LCJleHAiOjE3NjE2MjgxNzR9.oD9h4u1bqnCpnDu26ZTzHUhlBn-qUeuepJsXRqii-wEcJymBY7xuxiG9BUvGsAHz9b7SavnUFJ6gTNSqcPKobw\")"
     ],
     "deny": [],
     "ask": []
