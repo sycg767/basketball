@@ -392,77 +392,108 @@ onUnmounted(() => {
 </script>
 
 <style lang="scss" scoped>
+@use '@/styles/design-system/variables' as *;
+
 .dashboard-container {
   .page-title {
-    font-size: 24px;
+    font-size: 28px;
     font-weight: 600;
-    color: #1a202c;
+    color: $text-primary;
     margin: 0 0 24px 0;
+    letter-spacing: -0.02em;
   }
 
   .stats-row {
-    margin-bottom: 20px;
+    margin-bottom: 24px;
 
     .stat-card {
       margin-bottom: 20px;
+      border-radius: $radius-lg;
+      border: 1px solid $border-color;
+      transition: all $duration-fast $ease-in-out;
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: $shadow-md;
+      }
 
       :deep(.el-card__body) {
-        padding: 20px;
+        padding: 24px;
       }
 
       .stat-content {
         display: flex;
         align-items: center;
-        gap: 16px;
+        gap: 20px;
 
         .stat-icon {
-          width: 64px;
-          height: 64px;
-          border-radius: 12px;
+          width: 56px;
+          height: 56px;
+          border-radius: $radius-lg;
           display: flex;
           align-items: center;
           justify-content: center;
-          color: #ffffff;
+          color: $white;
+          flex-shrink: 0;
         }
 
         .stat-info {
           flex: 1;
 
           .stat-value {
-            font-size: 28px;
-            font-weight: 700;
-            color: #1a202c;
+            font-size: 32px;
+            font-weight: 600;
+            color: $text-primary;
             margin: 0 0 4px 0;
+            line-height: 1.2;
           }
 
           .stat-label {
-            font-size: 14px;
-            color: #718096;
+            font-size: 13px;
+            color: $text-secondary;
             margin: 0;
+            font-weight: 500;
           }
         }
       }
 
       &.blue .stat-icon {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: $primary;
       }
 
       &.green .stat-icon {
-        background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+        background: $success;
       }
 
       &.orange .stat-icon {
-        background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+        background: $warning;
       }
 
       &.red .stat-icon {
-        background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+        background: $error;
       }
     }
   }
 
   .charts-row {
-    margin-bottom: 20px;
+    margin-bottom: 24px;
+
+    :deep(.el-card) {
+      border-radius: $radius-lg;
+      border: 1px solid $border-color;
+      box-shadow: $shadow-sm;
+
+      .el-card__header {
+        border-bottom: 1px solid $border-color;
+        padding: 20px 24px;
+        font-weight: 600;
+        color: $text-primary;
+      }
+
+      .el-card__body {
+        padding: 24px;
+      }
+    }
 
     .chart-header {
       display: flex;
@@ -471,13 +502,37 @@ onUnmounted(() => {
     }
 
     .chart-container {
-      height: 300px;
+      height: 320px;
       width: 100%;
     }
   }
 
   .recent-bookings {
-    margin-bottom: 20px;
+    margin-bottom: 24px;
+    border-radius: $radius-lg;
+    border: 1px solid $border-color;
+    box-shadow: $shadow-sm;
+
+    :deep(.el-card__header) {
+      border-bottom: 1px solid $border-color;
+      padding: 20px 24px;
+      font-weight: 600;
+      color: $text-primary;
+    }
+
+    :deep(.el-table) {
+      font-size: 14px;
+
+      th {
+        background-color: $bg-secondary;
+        color: $text-secondary;
+        font-weight: 500;
+      }
+
+      td {
+        color: $text-primary;
+      }
+    }
   }
 }
 </style>

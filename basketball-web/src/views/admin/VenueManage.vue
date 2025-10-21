@@ -486,22 +486,110 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
+@use '@/styles/design-system/variables' as *;
+
 .venue-manage-container {
   .page-title {
-    font-size: 24px;
+    font-size: 28px;
     font-weight: 600;
-    color: #1a202c;
+    color: $text-primary;
     margin: 0 0 24px 0;
+    letter-spacing: -0.02em;
   }
 
   .search-card {
-    margin-bottom: 20px;
+    margin-bottom: 24px;
+    border-radius: $radius-lg;
+    border: 1px solid $border-color;
+    box-shadow: $shadow-sm;
+
+    :deep(.el-card__body) {
+      padding: 24px;
+    }
+
+    :deep(.el-form) {
+      .el-form-item {
+        margin-bottom: 0;
+      }
+
+      .el-button {
+        border-radius: $radius-md;
+        font-weight: 500;
+        transition: all $duration-fast $ease-in-out;
+
+        &:hover {
+          transform: translateY(-1px);
+        }
+      }
+    }
   }
 
   .table-card {
+    border-radius: $radius-lg;
+    border: 1px solid $border-color;
+    box-shadow: $shadow-sm;
+
+    :deep(.el-card__body) {
+      padding: 24px;
+    }
+
+    :deep(.el-table) {
+      font-size: 14px;
+
+      th {
+        background-color: $bg-secondary;
+        color: $text-secondary;
+        font-weight: 500;
+      }
+
+      td {
+        color: $text-primary;
+      }
+
+      .el-button {
+        font-weight: 500;
+        transition: all $duration-fast $ease-in-out;
+
+        &:hover {
+          transform: scale(1.05);
+        }
+      }
+    }
+
     .pagination {
-      margin-top: 20px;
+      margin-top: 24px;
       justify-content: flex-end;
+    }
+  }
+
+  // 对话框样式优化
+  :deep(.el-dialog) {
+    border-radius: $radius-xl;
+
+    .el-dialog__header {
+      padding: 24px 24px 16px;
+      border-bottom: 1px solid $border-color;
+
+      .el-dialog__title {
+        font-size: 17px;
+        font-weight: 600;
+        color: $text-primary;
+      }
+    }
+
+    .el-dialog__body {
+      padding: 24px;
+    }
+
+    .el-dialog__footer {
+      padding: 16px 24px 24px;
+      border-top: 1px solid $border-color;
+
+      .el-button {
+        border-radius: $radius-md;
+        font-weight: 500;
+        padding: 10px 20px;
+      }
     }
   }
 }

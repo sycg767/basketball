@@ -1,0 +1,244 @@
+// ============================================
+// Apple Design System - Button Components
+// Apple风格按钮组件
+// ============================================
+
+@use '../design-system/variables' as *;
+@use '../design-system/mixins' as *;
+
+// ============================================
+// 基础按钮样式
+// ============================================
+
+.btn {
+  @include button-base;
+  @include button-press; // 添加点击反馈
+  @include touch-target; // 确保触摸目标尺寸
+
+  // 无障碍支持
+  &:focus-visible {
+    @include focus-ring;
+  }
+
+  // 尺寸变体
+  &--sm {
+    padding: $spacing-2 $spacing-4;
+    font-size: $font-size-sm;
+    min-height: 32px;
+  }
+
+  &--lg {
+    padding: $spacing-4 $spacing-8;
+    font-size: $font-size-lg;
+    min-height: 48px;
+  }
+
+  // 颜色变体
+  &--primary {
+    @include button-primary;
+  }
+
+  &--secondary {
+    @include button-secondary;
+  }
+
+  &--ghost {
+    @include button-ghost;
+  }
+
+  &--success {
+    background: $success;
+    color: #FFFFFF;
+
+    &:hover:not(:disabled) {
+      background: color-mix(in srgb, $success 95%, black);
+      transform: translateY(-1px);
+      box-shadow: $shadow-sm;
+    }
+  }
+
+  &--warning {
+    background: $warning;
+    color: #FFFFFF;
+
+    &:hover:not(:disabled) {
+      background: color-mix(in srgb, $warning 95%, black);
+      transform: translateY(-1px);
+      box-shadow: $shadow-sm;
+    }
+  }
+
+  &--danger {
+    background: $error;
+    color: #FFFFFF;
+
+    &:hover:not(:disabled) {
+      background: color-mix(in srgb, $error 95%, black);
+      transform: translateY(-1px);
+      box-shadow: $shadow-sm;
+    }
+  }
+
+  // 文本按钮
+  &--text {
+    background: transparent;
+    color: $primary;
+    padding: $spacing-2 $spacing-3;
+
+    &:hover:not(:disabled) {
+      background: rgba($primary, 0.08);
+    }
+
+    &:active:not(:disabled) {
+      background: rgba($primary, 0.15);
+    }
+  }
+
+  // 图标按钮
+  &--icon {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border-radius: $radius-full;
+
+    &.btn--sm {
+      width: 32px;
+      height: 32px;
+    }
+
+    &.btn--lg {
+      width: 48px;
+      height: 48px;
+    }
+  }
+
+  // 块级按钮
+  &--block {
+    width: 100%;
+    display: flex;
+  }
+
+  // 圆角按钮
+  &--rounded {
+    border-radius: $radius-full;
+  }
+
+  // 加载状态
+  &--loading {
+    position: relative;
+    color: transparent;
+    pointer-events: none;
+    cursor: wait;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 16px;
+      height: 16px;
+      margin: -8px 0 0 -8px;
+      border: 2px solid currentColor;
+      border-right-color: transparent;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+    }
+  }
+
+  // 禁用状态
+  &:disabled {
+    @include disabled-state;
+  }
+}
+
+// 按钮组
+.btn-group {
+  display: inline-flex;
+  gap: $spacing-2;
+
+  &--vertical {
+    flex-direction: column;
+  }
+
+  &--attached {
+    gap: 0;
+
+    .btn {
+      border-radius: 0;
+
+      &:first-child {
+        border-top-left-radius: $radius-sm;
+        border-bottom-left-radius: $radius-sm;
+      }
+
+      &:last-child {
+        border-top-right-radius: $radius-sm;
+        border-bottom-right-radius: $radius-sm;
+      }
+
+      &:not(:last-child) {
+        border-right: 1px solid rgba(255, 255, 255, 0.2);
+      }
+    }
+  }
+}
+
+// 旋转动画
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// ============================================
+// Element Plus 按钮覆盖
+// ============================================
+
+.el-button {
+  @include button-base;
+  border: none;
+
+  &--primary {
+    @include button-primary;
+  }
+
+  &--default {
+    @include button-secondary;
+  }
+
+  &--success {
+    background: $success;
+    color: #FFFFFF;
+
+    &:hover:not(:disabled) {
+      background: color-mix(in srgb, $success 95%, black);
+    }
+  }
+
+  &--warning {
+    background: $warning;
+    color: #FFFFFF;
+
+    &:hover:not(:disabled) {
+      background: color-mix(in srgb, $warning 95%, black);
+    }
+  }
+
+  &--danger {
+    background: $error;
+    color: #FFFFFF;
+
+    &:hover:not(:disabled) {
+      background: color-mix(in srgb, $error 95%, black);
+    }
+  }
+
+  &--text {
+    background: transparent;
+    color: $primary;
+
+    &:hover:not(:disabled) {
+      background: rgba($primary, 0.08);
+    }
+  }
+}

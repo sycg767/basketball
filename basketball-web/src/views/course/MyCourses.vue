@@ -355,105 +355,332 @@ onMounted(() => {
 });
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@use '@/styles/design-system/variables' as *;
+@use '@/styles/design-system/mixins' as *;
+
 .my-courses-container {
-  padding: 20px;
-}
+  @include container;
+  padding: $spacing-8 $spacing-6;
+  min-height: 100vh;
+  background: $bg-secondary;
 
-.filter-card {
-  margin-bottom: 20px;
-}
+  .filter-card {
+    @include card-base;
+    margin-bottom: $spacing-6;
+    border: none;
 
-.search-form {
-  margin-bottom: 0;
-}
+    :deep(.el-card__body) {
+      padding: $spacing-6;
+    }
 
-.enrollment-list {
-  display: grid;
-  gap: 20px;
-}
+    .search-form {
+      margin-bottom: 0;
 
-.enrollment-card {
-  transition: transform 0.3s;
-}
+      .el-form-item {
+        margin-right: $spacing-4;
 
-.enrollment-card:hover {
-  transform: translateY(-3px);
-}
+        :deep(.el-form-item__label) {
+          font-size: $font-size-sm;
+          font-weight: $font-weight-medium;
+          color: $text-secondary;
+        }
 
-.enrollment-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
+        :deep(.el-select .el-input__wrapper) {
+          @include input-base;
+          box-shadow: none;
+        }
+      }
 
-.enrollment-no {
-  font-size: 14px;
-  color: #606266;
-}
+      .el-button {
+        @include button-base;
 
-.enrollment-no .label {
-  color: #909399;
-}
+        &.el-button--primary {
+          @include button-primary;
+        }
+      }
+    }
+  }
 
-.enrollment-no .value {
-  font-weight: bold;
-}
+  :deep(.el-tabs) {
+    margin-bottom: $spacing-6;
 
-.enrollment-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-}
+    .el-tabs__header {
+      margin-bottom: $spacing-6;
+      border-bottom: 2px solid $border-color;
+    }
 
-.course-info {
-  flex: 1;
-}
+    .el-tabs__nav-wrap::after {
+      display: none;
+    }
 
-.course-name {
-  font-size: 20px;
-  font-weight: bold;
-  margin: 0 0 15px 0;
-  color: #303133;
-}
+    .el-tabs__item {
+      font-size: $font-size-base;
+      font-weight: $font-weight-medium;
+      color: $text-secondary;
+      padding: $spacing-4 $spacing-6;
+      transition: $transition-fast;
 
-.info-row {
-  display: flex;
-  align-items: center;
-  margin-bottom: 12px;
-  font-size: 14px;
-}
+      &:hover {
+        color: $primary;
+      }
 
-.info-row .label {
-  color: #909399;
-  margin-right: 10px;
-  min-width: 80px;
-}
+      &.is-active {
+        color: $primary;
+        font-weight: $font-weight-semibold;
+      }
+    }
 
-.info-row .value {
-  color: #606266;
-}
+    .el-tabs__active-bar {
+      height: 3px;
+      background: $primary;
+      border-radius: $radius-full;
+    }
+  }
 
-.info-row .price {
-  font-size: 18px;
-  font-weight: bold;
-  color: #f56c6c;
-}
+  .enrollment-list {
+    display: grid;
+    gap: $spacing-5;
 
-.enrollment-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-left: 20px;
-}
+    .enrollment-card {
+      @include card-base;
+      border: none;
+      transition: all $duration-base $ease-out;
 
-.enrollment-actions .el-button {
-  min-width: 100px;
-}
+      &:hover {
+        @include card-hover;
+      }
 
-.pagination-container {
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
+      :deep(.el-card__body) {
+        padding: $spacing-6;
+      }
+
+      .enrollment-header {
+        @include flex-between;
+        margin-bottom: $spacing-4;
+
+        .enrollment-no {
+          font-size: $font-size-sm;
+          color: $text-secondary;
+
+          .label {
+            color: $text-tertiary;
+          }
+
+          .value {
+            font-weight: $font-weight-semibold;
+            color: $text-primary;
+          }
+        }
+
+        .enrollment-status {
+          display: flex;
+          gap: $spacing-2;
+
+          .el-tag {
+            @include tag-base;
+            font-weight: $font-weight-semibold;
+          }
+        }
+      }
+
+      :deep(.el-divider) {
+        margin: $spacing-4 0;
+        border-color: $border-color;
+      }
+
+      .enrollment-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: $spacing-6;
+
+        .course-info {
+          flex: 1;
+          min-width: 0;
+
+          .course-name {
+            @include text-heading-3;
+            font-size: $font-size-xl;
+            margin: 0 0 $spacing-4 0;
+          }
+
+          .info-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: $spacing-3;
+            font-size: $font-size-sm;
+
+            &:last-child {
+              margin-bottom: 0;
+            }
+
+            .label {
+              color: $text-secondary;
+              margin-right: $spacing-3;
+              min-width: 90px;
+              font-weight: $font-weight-medium;
+            }
+
+            .value {
+              color: $text-primary;
+            }
+
+            .price {
+              font-size: $font-size-xl;
+              font-weight: $font-weight-bold;
+              color: $error;
+            }
+
+            :deep(.el-rate) {
+              .el-rate__icon {
+                font-size: $font-size-lg;
+              }
+            }
+          }
+        }
+
+        .enrollment-actions {
+          display: flex;
+          flex-direction: column;
+          gap: $spacing-3;
+          flex-shrink: 0;
+
+          .el-button {
+            @include button-base;
+            min-width: 110px;
+
+            &.el-button--primary {
+              @include button-primary;
+            }
+
+            &.el-button--success {
+              background: $success;
+              color: $white;
+
+              &:hover:not(:disabled) {
+                background: color-mix(in srgb, $success 95%, black);
+              }
+            }
+
+            &.el-button--warning {
+              background: $warning;
+              color: $white;
+
+              &:hover:not(:disabled) {
+                background: color-mix(in srgb, $warning 95%, black);
+              }
+            }
+
+            &.el-button--danger {
+              background: transparent;
+              color: $error;
+              border: 1px solid $error;
+
+              &:hover:not(:disabled) {
+                background: rgba($error, 0.1);
+              }
+            }
+
+            &.el-button--info {
+              @include button-secondary;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .pagination-container {
+    @include flex-center;
+    margin-top: $spacing-10;
+    padding: $spacing-6 0;
+
+    :deep(.el-pagination) {
+      .el-pager li {
+        min-width: 36px;
+        height: 36px;
+        line-height: 36px;
+        border-radius: $radius-sm;
+        font-weight: $font-weight-medium;
+        transition: $transition-fast;
+
+        &.is-active {
+          background: $primary;
+          color: $white;
+        }
+
+        &:hover:not(.is-active) {
+          background: $gray-100;
+        }
+      }
+
+      .btn-prev,
+      .btn-next {
+        min-width: 36px;
+        height: 36px;
+        border-radius: $radius-sm;
+        transition: $transition-fast;
+
+        &:hover:not(:disabled) {
+          background: $gray-100;
+        }
+      }
+    }
+  }
+
+  :deep(.el-dialog) {
+    border-radius: $radius-lg;
+    box-shadow: $shadow-modal;
+
+    .el-dialog__header {
+      padding: $spacing-6;
+      border-bottom: 1px solid $border-color;
+
+      .el-dialog__title {
+        font-size: $font-size-xl;
+        font-weight: $font-weight-semibold;
+        color: $text-primary;
+      }
+    }
+
+    .el-dialog__body {
+      padding: $spacing-6;
+
+      .el-form-item__label {
+        font-size: $font-size-sm;
+        font-weight: $font-weight-medium;
+        color: $text-secondary;
+      }
+
+      :deep(.el-rate) {
+        .el-rate__icon {
+          font-size: $font-size-3xl;
+        }
+      }
+
+      :deep(.el-textarea__inner) {
+        @include input-base;
+        box-shadow: none;
+      }
+    }
+
+    .el-dialog__footer {
+      padding: $spacing-5 $spacing-6;
+      border-top: 1px solid $border-color;
+
+      .el-button {
+        @include button-base;
+
+        &.el-button--primary {
+          @include button-primary;
+        }
+
+        &:not(.el-button--primary) {
+          @include button-secondary;
+        }
+      }
+    }
+  }
 }
 </style>

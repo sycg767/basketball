@@ -1,0 +1,385 @@
+// ============================================
+// 性能优化样式 - 减少重绘重排
+// ============================================
+
+// ============================================
+// 1. GPU加速动画
+// ============================================
+
+@mixin gpu-accelerated {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+  will-change: transform;
+}
+
+.gpu-accelerated {
+  @include gpu-accelerated;
+}
+
+// ============================================
+// 2. 优化的动画属性（仅使用transform和opacity）
+// ============================================
+
+@mixin optimized-animation {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+}
+
+.animate-fade {
+  @include optimized-animation;
+  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-slide {
+  @include optimized-animation;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-scale {
+  @include optimized-animation;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+// ============================================
+// 3. 内容可见性优化
+// ============================================
+
+.content-visibility-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 500px;
+}
+
+.content-visibility-hidden {
+  content-visibility: hidden;
+}
+
+// ============================================
+// 4. 图片优化
+// ============================================
+
+.img-optimized {
+  content-visibility: auto;
+  loading: lazy;
+  decoding: async;
+  will-change: auto;
+}
+
+// ============================================
+// 5. 滚动性能优化
+// ============================================
+
+.scroll-optimized {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  scroll-behavior: smooth;
+}
+
+.scroll-snap-container {
+  scroll-snap-type: y mandatory;
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
+}
+
+.scroll-snap-item {
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+// ============================================
+// 6. 层叠上下文优化
+// ============================================
+
+.layer-promote {
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+.layer-isolate {
+  isolation: isolate;
+}
+
+// ============================================
+// 7. 字体渲染优化
+// ============================================
+
+.text-optimized {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "kern" 1;
+  font-kerning: normal;
+}
+
+// ============================================
+// 8. 避免布局抖动
+// ============================================
+
+.no-layout-shift {
+  aspect-ratio: 16 / 9;
+  width: 100%;
+  height: auto;
+}
+
+.skeleton-placeholder {
+  min-height: 200px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #f8f8f8 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+// ============================================
+// 9. 减少重绘的阴影
+// ============================================
+
+.shadow-optimized {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  will-change: box-shadow;
+  transition: box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  }
+}
+
+// ============================================
+// 10. 虚拟滚动容器
+// ============================================
+
+.virtual-scroll-container {
+  overflow-y: auto;
+  height: 100%;
+  position: relative;
+  contain: layout style paint;
+}
+
+.virtual-scroll-item {
+  position: absolute;
+  left: 0;
+  right: 0;
+  will-change: transform;
+}
+
+// ============================================
+// 11. 懒加载占位符
+// ============================================
+
+.lazy-placeholder {
+  background-color: #f5f5f7;
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.5),
+      transparent
+    );
+    animation: shimmer 1.5s infinite;
+  }
+}
+
+// ============================================
+// 12. 防抖动过渡
+// ============================================
+
+.debounced-transition {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition-delay: 0.05s;
+}
+
+// ============================================
+// 13. 优化的模糊效果
+// ============================================
+
+.backdrop-blur-optimized {
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  will-change: backdrop-filter;
+
+  @supports not (backdrop-filter: blur(10px)) {
+    background-color: rgba(255, 255, 255, 0.9);
+  }
+}
+
+// ============================================
+// 14. 减少paint的边框
+// ============================================
+
+.border-optimized {
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+
+  &:hover {
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.2);
+  }
+}
+
+// ============================================
+// 15. 批量DOM更新容器
+// ============================================
+
+.batch-update-container {
+  contain: layout style;
+}
+
+// ============================================
+// 16. 固定定位优化
+// ============================================
+
+.fixed-optimized {
+  position: fixed;
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+.sticky-optimized {
+  position: sticky;
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+// ============================================
+// 17. 表格性能优化
+// ============================================
+
+.table-optimized {
+  table-layout: fixed;
+  border-collapse: collapse;
+  contain: layout style;
+
+  td, th {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+// ============================================
+// 18. 网格性能优化
+// ============================================
+
+.grid-optimized {
+  display: grid;
+  contain: layout style;
+  will-change: auto;
+}
+
+// ============================================
+// 19. 动画性能监控类
+// ============================================
+
+@keyframes performance-test {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(100px); }
+}
+
+.animation-performance-test {
+  animation: performance-test 1s linear infinite;
+  will-change: transform;
+}
+
+// ============================================
+// 20. 资源提示
+// ============================================
+
+// 预加载关键资源
+.preload-hint {
+  &::before {
+    content: '';
+    display: none;
+    background-image: var(--preload-image);
+  }
+}
+
+// ============================================
+// 21. 减少复合层
+// ============================================
+
+.composite-layer-minimal {
+  transform: none;
+  will-change: auto;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+}
+
+// ============================================
+// 22. 优化的过渡组
+// ============================================
+
+.transition-group-optimized {
+  position: relative;
+
+  .item-enter-active,
+  .item-leave-active {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform, opacity;
+  }
+
+  .item-enter-from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  .item-leave-to {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+}
+
+// ============================================
+// 23. 防止内存泄漏
+// ============================================
+
+.cleanup-on-unmount {
+  // 确保动画在组件卸载时停止
+  &.unmounting {
+    animation: none !important;
+    transition: none !important;
+    will-change: auto !important;
+  }
+}
+
+// ============================================
+// 24. 长列表优化
+// ============================================
+
+.long-list-container {
+  overflow-y: auto;
+  height: 100%;
+  contain: strict;
+  content-visibility: auto;
+}
+
+.long-list-item {
+  contain: layout style paint;
+  content-visibility: auto;
+  contain-intrinsic-size: 0 100px;
+}
+
+// ============================================
+// 25. 响应式图片优化
+// ============================================
+
+.responsive-img-optimized {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  loading: lazy;
+  decoding: async;
+
+  &[data-loaded="false"] {
+    background: linear-gradient(90deg, #f0f0f0 25%, #f8f8f8 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
+  }
+}

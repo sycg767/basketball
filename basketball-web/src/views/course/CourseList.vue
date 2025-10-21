@@ -243,144 +243,288 @@ onMounted(() => {
 });
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@use '@/styles/design-system/variables' as *;
+@use '@/styles/design-system/mixins' as *;
+
 .course-list-container {
-  padding: 20px;
-}
+  @include container;
+  padding: $spacing-8 $spacing-6;
+  min-height: 100vh;
+  background: $bg-secondary;
 
-.filter-card {
-  margin-bottom: 20px;
-}
+  .page-header {
+    margin-bottom: $spacing-8;
 
-.search-form {
-  margin-bottom: 0;
-}
+    h2 {
+      @include text-heading-2;
+      margin-bottom: $spacing-3;
+    }
 
-.course-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 20px;
-  margin-bottom: 20px;
-}
+    :deep(.el-breadcrumb) {
+      font-size: $font-size-sm;
 
-.course-card {
-  cursor: pointer;
-  transition: transform 0.3s;
-}
+      .el-breadcrumb__item {
+        .el-breadcrumb__inner {
+          color: $text-secondary;
+          font-weight: $font-weight-medium;
+          transition: $transition-fast;
 
-.course-card:hover {
-  transform: translateY(-5px);
-}
+          &:hover {
+            color: $primary;
+          }
+        }
 
-.course-cover {
-  position: relative;
-  height: 200px;
-  overflow: hidden;
-  border-radius: 4px;
-  margin-bottom: 15px;
-}
+        &:last-child .el-breadcrumb__inner {
+          color: $text-primary;
+        }
+      }
+    }
+  }
 
-.cover-image {
-  width: 100%;
-  height: 100%;
-}
+  .filter-card {
+    @include card-base;
+    margin-bottom: $spacing-6;
+    border: none;
 
-.image-slot {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 100%;
-  background: var(--el-fill-color-light);
-  color: var(--el-text-color-secondary);
-  font-size: 30px;
-}
+    :deep(.el-card__body) {
+      padding: $spacing-6;
+    }
 
-.course-type-tag {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-}
+    .search-form {
+      margin-bottom: 0;
 
-.course-info {
-  padding: 0 10px;
-}
+      .el-form-item {
+        margin-right: $spacing-4;
 
-.course-name {
-  font-size: 18px;
-  font-weight: bold;
-  margin: 0 0 15px 0;
-  color: #303133;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
+        :deep(.el-form-item__label) {
+          font-size: $font-size-sm;
+          font-weight: $font-weight-medium;
+          color: $text-secondary;
+        }
 
-.course-meta {
-  display: flex;
-  gap: 20px;
-  margin-bottom: 15px;
-  color: #909399;
-  font-size: 14px;
-}
+        :deep(.el-input__wrapper),
+        :deep(.el-select .el-input__wrapper) {
+          @include input-base;
+          box-shadow: none;
+        }
+      }
 
-.meta-item {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
+      .el-button {
+        @include button-base;
 
-.course-detail {
-  margin-bottom: 15px;
-  padding: 10px;
-  background: #f5f7fa;
-  border-radius: 4px;
-}
+        &.el-button--primary {
+          @include button-primary;
+        }
+      }
+    }
+  }
 
-.detail-item {
-  display: flex;
-  align-items: center;
-  margin-bottom: 8px;
-  font-size: 14px;
-}
+  .course-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: $spacing-6;
+    margin-bottom: $spacing-8;
 
-.detail-item:last-child {
-  margin-bottom: 0;
-}
+    @include respond-to(md) {
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    }
 
-.detail-item .label {
-  color: #909399;
-  margin-right: 5px;
-}
+    @include respond-to(lg) {
+      gap: $spacing-8;
+    }
+  }
 
-.course-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-top: 15px;
-  border-top: 1px solid #ebeef5;
-}
+  .course-card {
+    @include card-base;
+    border: none;
+    cursor: pointer;
+    transition: all $duration-base $ease-out;
+    overflow: hidden;
 
-.price-info {
-  display: flex;
-  flex-direction: column;
-}
+    &:hover {
+      @include card-hover;
+    }
 
-.price {
-  font-size: 20px;
-  font-weight: bold;
-  color: #f56c6c;
-}
+    &:active {
+      @include card-active;
+    }
 
-.member-price {
-  font-size: 12px;
-  color: #909399;
-  margin-top: 5px;
-}
+    :deep(.el-card__body) {
+      padding: 0;
+    }
 
-.pagination-container {
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
+    .course-cover {
+      position: relative;
+      height: 220px;
+      overflow: hidden;
+      background: $gray-100;
+
+      .cover-image {
+        width: 100%;
+        height: 100%;
+
+        :deep(.el-image__inner) {
+          @include image-cover;
+          transition: transform $duration-slow $ease-out;
+        }
+      }
+
+      &:hover .cover-image :deep(.el-image__inner) {
+        transform: scale(1.05);
+      }
+
+      .image-slot {
+        @include flex-center;
+        width: 100%;
+        height: 100%;
+        background: $gray-100;
+        color: $text-tertiary;
+        font-size: $font-size-4xl;
+      }
+
+      .course-type-tag {
+        position: absolute;
+        top: $spacing-3;
+        right: $spacing-3;
+        z-index: 1;
+
+        .el-tag {
+          @include tag-base;
+          backdrop-filter: $backdrop-blur-sm;
+          background: rgba($white, 0.95);
+          font-weight: $font-weight-semibold;
+        }
+      }
+    }
+
+    .course-info {
+      padding: $spacing-5;
+
+      .course-name {
+        @include text-heading-3;
+        font-size: $font-size-lg;
+        margin: 0 0 $spacing-4 0;
+        @include text-ellipsis;
+      }
+
+      .course-meta {
+        display: flex;
+        gap: $spacing-5;
+        margin-bottom: $spacing-4;
+        color: $text-tertiary;
+        font-size: $font-size-sm;
+
+        .meta-item {
+          display: flex;
+          align-items: center;
+          gap: $spacing-1;
+
+          .el-icon {
+            font-size: $font-size-base;
+          }
+        }
+      }
+
+      .course-detail {
+        margin-bottom: $spacing-4;
+        padding: $spacing-3;
+        background: $gray-50;
+        border-radius: $radius-sm;
+
+        .detail-item {
+          display: flex;
+          align-items: center;
+          margin-bottom: $spacing-2;
+          font-size: $font-size-sm;
+
+          &:last-child {
+            margin-bottom: 0;
+          }
+
+          .label {
+            color: $text-tertiary;
+            margin-right: $spacing-1;
+          }
+
+          .el-tag {
+            @include tag-base;
+            font-size: $font-size-xs;
+          }
+        }
+      }
+
+      .course-footer {
+        @include flex-between;
+        padding-top: $spacing-4;
+        border-top: 1px solid $border-color;
+
+        .price-info {
+          display: flex;
+          flex-direction: column;
+          gap: $spacing-1;
+
+          .price {
+            font-size: $font-size-2xl;
+            font-weight: $font-weight-bold;
+            color: $error;
+          }
+
+          .member-price {
+            font-size: $font-size-xs;
+            color: $text-tertiary;
+          }
+        }
+
+        .el-button {
+          @include button-base;
+          height: 36px;
+          font-size: $font-size-sm;
+
+          &.el-button--primary {
+            @include button-primary;
+          }
+        }
+      }
+    }
+  }
+
+  .pagination-container {
+    @include flex-center;
+    margin-top: $spacing-10;
+    padding: $spacing-6 0;
+
+    :deep(.el-pagination) {
+      .el-pager li {
+        min-width: 36px;
+        height: 36px;
+        line-height: 36px;
+        border-radius: $radius-sm;
+        font-weight: $font-weight-medium;
+        transition: $transition-fast;
+
+        &.is-active {
+          background: $primary;
+          color: $white;
+        }
+
+        &:hover:not(.is-active) {
+          background: $gray-100;
+        }
+      }
+
+      .btn-prev,
+      .btn-next {
+        min-width: 36px;
+        height: 36px;
+        border-radius: $radius-sm;
+        transition: $transition-fast;
+
+        &:hover:not(:disabled) {
+          background: $gray-100;
+        }
+      }
+    }
+  }
 }
 </style>

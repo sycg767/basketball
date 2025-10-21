@@ -296,76 +296,102 @@ const goToMember = () => {
 </script>
 
 <style lang="scss" scoped>
+@use '@/styles/design-system/variables' as *;
+@use '@/styles/design-system/mixins' as *;
+
 .home-container {
   min-height: 100vh;
-  background: linear-gradient(to bottom, #f0f4f8 0%, #ffffff 100%);
+  background: $bg-secondary;
 
   .home-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.2);
+    // Apple风格毛玻璃导航栏
+    @include frosted-glass(blur(20px), 0.85);
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: $shadow-sm;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
     position: sticky;
     top: 0;
-    z-index: 100;
+    z-index: $z-index-sticky;
 
     .header-content {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 16px 40px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      @include container;
+      padding: $spacing-4 $spacing-8;
+      @include flex-between;
 
       .logo-section {
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: $spacing-3;
 
         h1 {
-          font-size: 28px;
-          font-weight: 700;
-          color: #ffffff;
+          font-size: $font-size-2xl;
+          font-weight: $font-weight-bold;
+          color: $text-primary;
           margin: 0;
-          letter-spacing: 2px;
-          text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+          letter-spacing: $letter-spacing-tight;
+        }
+
+        :deep(.el-icon) {
+          color: $primary;
         }
       }
 
       .user-info {
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: $spacing-3;
 
         .username {
-          color: #ffffff;
-          font-weight: 500;
-          margin-right: 8px;
+          color: $text-primary;
+          font-weight: $font-weight-medium;
+          font-size: $font-size-base;
+        }
+
+        :deep(.el-avatar) {
+          background: $primary-gradient;
+          font-weight: $font-weight-semibold;
         }
 
         :deep(.el-button) {
-          color: #ffffff;
+          @include button-base;
+          padding: $spacing-2 $spacing-4;
+          font-size: $font-size-sm;
+          border-radius: $radius-full;
 
-          &:hover {
-            color: #e0e7ff;
+          &.el-button--primary {
+            @include button-primary;
+
+            &.is-plain {
+              background: transparent;
+              color: $primary;
+              border: 1px solid $primary;
+
+              &:hover {
+                background: rgba($primary, 0.1);
+              }
+            }
           }
-        }
 
-        :deep(.el-button--primary) {
-          background-color: rgba(255, 255, 255, 0.2);
-          border-color: rgba(255, 255, 255, 0.3);
-          color: #ffffff;
-
-          &:hover {
-            background-color: rgba(255, 255, 255, 0.3);
-            border-color: rgba(255, 255, 255, 0.4);
-          }
-
-          &:not(.is-plain) {
-            background-color: #ffffff;
-            color: #667eea;
+          &.el-button--danger {
+            background: transparent;
+            color: $error;
+            border: none;
 
             &:hover {
-              background-color: #e0e7ff;
-              color: #5568d3;
+              background: rgba($error, 0.1);
+            }
+          }
+
+          &.is-link {
+            background: transparent;
+            color: $primary;
+            border: none;
+            padding: $spacing-2 $spacing-3;
+
+            &:hover {
+              background: rgba($primary, 0.08);
             }
           }
         }
@@ -374,69 +400,90 @@ const goToMember = () => {
   }
 
   .home-content {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 40px 60px;
+    @include container;
+    padding-bottom: $spacing-16;
 
-    // Hero区域
+    // Hero区域 - 简化设计
     .hero-section {
       display: flex;
       align-items: center;
-      gap: 60px;
-      padding: 60px 0;
+      gap: $spacing-16;
+      padding: $spacing-16 0;
+
+      @media (max-width: $breakpoint-md) {
+        flex-direction: column;
+        gap: $spacing-8;
+        padding: $spacing-12 0;
+      }
 
       .hero-content {
         flex: 1;
 
         .hero-title {
-          font-size: 42px;
-          font-weight: 700;
-          color: #1a202c;
-          margin: 0 0 16px 0;
-          line-height: 1.2;
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
+          @include text-heading-1;
+          font-size: $font-size-5xl;
+          margin: 0 0 $spacing-4 0;
+          color: $text-primary;
+
+          @media (max-width: $breakpoint-md) {
+            font-size: $font-size-4xl;
+          }
         }
 
         .hero-subtitle {
-          font-size: 18px;
-          color: #4a5568;
-          margin: 0 0 32px 0;
-          line-height: 1.6;
+          @include text-body;
+          font-size: $font-size-lg;
+          color: $text-secondary;
+          margin: 0 0 $spacing-8 0;
         }
 
         .hero-actions {
           display: flex;
-          gap: 16px;
-          margin-bottom: 32px;
+          gap: $spacing-4;
+          margin-bottom: $spacing-8;
 
           :deep(.el-button) {
-            padding: 12px 32px;
-            font-size: 16px;
-            border-radius: 8px;
+            @include button-base;
+            padding: $spacing-4 $spacing-8;
+            font-size: $font-size-lg;
+            border-radius: $radius-lg;
+
+            &.el-button--primary {
+              @include button-primary;
+            }
+
+            &.el-button--success {
+              background: transparent;
+              color: $success;
+              border: 2px solid $success;
+
+              &:hover {
+                background: rgba($success, 0.1);
+              }
+            }
           }
         }
 
         .features {
           display: flex;
-          gap: 24px;
+          gap: $spacing-4;
           flex-wrap: wrap;
 
           .feature-tag {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 16px;
-            background: #ffffff;
-            border-radius: 20px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            @include tag-base;
+            @include tag-primary;
+            padding: $spacing-2 $spacing-4;
+            background: $bg-primary;
+            box-shadow: $shadow-sm;
 
             span {
-              font-size: 14px;
-              color: #4a5568;
-              font-weight: 500;
+              font-size: $font-size-sm;
+              color: $text-secondary;
+              font-weight: $font-weight-medium;
+            }
+
+            :deep(.el-icon) {
+              color: $primary;
             }
           }
         }
@@ -445,28 +492,34 @@ const goToMember = () => {
       .hero-image {
         flex: 0 0 400px;
 
+        @media (max-width: $breakpoint-md) {
+          flex: 1;
+          width: 100%;
+        }
+
         .image-placeholder {
           width: 100%;
           height: 400px;
-          background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-          border-radius: 20px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          box-shadow: 0 10px 40px rgba(102, 126, 234, 0.15);
+          background: $bg-primary;
+          border-radius: $radius-2xl;
+          @include flex-center;
+          box-shadow: $shadow-card;
+
+          :deep(.el-icon) {
+            color: $primary;
+            opacity: 0.3;
+          }
         }
       }
     }
 
     // 公共标题样式
     .section-title {
-      font-size: 28px;
-      font-weight: 700;
-      color: #1a202c;
-      margin: 0 0 32px 0;
+      @include text-heading-2;
+      margin: 0 0 $spacing-8 0;
       text-align: center;
       position: relative;
-      padding-bottom: 16px;
+      padding-bottom: $spacing-4;
 
       &::after {
         content: '';
@@ -474,91 +527,88 @@ const goToMember = () => {
         bottom: 0;
         left: 50%;
         transform: translateX(-50%);
-        width: 60px;
+        width: 48px;
         height: 4px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border-radius: 2px;
+        background: $primary;
+        border-radius: $radius-full;
       }
     }
 
     // 快捷功能
     .quick-actions {
-      margin: 60px 0;
+      margin: $spacing-16 0;
 
       .actions-grid {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
-        gap: 24px;
+        gap: $spacing-6;
 
-        @media (max-width: 992px) {
+        @media (max-width: $breakpoint-lg) {
           grid-template-columns: repeat(2, 1fr);
         }
 
-        @media (max-width: 576px) {
+        @media (max-width: $breakpoint-sm) {
           grid-template-columns: 1fr;
         }
 
         .action-card {
-          background: #ffffff;
-          border-radius: 16px;
-          padding: 32px 24px;
+          @include card-base;
+          padding: $spacing-8 $spacing-6;
           text-align: center;
           cursor: pointer;
-          transition: all 0.3s ease;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+          border-radius: $radius-xl;
 
           &:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+            @include card-hover;
 
             .action-icon {
-              transform: scale(1.1);
+              transform: scale(1.05);
             }
           }
 
+          &:active {
+            @include card-active;
+          }
+
           .action-icon {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 20px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
+            width: 72px;
+            height: 72px;
+            margin: 0 auto $spacing-5;
+            border-radius: $radius-full;
+            @include flex-center;
+            transition: $transition-transform;
 
             &.blue {
-              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-              color: #ffffff;
+              background: rgba($primary, 0.1);
+              color: $primary;
             }
 
             &.green {
-              background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
-              color: #ffffff;
+              background: rgba($success, 0.1);
+              color: $success;
             }
 
             &.orange {
-              background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
-              color: #ffffff;
+              background: rgba($warning, 0.1);
+              color: $warning;
             }
 
             &.red {
-              background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
-              color: #ffffff;
+              background: rgba($error, 0.1);
+              color: $error;
             }
           }
 
           h4 {
-            font-size: 18px;
-            font-weight: 600;
-            color: #1a202c;
-            margin: 0 0 12px 0;
+            font-size: $font-size-lg;
+            font-weight: $font-weight-semibold;
+            color: $text-primary;
+            margin: 0 0 $spacing-2 0;
           }
 
           p {
-            font-size: 14px;
-            color: #718096;
+            @include text-caption;
             margin: 0;
-            line-height: 1.6;
           }
         }
       }
@@ -566,69 +616,63 @@ const goToMember = () => {
 
     // 系统简介
     .intro-section {
-      margin: 60px 0;
+      margin: $spacing-16 0;
 
       .intro-grid {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
-        gap: 32px;
+        gap: $spacing-6;
 
-        @media (max-width: 768px) {
+        @media (max-width: $breakpoint-md) {
           grid-template-columns: 1fr;
         }
 
         .intro-item {
-          background: #ffffff;
-          border-radius: 16px;
-          padding: 32px;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-          transition: all 0.3s ease;
+          @include card-base;
+          padding: $spacing-8;
+          border-radius: $radius-xl;
 
           &:hover {
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            @include card-hover;
           }
 
           .intro-icon {
-            width: 64px;
-            height: 64px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 20px;
+            width: 56px;
+            height: 56px;
+            border-radius: $radius-lg;
+            @include flex-center;
+            margin-bottom: $spacing-5;
 
             &.blue {
-              background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-              color: #667eea;
+              background: rgba($primary, 0.1);
+              color: $primary;
             }
 
             &.green {
-              background: linear-gradient(135deg, rgba(132, 250, 176, 0.1) 0%, rgba(143, 211, 244, 0.1) 100%);
-              color: #48bb78;
+              background: rgba($success, 0.1);
+              color: $success;
             }
 
             &.orange {
-              background: linear-gradient(135deg, rgba(255, 236, 210, 0.3) 0%, rgba(252, 182, 159, 0.3) 100%);
-              color: #ed8936;
+              background: rgba($warning, 0.1);
+              color: $warning;
             }
 
             &.red {
-              background: linear-gradient(135deg, rgba(255, 154, 158, 0.1) 0%, rgba(254, 207, 239, 0.1) 100%);
-              color: #f56565;
+              background: rgba($error, 0.1);
+              color: $error;
             }
           }
 
           h4 {
-            font-size: 20px;
-            font-weight: 600;
-            color: #1a202c;
-            margin: 0 0 12px 0;
+            font-size: $font-size-xl;
+            font-weight: $font-weight-semibold;
+            color: $text-primary;
+            margin: 0 0 $spacing-3 0;
           }
 
           p {
-            font-size: 15px;
-            color: #718096;
-            line-height: 1.7;
+            @include text-body;
             margin: 0;
           }
         }
@@ -637,91 +681,104 @@ const goToMember = () => {
 
     // 公告区域样式
     .announcement-section {
-      margin: 60px 0;
+      margin: $spacing-16 0;
 
       .section-title {
-        font-size: 24px;
-        font-weight: 700;
-        color: #1a202c;
-        margin: 0 0 24px 0;
+        @include text-heading-3;
+        margin: 0 0 $spacing-6 0;
+        text-align: left;
         position: relative;
-        padding-bottom: 12px;
+        padding-bottom: $spacing-3;
 
         &::after {
           content: '';
           position: absolute;
           bottom: 0;
           left: 0;
-          width: 48px;
+          width: 40px;
           height: 3px;
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          border-radius: 2px;
+          background: $primary;
+          border-radius: $radius-full;
         }
       }
     }
 
     // 用户欢迎区域样式
     .user-welcome-section {
-      margin: 40px 0;
+      margin: $spacing-10 0;
 
       .welcome-content {
-        background: #ffffff;
-        border-radius: 16px;
-        padding: 40px;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 40px;
+        background: $white;
+        padding: $spacing-10;
+        border-radius: $radius-xl;
+        box-shadow: $shadow-sm;
+        border: 1px solid $border-color;
+        @include flex-between;
+        gap: $spacing-10;
+        transition: all $duration-base $ease-in-out;
 
-        @media (max-width: 768px) {
+        &:hover {
+          box-shadow: $shadow-md;
+        }
+
+        @media (max-width: $breakpoint-md) {
           flex-direction: column;
-          gap: 24px;
-          padding: 32px;
+          gap: $spacing-6;
+          padding: $spacing-8;
         }
 
         .welcome-text {
           flex: 1;
 
           h2 {
-            font-size: 32px;
-            font-weight: 700;
-            color: #1a202c;
-            margin: 0 0 12px 0;
-            line-height: 1.2;
+            font-size: $font-size-3xl;
+            font-weight: 600;
+            color: $text-primary;
+            margin: 0 0 $spacing-2 0;
+            letter-spacing: -0.02em;
+
+            @media (max-width: $breakpoint-md) {
+              font-size: $font-size-2xl;
+            }
           }
 
           p {
-            font-size: 16px;
-            color: #718096;
+            font-size: $font-size-base;
+            color: $text-secondary;
             margin: 0;
-            line-height: 1.6;
+            font-weight: 500;
           }
         }
 
         .user-stats {
           display: flex;
-          gap: 40px;
+          gap: $spacing-8;
           align-items: center;
 
-          @media (max-width: 768px) {
-            gap: 24px;
+          @media (max-width: $breakpoint-md) {
+            gap: $spacing-6;
+            width: 100%;
+            justify-content: space-around;
           }
 
           .stat-item {
             text-align: center;
+            padding: $spacing-4 $spacing-6;
+            background: $bg-secondary;
+            border-radius: $radius-lg;
+            min-width: 100px;
 
             .stat-value {
-              font-size: 32px;
-              font-weight: 700;
-              color: #667eea;
-              margin-bottom: 8px;
-              line-height: 1;
+              font-size: $font-size-2xl;
+              font-weight: 600;
+              color: $primary;
+              margin-bottom: $spacing-1;
+              line-height: 1.2;
             }
 
             .stat-label {
-              font-size: 14px;
-              color: #718096;
+              font-size: $font-size-sm;
+              color: $text-secondary;
               font-weight: 500;
             }
           }

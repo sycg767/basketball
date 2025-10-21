@@ -1,88 +1,107 @@
 <template>
   <div class="member-card-container">
+    <!-- 页面头部 -->
+    <el-page-header @back="handleBack" content="我的会员卡" />
+
     <!-- 顶部操作栏 -->
-    <el-card class="header-card">
-      <div class="header-actions">
-        <el-button type="primary" @click="handlePurchase">
-          <el-icon><Plus /></el-icon>
-          购买会员卡
-        </el-button>
-        <el-button @click="handleViewRecords">
-          <el-icon><Document /></el-icon>
-          使用记录
-        </el-button>
+    <div class="header-actions">
+      <el-button type="primary" @click="handlePurchase" class="action-btn">
+        <el-icon><Plus /></el-icon>
+        购买会员卡
+      </el-button>
+      <el-button @click="handleViewRecords" class="action-btn">
+        <el-icon><Document /></el-icon>
+        使用记录
+      </el-button>
+    </div>
+
+    <!-- 会员卡列表 - Apple Wallet风格 -->
+    <div class="wallet-cards" v-if="cardList.length > 0">
+      <div
+        v-for="card in cardList"
+        :key="card.id"
+        class="wallet-card"
+        :class="[getCardClass(card), `card-type-${card.cardType}`]"
+        @click="handleViewDetail(card)"
+      >
+        <!-- 卡片背景装饰 -->
+        <div class="card-decoration">
+          <div class="decoration-circle circle-1"></div>
+          <div class="decoration-circle circle-2"></div>
+          <div class="decoration-circle circle-3"></div>
+        </div>
+
+        <!-- 卡片内容 -->
+        <div class="card-content">
+          <!-- 卡片头部 -->
+          <div class="card-top">
+            <div class="card-logo">
+              <el-icon><CreditCard /></el-icon>
+            </div>
+            <el-tag :type="getStatusType(card.status)" class="status-tag">
+              {{ getStatusText(card.status) }}
+            </el-tag>
+          </div>
+
+          <!-- 卡片主体 -->
+          <div class="card-main">
+            <h3 class="card-name">{{ card.cardName }}</h3>
+            <div class="card-no">{{ card.cardNo }}</div>
+
+            <!-- 时间卡显示有效期 -->
+            <div v-if="card.cardType === 1" class="card-value">
+              <div class="value-item">
+                <span class="value-label">有效期至</span>
+                <span class="value-text">{{ formatDate(card.expireDate) }}</span>
+              </div>
+            </div>
+
+            <!-- 次卡显示剩余次数 -->
+            <div v-if="card.cardType === 2" class="card-value">
+              <div class="value-item">
+                <span class="value-label">剩余次数</span>
+                <span class="value-text highlight">{{ card.remainingTimes }} 次</span>
+              </div>
+            </div>
+
+            <!-- 储值卡显示余额 -->
+            <div v-if="card.cardType === 3" class="card-value">
+              <div class="value-item">
+                <span class="value-label">卡内余额</span>
+                <span class="value-text highlight">¥{{ card.balance }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 卡片底部操作 -->
+          <div class="card-actions" @click.stop>
+            <el-button
+              v-if="card.cardType === 3 && card.status === 1"
+              type="primary"
+              size="small"
+              @click="handleRecharge(card)"
+              class="card-action-btn"
+            >
+              充值
+            </el-button>
+            <el-button
+              size="small"
+              @click="handleViewDetail(card)"
+              class="card-action-btn"
+            >
+              详情
+            </el-button>
+          </div>
+        </div>
       </div>
-    </el-card>
+    </div>
 
-    <!-- 会员卡列表 -->
-    <el-card class="table-card">
-      <el-row :gutter="20" class="card-list" v-if="cardList.length > 0">
-        <el-col :xs="24" :sm="12" :md="8" :lg="6" v-for="card in cardList" :key="card.id">
-          <el-card class="member-card" :class="getCardClass(card)">
-            <div class="card-header">
-              <h3>{{ card.cardName }}</h3>
-              <el-tag :type="getStatusType(card.status)">
-                {{ getStatusText(card.status) }}
-              </el-tag>
-            </div>
-
-            <div class="card-body">
-              <div class="card-no">卡号: {{ card.cardNo }}</div>
-
-              <!-- 时间卡显示有效期 -->
-              <div v-if="card.cardType === 1" class="card-info">
-                <div class="info-item">
-                  <span class="label">开始日期:</span>
-                  <span class="value">{{ formatDate(card.startDate) }}</span>
-                </div>
-                <div class="info-item">
-                  <span class="label">到期日期:</span>
-                  <span class="value">{{ formatDate(card.expireDate) }}</span>
-                </div>
-              </div>
-
-              <!-- 次卡显示剩余次数 -->
-              <div v-if="card.cardType === 2" class="card-info">
-                <div class="info-item">
-                  <span class="label">剩余次数:</span>
-                  <span class="value highlight">{{ card.remainingTimes }} 次</span>
-                </div>
-              </div>
-
-              <!-- 储值卡显示余额 -->
-              <div v-if="card.cardType === 3" class="card-info">
-                <div class="info-item">
-                  <span class="label">卡内余额:</span>
-                  <span class="value highlight">¥{{ card.balance }}</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="card-footer">
-              <el-button
-                v-if="card.cardType === 3 && card.status === 1"
-                type="primary"
-                size="small"
-                @click="handleRecharge(card)"
-              >
-                充值
-              </el-button>
-              <el-button
-                size="small"
-                @click="handleViewDetail(card)"
-              >
-                查看详情
-              </el-button>
-            </div>
-          </el-card>
-        </el-col>
-      </el-row>
-
-      <!-- 空状态 -->
-      <el-empty v-else description="暂无会员卡">
+    <!-- 空状态 -->
+    <div v-else class="empty-state">
+      <el-empty description="暂无会员卡">
         <el-button type="primary" @click="handlePurchase">立即购买会员卡</el-button>
       </el-empty>
-    </el-card>
+    </div>
 
     <!-- 分页 -->
     <el-pagination
@@ -177,7 +196,7 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Plus, Document } from '@element-plus/icons-vue'
+import { Plus, Document, CreditCard } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
 import { getMyCards, rechargeCard, getCardRecords } from '@/api/member'
 
@@ -248,6 +267,11 @@ const fetchRecordList = async () => {
 }
 
 // 处理购买
+// 返回上一页
+const handleBack = () => {
+  router.back()
+}
+
 const handlePurchase = () => {
   router.push('/member/card-purchase')
 }
@@ -369,112 +393,284 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
+@use '@/styles/design-system/variables' as *;
+@use '@/styles/design-system/mixins' as *;
+
 .member-card-container {
-  padding: 20px;
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
 
-  .header-card {
-    margin-bottom: 20px;
+  // 页面头部
+  :deep(.el-page-header) {
+    margin-bottom: 24px;
+  }
 
-    .header-actions {
-      display: flex;
-      gap: 10px;
+  // 顶部操作栏
+  .header-actions {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 32px;
+
+    .action-btn {
+      border-radius: 12px;
+      padding: 12px 24px;
+      font-weight: 500;
+      transition: all 0.2s;
+
+      &:hover {
+        transform: translateY(-1px);
+      }
     }
   }
 
-  .card-list {
-    margin-bottom: 20px;
+  // Apple Wallet风格卡片容器
+  .wallet-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 24px;
+    margin-bottom: 32px;
+  }
 
-    .member-card {
+  // 单个钱包卡片
+  .wallet-card {
+    position: relative;
+    min-height: 220px;
+    border-radius: 16px;
+    padding: 24px;
+    cursor: pointer;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+
+    &:hover {
+      transform: translateY(-4px) scale(1.02);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+    }
+
+    &:active {
+      transform: translateY(-2px) scale(1.01);
+    }
+
+    // 不同类型卡片的渐变背景
+    &.card-type-1 {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    &.card-type-2 {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+
+    &.card-type-3 {
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    }
+
+    // 状态样式
+    &.card-inactive {
+      opacity: 0.6;
+      filter: grayscale(0.5);
+    }
+
+    &.card-expired {
+      opacity: 0.5;
+      filter: grayscale(0.8);
+    }
+
+    // 背景装饰圆圈
+    .card-decoration {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+
+      .decoration-circle {
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.1);
+
+        &.circle-1 {
+          width: 120px;
+          height: 120px;
+          top: -40px;
+          right: -20px;
+        }
+
+        &.circle-2 {
+          width: 80px;
+          height: 80px;
+          bottom: -20px;
+          left: -10px;
+        }
+
+        &.circle-3 {
+          width: 60px;
+          height: 60px;
+          top: 50%;
+          right: 20px;
+          opacity: 0.5;
+        }
+      }
+    }
+
+    // 卡片内容
+    .card-content {
+      position: relative;
+      z-index: 1;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      color: white;
+    }
+
+    // 卡片头部
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       margin-bottom: 20px;
-      height: 280px;
-      transition: all 0.3s;
 
-      &:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-      }
-
-      &.card-active {
-        border-color: #67c23a;
-      }
-
-      &.card-inactive {
-        border-color: #909399;
-        opacity: 0.7;
-      }
-
-      &.card-expired {
-        border-color: #f56c6c;
-        opacity: 0.6;
-      }
-
-      .card-header {
+      .card-logo {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
         display: flex;
-        justify-content: space-between;
         align-items: center;
-        margin-bottom: 15px;
-        padding-bottom: 10px;
-        border-bottom: 1px solid #ebeef5;
+        justify-content: center;
 
-        h3 {
-          margin: 0;
-          font-size: 18px;
-          color: #303133;
+        .el-icon {
+          font-size: 20px;
+          color: white;
         }
       }
 
-      .card-body {
-        .card-no {
-          font-size: 14px;
-          color: #909399;
-          margin-bottom: 15px;
-        }
+      .status-tag {
+        background: rgba(255, 255, 255, 0.25);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: white;
+        backdrop-filter: blur(10px);
+        font-weight: 500;
+      }
+    }
 
-        .card-info {
-          .info-item {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-            font-size: 14px;
+    // 卡片主体
+    .card-main {
+      flex: 1;
 
-            .label {
-              color: #606266;
-            }
+      .card-name {
+        font-size: 20px;
+        font-weight: 600;
+        margin: 0 0 8px 0;
+        color: white;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
 
-            .value {
-              color: #303133;
-              font-weight: 500;
+      .card-no {
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.8);
+        margin-bottom: 16px;
+        font-family: 'SF Mono', 'Monaco', 'Courier New', monospace;
+        letter-spacing: 1px;
+      }
 
-              &.highlight {
-                color: #409eff;
-                font-size: 16px;
-                font-weight: bold;
-              }
+      .card-value {
+        .value-item {
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+
+          .value-label {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+          }
+
+          .value-text {
+            font-size: 24px;
+            font-weight: 700;
+            color: white;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+
+            &.highlight {
+              font-size: 28px;
             }
           }
         }
       }
+    }
 
-      .card-footer {
-        display: flex;
-        gap: 10px;
-        margin-top: 20px;
+    // 卡片底部操作
+    .card-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: auto;
+
+      .card-action-btn {
+        background: rgba(255, 255, 255, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: white;
+        backdrop-filter: blur(10px);
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.2s;
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.3);
+          border-color: rgba(255, 255, 255, 0.5);
+          transform: translateY(-1px);
+        }
+
+        &.el-button--primary {
+          background: rgba(255, 255, 255, 0.95);
+          color: $primary-color;
+          border: none;
+
+          &:hover {
+            background: white;
+          }
+        }
       }
     }
   }
 
+  // 空状态
+  .empty-state {
+    padding: 60px 20px;
+    text-align: center;
+  }
+
+  // 分页
   .pagination {
     display: flex;
     justify-content: center;
-    margin-top: 20px;
+    margin-top: 32px;
   }
 
+  // 文本颜色
   .text-success {
     color: #67c23a;
   }
 
   .text-danger {
     color: #f56c6c;
+  }
+
+  // 响应式
+  @media (max-width: 768px) {
+    padding: 16px;
+
+    .wallet-cards {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    .wallet-card {
+      min-height: 200px;
+    }
   }
 }
 </style>

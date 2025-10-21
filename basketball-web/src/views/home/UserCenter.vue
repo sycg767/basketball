@@ -27,7 +27,7 @@
       <div class="user-info-card">
         <div class="card-content">
           <div class="user-avatar">
-            <el-avatar :size="64" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%)">
+            <el-avatar :size="80">
               {{ getUserInitial() }}
             </el-avatar>
           </div>
@@ -105,7 +105,18 @@
             </div>
             <div class="action-content">
               <h4>会员中心</h4>
-              <p>查看会员权益和积分</p>
+              <p>查看会员卡和权益</p>
+            </div>
+            <el-icon class="arrow-icon"><ArrowRight /></el-icon>
+          </div>
+
+          <div class="action-card" @click="goToPoints">
+            <div class="action-icon gold">
+              <el-icon :size="32"><TrophyBase /></el-icon>
+            </div>
+            <div class="action-content">
+              <h4>我的积分</h4>
+              <p>查看积分余额和明细</p>
             </div>
             <el-icon class="arrow-icon"><ArrowRight /></el-icon>
           </div>
@@ -200,6 +211,7 @@ import {
   Calendar,
   Reading,
   Star,
+  TrophyBase,
   Money,
   Bell,
   ArrowRight,
@@ -307,6 +319,10 @@ const goToMember = () => {
   router.push('/member/card');
 };
 
+const goToPoints = () => {
+  router.push('/member/points');
+};
+
 const goToPayment = () => {
   router.push('/payment/method');
 };
@@ -317,13 +333,18 @@ const goToNotifications = () => {
 </script>
 
 <style lang="scss" scoped>
+@use '@/styles/design-system/variables' as *;
+
 .user-center-container {
   min-height: 100vh;
-  background: linear-gradient(to bottom, #f0f4f8 0%, #ffffff 100%);
+  background: $bg-secondary;
 
   .user-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.2);
+    background: rgba($white, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: $shadow-sm;
+    border-bottom: 1px solid $border-color;
     position: sticky;
     top: 0;
     z-index: 100;
@@ -348,18 +369,18 @@ const goToNotifications = () => {
       .logo-section {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 12px;
 
-        @media (min-width: 768px) {
-          gap: 12px;
+        :deep(.el-icon) {
+          color: $primary;
         }
 
         h1 {
-          font-size: 18px;
-          font-weight: 700;
-          color: #ffffff;
+          font-size: 20px;
+          font-weight: 600;
+          color: $text-primary;
           margin: 0;
-          letter-spacing: 1px;
+          letter-spacing: -0.02em;
 
           @media (min-width: 768px) {
             font-size: 24px;
@@ -372,51 +393,40 @@ const goToNotifications = () => {
         flex-wrap: wrap;
         justify-content: center;
         align-items: center;
-        gap: 8px;
+        gap: 12px;
 
         @media (min-width: 768px) {
           flex-wrap: nowrap;
-          gap: 12px;
+        }
+
+        :deep(.el-avatar) {
+          background: $primary-gradient;
         }
 
         .username {
-          color: #ffffff;
+          color: $text-primary;
           font-weight: 500;
-          font-size: 14px;
-          margin-right: 4px;
-
-          @media (min-width: 768px) {
-            font-size: 16px;
-            margin-right: 8px;
-          }
+          font-size: 15px;
         }
 
         :deep(.el-button) {
-          color: #ffffff;
-          font-size: 12px;
-
-          @media (min-width: 768px) {
-            font-size: 14px;
-          }
-
-          &:hover {
-            color: #e0e7ff;
-          }
-        }
-
-        :deep(.el-button--primary) {
-          background-color: rgba(255, 255, 255, 0.2);
-          border-color: rgba(255, 255, 255, 0.3);
-          color: #ffffff;
+          color: $text-secondary;
+          font-size: 14px;
+          font-weight: 500;
+          border-radius: $radius-full;
+          padding: 8px 16px;
+          transition: all $duration-fast $ease-in-out;
 
           &:hover {
-            background-color: rgba(255, 255, 255, 0.3);
-            border-color: rgba(255, 255, 255, 0.4);
+            color: $primary;
+            background: rgba($primary, 0.08);
           }
 
-          &.is-link {
-            background-color: transparent;
-            border-color: transparent;
+          &.el-button--danger {
+            &:hover {
+              color: $error;
+              background: rgba($error, 0.08);
+            }
           }
         }
       }
@@ -430,20 +440,26 @@ const goToNotifications = () => {
 
     // 用户信息卡片
     .user-info-card {
-      background: #ffffff;
-      border-radius: 16px;
-      padding: 24px;
+      background: $white;
+      border-radius: $radius-xl;
+      padding: 32px;
       margin-bottom: 24px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+      box-shadow: $shadow-sm;
+      border: 1px solid $border-color;
 
       .card-content {
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 16px;
+        gap: 20px;
+        margin-bottom: 24px;
 
         .user-avatar {
           flex-shrink: 0;
+
+          :deep(.el-avatar) {
+            background: $primary-gradient;
+          }
         }
 
         .user-details {
@@ -451,10 +467,11 @@ const goToNotifications = () => {
           text-align: center;
 
           h2 {
-            font-size: 24px;
-            font-weight: 700;
-            color: #1a202c;
+            font-size: 28px;
+            font-weight: 600;
+            color: $text-primary;
             margin: 0 0 12px 0;
+            letter-spacing: -0.02em;
           }
 
           .user-meta {
@@ -465,31 +482,32 @@ const goToNotifications = () => {
             margin-bottom: 12px;
 
             .member-level {
-              background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
-              color: #8b4513;
-              padding: 4px 12px;
-              border-radius: 20px;
-              font-size: 12px;
+              background: rgba($primary, 0.1);
+              color: $primary;
+              padding: 6px 16px;
+              border-radius: $radius-full;
+              font-size: 13px;
               font-weight: 600;
             }
 
             .user-id {
-              color: #718096;
-              font-size: 12px;
+              color: $text-tertiary;
+              font-size: 13px;
+              font-weight: 500;
             }
           }
 
           .member-benefits {
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-            border-radius: 12px;
-            padding: 12px;
+            background: $bg-secondary;
+            border-radius: $radius-lg;
+            padding: 16px;
             margin-top: 12px;
 
             p {
               margin: 0;
-              color: #4a5568;
-              font-size: 12px;
-              line-height: 1.4;
+              color: $text-secondary;
+              font-size: 14px;
+              line-height: 1.6;
             }
           }
         }
@@ -497,29 +515,36 @@ const goToNotifications = () => {
 
       // 账户信息面板
       .account-panel {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border-radius: 12px;
-        padding: 16px;
-        color: #ffffff;
-        text-align: center;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
 
         .account-item {
-          margin-bottom: 16px;
-
-          &:last-child {
-            margin-bottom: 0;
-          }
+          background: $bg-secondary;
+          border-radius: $radius-lg;
+          padding: 20px;
+          text-align: center;
+          height: 100px;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
 
           .account-label {
-            font-size: 12px;
-            opacity: 0.9;
-            margin-bottom: 6px;
+            font-size: 13px;
+            color: $text-secondary;
+            margin-bottom: 8px;
+            font-weight: 500;
           }
 
           .account-value {
-            font-size: 20px;
-            font-weight: 700;
-            line-height: 1;
+            font-size: 16px;
+            font-weight: 600;
+            color: $primary;
+            line-height: 1.2;
+            word-break: break-word;
+            overflow: hidden;
+            text-overflow: ellipsis;
           }
         }
       }
@@ -543,7 +568,7 @@ const goToNotifications = () => {
             }
 
             .account-value {
-              font-size: 24px;
+              font-size: 20px;
             }
           }
         }
@@ -676,6 +701,11 @@ const goToNotifications = () => {
 
             &.cyan {
               background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+              color: #ffffff;
+            }
+
+            &.gold {
+              background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
               color: #ffffff;
             }
           }

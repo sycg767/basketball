@@ -1,0 +1,501 @@
+// ============================================
+// 响应式设计系统 - Apple风格
+// ============================================
+
+// ============================================
+// 1. 断点定义
+// ============================================
+
+$breakpoint-xs: 375px;   // 小手机
+$breakpoint-sm: 640px;   // 大手机
+$breakpoint-md: 768px;   // 平板竖屏
+$breakpoint-lg: 1024px;  // 平板横屏/小笔记本
+$breakpoint-xl: 1280px;  // 桌面
+$breakpoint-2xl: 1536px; // 大屏
+
+// ============================================
+// 2. 媒体查询 Mixins
+// ============================================
+
+@mixin mobile {
+  @media (max-width: #{$breakpoint-sm - 1px}) {
+    @content;
+  }
+}
+
+@mixin tablet {
+  @media (min-width: $breakpoint-md) and (max-width: #{$breakpoint-lg - 1px}) {
+    @content;
+  }
+}
+
+@mixin desktop {
+  @media (min-width: $breakpoint-lg) {
+    @content;
+  }
+}
+
+@mixin mobile-only {
+  @media (max-width: #{$breakpoint-md - 1px}) {
+    @content;
+  }
+}
+
+@mixin tablet-up {
+  @media (min-width: $breakpoint-md) {
+    @content;
+  }
+}
+
+@mixin desktop-up {
+  @media (min-width: $breakpoint-lg) {
+    @content;
+  }
+}
+
+// ============================================
+// 3. 容器响应式
+// ============================================
+
+.container-responsive {
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 16px;
+
+  @include tablet-up {
+    padding: 0 24px;
+    max-width: 1200px;
+  }
+
+  @include desktop-up {
+    padding: 0 32px;
+    max-width: 1400px;
+  }
+}
+
+// ============================================
+// 4. 网格系统
+// ============================================
+
+.grid-responsive {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: 1fr;
+
+  @include tablet-up {
+    gap: 24px;
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @include desktop-up {
+    gap: 32px;
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.grid-2-col {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: 1fr;
+
+  @include tablet-up {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.grid-4-col {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: 1fr;
+
+  @include mobile {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @include tablet-up {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @include desktop-up {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+// ============================================
+// 5. 间距响应式
+// ============================================
+
+.spacing-responsive {
+  padding: 16px;
+
+  @include tablet-up {
+    padding: 24px;
+  }
+
+  @include desktop-up {
+    padding: 32px;
+  }
+}
+
+.gap-responsive {
+  gap: 12px;
+
+  @include tablet-up {
+    gap: 16px;
+  }
+
+  @include desktop-up {
+    gap: 24px;
+  }
+}
+
+// ============================================
+// 6. 字体响应式
+// ============================================
+
+.text-responsive-lg {
+  font-size: 24px;
+
+  @include tablet-up {
+    font-size: 32px;
+  }
+
+  @include desktop-up {
+    font-size: 40px;
+  }
+}
+
+.text-responsive-md {
+  font-size: 18px;
+
+  @include tablet-up {
+    font-size: 20px;
+  }
+
+  @include desktop-up {
+    font-size: 24px;
+  }
+}
+
+.text-responsive-sm {
+  font-size: 14px;
+
+  @include tablet-up {
+    font-size: 15px;
+  }
+
+  @include desktop-up {
+    font-size: 16px;
+  }
+}
+
+// ============================================
+// 7. 触摸优化
+// ============================================
+
+@mixin touch-target {
+  min-height: 44px;
+  min-width: 44px;
+
+  @include mobile-only {
+    min-height: 48px;
+    min-width: 48px;
+  }
+}
+
+.touch-target {
+  @include touch-target;
+}
+
+// ============================================
+// 8. 移动端隐藏/显示
+// ============================================
+
+.hide-mobile {
+  @include mobile-only {
+    display: none !important;
+  }
+}
+
+.show-mobile {
+  display: none !important;
+
+  @include mobile-only {
+    display: block !important;
+  }
+}
+
+.hide-tablet {
+  @include tablet {
+    display: none !important;
+  }
+}
+
+.show-tablet {
+  display: none !important;
+
+  @include tablet {
+    display: block !important;
+  }
+}
+
+.hide-desktop {
+  @include desktop-up {
+    display: none !important;
+  }
+}
+
+.show-desktop {
+  display: none !important;
+
+  @include desktop-up {
+    display: block !important;
+  }
+}
+
+// ============================================
+// 9. 卡片响应式
+// ============================================
+
+.card-responsive {
+  padding: 16px;
+  border-radius: 12px;
+
+  @include tablet-up {
+    padding: 20px;
+    border-radius: 16px;
+  }
+
+  @include desktop-up {
+    padding: 24px;
+    border-radius: 20px;
+  }
+}
+
+// ============================================
+// 10. 导航栏响应式
+// ============================================
+
+.nav-responsive {
+  height: 56px;
+
+  @include tablet-up {
+    height: 64px;
+  }
+
+  @include desktop-up {
+    height: 72px;
+  }
+}
+
+// ============================================
+// 11. 侧边栏响应式
+// ============================================
+
+.sidebar-responsive {
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  transform: translateX(-100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1000;
+
+  &.open {
+    transform: translateX(0);
+  }
+
+  @include desktop-up {
+    width: 260px;
+    position: relative;
+    transform: translateX(0);
+  }
+}
+
+// ============================================
+// 12. 模态框响应式
+// ============================================
+
+.modal-responsive {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  border-radius: 0;
+
+  @include tablet-up {
+    width: 90%;
+    max-width: 600px;
+    margin: 40px auto;
+    border-radius: 16px;
+  }
+
+  @include desktop-up {
+    max-width: 800px;
+    border-radius: 20px;
+  }
+}
+
+// ============================================
+// 13. 表格响应式
+// ============================================
+
+.table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+
+  @include mobile-only {
+    table {
+      font-size: 14px;
+    }
+
+    th, td {
+      padding: 8px;
+      white-space: nowrap;
+    }
+  }
+}
+
+// ============================================
+// 14. 图片响应式
+// ============================================
+
+.img-responsive {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  border-radius: 8px;
+
+  @include tablet-up {
+    border-radius: 12px;
+  }
+
+  @include desktop-up {
+    border-radius: 16px;
+  }
+}
+
+// ============================================
+// 15. Flex响应式
+// ============================================
+
+.flex-responsive {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  @include tablet-up {
+    flex-direction: row;
+    gap: 24px;
+  }
+}
+
+.flex-responsive-reverse {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 16px;
+
+  @include tablet-up {
+    flex-direction: row;
+    gap: 24px;
+  }
+}
+
+// ============================================
+// 16. 按钮组响应式
+// ============================================
+
+.button-group-responsive {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  @include tablet-up {
+    flex-direction: row;
+    gap: 16px;
+  }
+
+  button {
+    width: 100%;
+
+    @include tablet-up {
+      width: auto;
+    }
+  }
+}
+
+// ============================================
+// 17. 表单响应式
+// ============================================
+
+.form-responsive {
+  .form-row {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    @include tablet-up {
+      flex-direction: row;
+      gap: 24px;
+    }
+
+    .form-item {
+      flex: 1;
+    }
+  }
+}
+
+// ============================================
+// 18. 安全区域适配（iOS刘海屏）
+// ============================================
+
+.safe-area-top {
+  padding-top: env(safe-area-inset-top);
+}
+
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.safe-area-left {
+  padding-left: env(safe-area-inset-left);
+}
+
+.safe-area-right {
+  padding-right: env(safe-area-inset-right);
+}
+
+// ============================================
+// 19. 横屏适配
+// ============================================
+
+@mixin landscape {
+  @media (orientation: landscape) and (max-height: 600px) {
+    @content;
+  }
+}
+
+.landscape-adjust {
+  @include landscape {
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+}
+
+// ============================================
+// 20. 高分辨率屏幕优化
+// ============================================
+
+@mixin retina {
+  @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    @content;
+  }
+}
+
+.retina-border {
+  border: 1px solid #e5e5e5;
+
+  @include retina {
+    border-width: 0.5px;
+  }
+}

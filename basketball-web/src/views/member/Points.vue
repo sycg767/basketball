@@ -1,88 +1,111 @@
 <template>
   <div class="points-container">
-    <!-- 积分卡片 -->
-    <el-card class="points-card">
-      <div class="points-header">
-        <div class="points-info">
-          <div class="points-icon">
-            <el-icon><TrophyBase /></el-icon>
+    <!-- 页面头部 -->
+    <el-page-header @back="handleBack" content="我的积分" />
+
+    <!-- 积分展示卡片 - Apple风格 -->
+    <div class="points-showcase">
+      <div class="points-card-main">
+        <div class="points-background">
+          <div class="bg-circle circle-1"></div>
+          <div class="bg-circle circle-2"></div>
+          <div class="bg-circle circle-3"></div>
+        </div>
+
+        <div class="points-content">
+          <div class="points-header">
+            <div class="points-icon">
+              <el-icon><TrophyBase /></el-icon>
+            </div>
+            <el-button type="primary" @click="handleRefresh" class="refresh-btn">
+              <el-icon><Refresh /></el-icon>
+            </el-button>
           </div>
-          <div class="points-detail">
+
+          <div class="points-main">
             <div class="points-label">我的积分</div>
-            <div class="points-value">{{ myPoints }}</div>
+            <div class="points-value">{{ myPoints.toLocaleString() }}</div>
+            <div class="points-subtitle">Points Balance</div>
           </div>
         </div>
-        <el-button type="primary" @click="handleRefresh">
-          <el-icon><Refresh /></el-icon>
-          刷新
-        </el-button>
       </div>
 
-      <div class="points-tips">
-        <el-alert
-          title="积分说明"
-          type="info"
-          :closable="false"
-        >
-          <template #default>
-            <ul>
-              <li>消费满1元即可获得1积分</li>
-              <li>积分可用于兑换礼品或抵扣消费</li>
-              <li>积分有效期为1年,请及时使用</li>
-            </ul>
-          </template>
-        </el-alert>
+      <!-- 积分说明卡片 -->
+      <div class="points-tips-card">
+        <h3 class="tips-title">积分规则</h3>
+        <div class="tips-list">
+          <div class="tip-item">
+            <div class="tip-icon">
+              <el-icon><Coin /></el-icon>
+            </div>
+            <div class="tip-content">
+              <div class="tip-title">消费赚积分</div>
+              <div class="tip-desc">每消费1元获得1积分</div>
+            </div>
+          </div>
+          <div class="tip-item">
+            <div class="tip-icon">
+              <el-icon><Present /></el-icon>
+            </div>
+            <div class="tip-content">
+              <div class="tip-title">积分可兑换</div>
+              <div class="tip-desc">兑换礼品或抵扣消费</div>
+            </div>
+          </div>
+          <div class="tip-item">
+            <div class="tip-icon">
+              <el-icon><Clock /></el-icon>
+            </div>
+            <div class="tip-content">
+              <div class="tip-title">有效期1年</div>
+              <div class="tip-desc">请及时使用积分</div>
+            </div>
+          </div>
+        </div>
       </div>
-    </el-card>
+    </div>
 
     <!-- 积分明细 -->
-    <el-card class="records-card">
-      <template #header>
-        <div class="card-header">
-          <span>积分明细</span>
-          <el-radio-group v-model="filterType" size="small" @change="handleFilterChange">
-            <el-radio-button :label="0">全部</el-radio-button>
-            <el-radio-button :label="1">获得</el-radio-button>
-            <el-radio-button :label="2">消费</el-radio-button>
-          </el-radio-group>
+    <div class="records-section">
+      <div class="section-header">
+        <h2 class="section-title">积分明细</h2>
+        <el-radio-group v-model="filterType" size="default" @change="handleFilterChange" class="filter-tabs">
+          <el-radio-button :label="0">全部</el-radio-button>
+          <el-radio-button :label="1">获得</el-radio-button>
+          <el-radio-button :label="2">消费</el-radio-button>
+        </el-radio-group>
+      </div>
+
+      <div class="records-list" v-if="recordList.length > 0">
+        <div v-for="record in recordList" :key="record.id" class="record-item">
+          <div class="record-icon" :class="record.points > 0 ? 'icon-gain' : 'icon-cost'">
+            <el-icon v-if="record.points > 0"><Plus /></el-icon>
+            <el-icon v-else><Minus /></el-icon>
+          </div>
+
+          <div class="record-info">
+            <div class="record-main">
+              <span class="record-type">{{ getTypeText(record.type) }}</span>
+              <span class="record-desc">{{ record.remark }}</span>
+            </div>
+            <div class="record-meta">
+              <span class="record-time">{{ formatDate(record.createTime) }}</span>
+              <span class="record-expire" :class="getExpireClass(record.expireDate)">
+                {{ record.expireDate ? `有效期至 ${formatDate(record.expireDate)}` : '' }}
+              </span>
+            </div>
+          </div>
+
+          <div class="record-amount">
+            <div class="amount-change" :class="record.points > 0 ? 'text-success' : 'text-danger'">
+              {{ record.points > 0 ? '+' : '' }}{{ record.points }}
+            </div>
+            <div class="amount-balance">余额 {{ record.pointsAfter }}</div>
+          </div>
         </div>
-      </template>
+      </div>
 
-      <el-table :data="recordList" style="width: 100%">
-        <el-table-column label="积分变动" width="120">
-          <template #default="{ row }">
-            <span :class="row.points > 0 ? 'text-success' : 'text-danger'">
-              {{ row.points > 0 ? '+' : '' }}{{ row.points }}
-            </span>
-          </template>
-        </el-table-column>
-
-        <el-table-column label="类型" width="120">
-          <template #default="{ row }">
-            <el-tag :type="getTypeTag(row.type)">
-              {{ getTypeText(row.type) }}
-            </el-tag>
-          </template>
-        </el-table-column>
-
-        <el-table-column prop="remark" label="说明" />
-
-        <el-table-column label="积分余额" width="120">
-          <template #default="{ row }">
-            <span class="points-balance">{{ row.pointsAfter }}</span>
-          </template>
-        </el-table-column>
-
-        <el-table-column label="过期时间" width="120">
-          <template #default="{ row }">
-            <span :class="getExpireClass(row.expireDate)">
-              {{ formatDate(row.expireDate) }}
-            </span>
-          </template>
-        </el-table-column>
-
-        <el-table-column prop="createTime" label="时间" width="180" />
-      </el-table>
+      <el-empty v-else description="暂无积分记录" class="empty-records" />
 
       <!-- 分页 -->
       <el-pagination
@@ -96,17 +119,23 @@
         @size-change="handleSizeChange"
         @current-change="handlePageChange"
       />
-
-      <el-empty v-else description="暂无积分记录" />
-    </el-card>
+    </div>
   </div>
 </template>
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { TrophyBase, Refresh } from '@element-plus/icons-vue'
+import { TrophyBase, Refresh, Coin, Present, Clock, Plus, Minus } from '@element-plus/icons-vue'
 import { getMyPoints, getPointsRecords } from '@/api/member'
+
+const router = useRouter()
+
+// 返回上一页
+const handleBack = () => {
+  router.back()
+}
 
 // 我的积分
 const myPoints = ref(0)
@@ -226,113 +255,522 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
-.points-container {
-  padding: 20px;
+@use '@/styles/design-system/variables' as *;
+@use '@/styles/design-system/mixins' as *;
 
-  .points-card {
-    margin-bottom: 20px;
+.points-container {
+  min-height: 100vh;
+  background: $bg-secondary;
+  padding: $spacing-6;
+  max-width: 1400px;
+  margin: 0 auto;
+
+  // 页面头部
+  :deep(.el-page-header) {
+    margin-bottom: $spacing-6;
+    background: $white;
+    padding: $spacing-4;
+    border-radius: $radius-lg;
+    box-shadow: $shadow-sm;
+  }
+
+  // 积分展示区域
+  .points-showcase {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: $spacing-6;
+    margin-bottom: $spacing-8;
+
+    @media (max-width: 968px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  // 主积分卡片 - Apple Wallet风格
+  .points-card-main {
+    position: relative;
+    height: 280px;
+    border-radius: $radius-xl;
+    padding: $spacing-8;
+    background: linear-gradient(135deg, #FF9500 0%, #FF6B00 100%);
+    overflow: hidden;
+    box-shadow: $shadow-lg;
+    transition: $transition-base;
+
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: $shadow-xl;
+    }
+
+    .points-background {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      opacity: 0.3;
+
+      .bg-circle {
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: $backdrop-blur-sm;
+
+        &.circle-1 {
+          width: 220px;
+          height: 220px;
+          top: -90px;
+          right: -70px;
+        }
+
+        &.circle-2 {
+          width: 160px;
+          height: 160px;
+          bottom: -60px;
+          left: -50px;
+        }
+
+        &.circle-3 {
+          width: 120px;
+          height: 120px;
+          top: 35%;
+          right: 12%;
+          opacity: 0.6;
+        }
+      }
+    }
+
+    .points-content {
+      position: relative;
+      z-index: 1;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      color: $white;
+    }
 
     .points-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 20px;
+      margin-bottom: $spacing-10;
 
-      .points-info {
+      .points-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: $radius-lg;
+        background: rgba(255, 255, 255, 0.25);
+        backdrop-filter: $backdrop-blur;
         display: flex;
         align-items: center;
-        gap: 20px;
+        justify-content: center;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 
-        .points-icon {
-          width: 80px;
-          height: 80px;
-          border-radius: 50%;
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-
-          .el-icon {
-            font-size: 40px;
-            color: #fff;
-          }
+        .el-icon {
+          font-size: 32px;
+          color: $white;
         }
+      }
 
-        .points-detail {
-          .points-label {
-            font-size: 14px;
-            color: #909399;
-            margin-bottom: 5px;
-          }
+      .refresh-btn {
+        background: rgba(255, 255, 255, 0.25);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        color: $white;
+        backdrop-filter: $backdrop-blur;
+        border-radius: $radius-md;
+        transition: $transition-fast;
 
-          .points-value {
-            font-size: 36px;
-            font-weight: bold;
-            color: #303133;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-          }
+        &:hover {
+          background: rgba(255, 255, 255, 0.35);
+          transform: scale(1.05);
         }
       }
     }
 
-    .points-tips {
-      :deep(.el-alert__content) {
-        ul {
-          margin: 0;
-          padding-left: 20px;
+    .points-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
 
-          li {
-            margin-bottom: 5px;
-            font-size: 13px;
-            color: #606266;
+      .points-label {
+        font-size: $font-size-lg;
+        color: rgba(255, 255, 255, 0.95);
+        margin-bottom: $spacing-3;
+        font-weight: $font-weight-semibold;
+        letter-spacing: $letter-spacing-tight;
+      }
 
-            &:last-child {
-              margin-bottom: 0;
-            }
-          }
+      .points-value {
+        font-size: 64px;
+        font-weight: $font-weight-bold;
+        color: $white;
+        line-height: 1;
+        margin-bottom: $spacing-2;
+        text-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+        letter-spacing: -0.03em;
+      }
+
+      .points-subtitle {
+        font-size: $font-size-sm;
+        color: rgba(255, 255, 255, 0.8);
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        font-weight: $font-weight-medium;
+      }
+    }
+  }
+
+  // 积分说明卡片 - iOS风格
+  .points-tips-card {
+    background: $white;
+    border-radius: $radius-lg;
+    padding: $spacing-6;
+    box-shadow: $shadow-sm;
+    border: 1px solid $border-color;
+    transition: $transition-base;
+
+    &:hover {
+      box-shadow: $shadow-md;
+    }
+
+    .tips-title {
+      font-size: $font-size-xl;
+      font-weight: $font-weight-semibold;
+      color: $text-primary;
+      margin: 0 0 $spacing-5 0;
+      letter-spacing: $letter-spacing-tight;
+    }
+
+    .tips-list {
+      display: flex;
+      flex-direction: column;
+      gap: $spacing-4;
+    }
+
+    .tip-item {
+      display: flex;
+      align-items: flex-start;
+      gap: $spacing-3;
+      padding: $spacing-3;
+      border-radius: $radius-md;
+      transition: $transition-fast;
+
+      &:hover {
+        background: $bg-secondary;
+      }
+
+      .tip-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: $radius-md;
+        background: rgba($warning, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+
+        .el-icon {
+          font-size: 22px;
+          color: $warning;
+        }
+      }
+
+      .tip-content {
+        flex: 1;
+
+        .tip-title {
+          font-size: $font-size-base;
+          font-weight: $font-weight-semibold;
+          color: $text-primary;
+          margin-bottom: $spacing-1;
+          letter-spacing: $letter-spacing-tight;
+        }
+
+        .tip-desc {
+          font-size: $font-size-sm;
+          color: $text-secondary;
+          line-height: $line-height-normal;
         }
       }
     }
   }
 
-  .records-card {
-    .card-header {
+  // 积分明细区域 - iOS风格
+  .records-section {
+    background: $white;
+    border-radius: $radius-lg;
+    padding: $spacing-6;
+    box-shadow: $shadow-sm;
+    border: 1px solid $border-color;
+
+    .section-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      margin-bottom: $spacing-6;
+      flex-wrap: wrap;
+      gap: $spacing-4;
+
+      .section-title {
+        font-size: $font-size-xl;
+        font-weight: $font-weight-semibold;
+        color: $text-primary;
+        margin: 0;
+        letter-spacing: $letter-spacing-tight;
+      }
+
+      .filter-tabs {
+        :deep(.el-radio-button__inner) {
+          border-radius: $radius-sm;
+          padding: $spacing-2 $spacing-5;
+          border: 1px solid $border-color;
+          transition: $transition-fast;
+          font-weight: $font-weight-medium;
+          font-size: $font-size-sm;
+
+          &:hover {
+            color: $primary;
+            border-color: $primary;
+            background: rgba($primary, 0.05);
+          }
+        }
+
+        :deep(.el-radio-button__original-radio:checked + .el-radio-button__inner) {
+          background: $primary;
+          border-color: $primary;
+          color: $white;
+          box-shadow: 0 2px 8px rgba($primary, 0.25);
+        }
+      }
     }
 
-    .text-success {
-      color: #67c23a;
-      font-weight: bold;
+    .records-list {
+      display: flex;
+      flex-direction: column;
+      gap: $spacing-3;
     }
 
-    .text-danger {
-      color: #f56c6c;
-      font-weight: bold;
+    .record-item {
+      display: flex;
+      align-items: center;
+      gap: $spacing-4;
+      padding: $spacing-4;
+      background: $bg-secondary;
+      border-radius: $radius-md;
+      transition: $transition-fast;
+      border: 1px solid transparent;
+
+      &:hover {
+        background: $white;
+        border-color: $border-color;
+        box-shadow: $shadow-sm;
+        transform: translateX(2px);
+      }
+
+      .record-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: $radius-md;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+
+        .el-icon {
+          font-size: 22px;
+        }
+
+        &.icon-gain {
+          background: rgba($success, 0.12);
+          color: $success;
+        }
+
+        &.icon-cost {
+          background: rgba($error, 0.12);
+          color: $error;
+        }
+      }
+
+      .record-info {
+        flex: 1;
+        min-width: 0;
+
+        .record-main {
+          display: flex;
+          align-items: center;
+          gap: $spacing-3;
+          margin-bottom: $spacing-1;
+
+          .record-type {
+            font-size: $font-size-base;
+            font-weight: $font-weight-semibold;
+            color: $text-primary;
+            letter-spacing: $letter-spacing-tight;
+          }
+
+          .record-desc {
+            font-size: $font-size-sm;
+            color: $text-secondary;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+        }
+
+        .record-meta {
+          display: flex;
+          align-items: center;
+          gap: $spacing-4;
+          font-size: $font-size-xs;
+          color: $text-tertiary;
+
+          .record-expire {
+            &.text-warning {
+              color: $warning;
+              font-weight: $font-weight-medium;
+            }
+
+            &.text-expired {
+              color: $error;
+              text-decoration: line-through;
+            }
+          }
+        }
+      }
+
+      .record-amount {
+        text-align: right;
+        flex-shrink: 0;
+
+        .amount-change {
+          font-size: $font-size-xl;
+          font-weight: $font-weight-bold;
+          margin-bottom: $spacing-1;
+          letter-spacing: $letter-spacing-tight;
+
+          &.text-success {
+            color: $success;
+          }
+
+          &.text-danger {
+            color: $error;
+          }
+        }
+
+        .amount-balance {
+          font-size: $font-size-xs;
+          color: $text-tertiary;
+          font-weight: $font-weight-medium;
+        }
+      }
     }
 
-    .text-warning {
-      color: #e6a23c;
-    }
-
-    .text-expired {
-      color: #f56c6c;
-      text-decoration: line-through;
-    }
-
-    .points-balance {
-      font-weight: 500;
-      color: #409eff;
+    .empty-records {
+      padding: $spacing-12 $spacing-5;
     }
 
     .pagination {
       display: flex;
       justify-content: center;
-      margin-top: 20px;
+      margin-top: $spacing-6;
+    }
+  }
+
+  // 响应式设计
+  @media (max-width: 768px) {
+    padding: $spacing-4;
+
+    :deep(.el-page-header) {
+      padding: $spacing-3;
+    }
+
+    .points-showcase {
+      gap: $spacing-4;
+      margin-bottom: $spacing-6;
+    }
+
+    .points-card-main {
+      height: 240px;
+      padding: $spacing-6;
+
+      .points-header {
+        margin-bottom: $spacing-6;
+
+        .points-icon {
+          width: 52px;
+          height: 52px;
+
+          .el-icon {
+            font-size: 28px;
+          }
+        }
+      }
+
+      .points-main .points-value {
+        font-size: 48px;
+      }
+    }
+
+    .points-tips-card {
+      padding: $spacing-4;
+
+      .tips-title {
+        font-size: $font-size-lg;
+        margin-bottom: $spacing-4;
+      }
+
+      .tip-item {
+        padding: $spacing-2;
+
+        .tip-icon {
+          width: 40px;
+          height: 40px;
+
+          .el-icon {
+            font-size: 20px;
+          }
+        }
+      }
+    }
+
+    .records-section {
+      padding: $spacing-4;
+
+      .section-header {
+        gap: $spacing-3;
+
+        .section-title {
+          font-size: $font-size-lg;
+        }
+      }
+
+      .record-item {
+        flex-wrap: wrap;
+        padding: $spacing-3;
+
+        .record-icon {
+          width: 44px;
+          height: 44px;
+
+          .el-icon {
+            font-size: 20px;
+          }
+        }
+
+        .record-amount {
+          width: 100%;
+          text-align: left;
+          margin-top: $spacing-2;
+          padding-top: $spacing-2;
+          border-top: 1px solid $border-color;
+
+          .amount-change {
+            font-size: $font-size-lg;
+          }
+        }
+      }
     }
   }
 }

@@ -1,0 +1,424 @@
+// ============================================
+// Apple Design System - Mixins
+// 可复用的样式混合宏
+// ============================================
+
+@use './variables' as *;
+
+// ============================================
+// 响应式设计 (Responsive Design)
+// ============================================
+
+// 媒体查询混合宏
+@mixin respond-to($breakpoint) {
+  @if $breakpoint == xs {
+    @media (min-width: $breakpoint-xs) { @content; }
+  }
+  @else if $breakpoint == sm {
+    @media (min-width: $breakpoint-sm) { @content; }
+  }
+  @else if $breakpoint == md {
+    @media (min-width: $breakpoint-md) { @content; }
+  }
+  @else if $breakpoint == lg {
+    @media (min-width: $breakpoint-lg) { @content; }
+  }
+  @else if $breakpoint == xl {
+    @media (min-width: $breakpoint-xl) { @content; }
+  }
+  @else if $breakpoint == 2xl {
+    @media (min-width: $breakpoint-2xl) { @content; }
+  }
+}
+
+// ============================================
+// 毛玻璃效果 (Frosted Glass)
+// ============================================
+
+@mixin frosted-glass($blur: $backdrop-blur, $opacity: 0.8) {
+  background: rgba(255, 255, 255, $opacity);
+  backdrop-filter: $blur;
+  -webkit-backdrop-filter: $blur;
+}
+
+@mixin frosted-glass-dark($blur: $backdrop-blur, $opacity: 0.8) {
+  background: rgba(0, 0, 0, $opacity);
+  backdrop-filter: $blur;
+  -webkit-backdrop-filter: $blur;
+}
+
+// ============================================
+// 卡片样式 (Card Styles)
+// ============================================
+
+@mixin card-base {
+  background: $bg-primary;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+  transition: $transition-base;
+}
+
+@mixin card-hover {
+  box-shadow: $shadow-hover;
+  transform: translateY(-2px);
+}
+
+@mixin card-active {
+  box-shadow: $shadow-active;
+  transform: translateY(0);
+}
+
+// ============================================
+// 按钮样式 (Button Styles)
+// ============================================
+
+@mixin button-base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-3 $spacing-6;
+  font-size: $font-size-base;
+  font-weight: $font-weight-semibold;
+  line-height: $line-height-tight;
+  border-radius: $radius-sm;
+  border: none;
+  cursor: pointer;
+  transition: $transition-fast;
+  user-select: none;
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba($primary, 0.2);
+  }
+
+  &:disabled {
+    opacity: $opacity-disabled;
+    cursor: not-allowed;
+  }
+}
+
+@mixin button-primary {
+  background: $primary;
+  color: #FFFFFF;
+
+  &:hover:not(:disabled) {
+    background: $primary-hover;
+    transform: translateY(-1px);
+    box-shadow: $shadow-sm;
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: none;
+  }
+}
+
+@mixin button-secondary {
+  background: $gray-100;
+  color: $gray-900;
+
+  &:hover:not(:disabled) {
+    background: $gray-200;
+  }
+
+  &:active:not(:disabled) {
+    background: $gray-300;
+  }
+}
+
+@mixin button-ghost {
+  background: transparent;
+  color: $primary;
+  border: $border-width solid $primary;
+
+  &:hover:not(:disabled) {
+    background: rgba($primary, 0.1);
+  }
+
+  &:active:not(:disabled) {
+    background: rgba($primary, 0.2);
+  }
+}
+
+// ============================================
+// 文本样式 (Text Styles)
+// ============================================
+
+@mixin text-ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@mixin text-clamp($lines: 2) {
+  display: -webkit-box;
+  -webkit-line-clamp: $lines;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+@mixin text-heading-1 {
+  font-size: $font-size-4xl;
+  font-weight: $font-weight-bold;
+  line-height: $line-height-tight;
+  letter-spacing: $letter-spacing-tight;
+  color: $gray-900;
+}
+
+@mixin text-heading-2 {
+  font-size: $font-size-3xl;
+  font-weight: $font-weight-bold;
+  line-height: $line-height-tight;
+  letter-spacing: $letter-spacing-tight;
+  color: $gray-900;
+}
+
+@mixin text-heading-3 {
+  font-size: $font-size-2xl;
+  font-weight: $font-weight-semibold;
+  line-height: $line-height-normal;
+  color: $gray-800;
+}
+
+@mixin text-body {
+  font-size: $font-size-base;
+  font-weight: $font-weight-regular;
+  line-height: $line-height-relaxed;
+  color: $gray-600;
+}
+
+@mixin text-caption {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-regular;
+  line-height: $line-height-normal;
+  color: $gray-500;
+}
+
+// ============================================
+// 布局工具 (Layout Utilities)
+// ============================================
+
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+@mixin absolute-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+@mixin container {
+  width: 100%;
+  max-width: $container-xl;
+  margin: 0 auto;
+  padding: 0 $spacing-6;
+
+  @include respond-to(md) {
+    padding: 0 $spacing-8;
+  }
+}
+
+// ============================================
+// 滚动条样式 (Scrollbar)
+// ============================================
+
+@mixin scrollbar-thin {
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: $gray-300;
+    border-radius: $radius-full;
+
+    &:hover {
+      background-color: $gray-400;
+    }
+  }
+
+  &::-webkit-scrollbar-track {
+    background-color: transparent;
+  }
+}
+
+@mixin scrollbar-hidden {
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+// ============================================
+// 动画效果 (Animations)
+// ============================================
+
+@mixin fade-in {
+  animation: fadeIn $duration-base $ease-out;
+}
+
+@mixin slide-up {
+  animation: slideUp $duration-base $ease-out;
+}
+
+@mixin scale-in {
+  animation: scaleIn $duration-fast $ease-spring;
+}
+
+// 关键帧动画
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+// ============================================
+// 表单样式 (Form Styles)
+// ============================================
+
+@mixin input-base {
+  width: 100%;
+  padding: $spacing-3 $spacing-4;
+  font-size: $font-size-base;
+  font-family: $font-family;
+  color: $gray-900;
+  background: $bg-primary;
+  border: $border-width solid $border-color;
+  border-radius: $radius-sm;
+  transition: $transition-fast;
+
+  &:hover {
+    border-color: $border-color-dark;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: $primary;
+    box-shadow: 0 0 0 4px rgba($primary, 0.1);
+  }
+
+  &:disabled {
+    background: $gray-50;
+    color: $gray-400;
+    cursor: not-allowed;
+  }
+
+  &::placeholder {
+    color: $gray-400;
+  }
+}
+
+// ============================================
+// 标签样式 (Tag/Badge Styles)
+// ============================================
+
+@mixin tag-base {
+  display: inline-flex;
+  align-items: center;
+  padding: $spacing-1 $spacing-3;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  line-height: $line-height-tight;
+  border-radius: $radius-full;
+  white-space: nowrap;
+}
+
+@mixin tag-primary {
+  background: rgba($primary, 0.1);
+  color: $primary;
+}
+
+@mixin tag-success {
+  background: rgba($success, 0.1);
+  color: $success;
+}
+
+@mixin tag-warning {
+  background: rgba($warning, 0.1);
+  color: $warning;
+}
+
+@mixin tag-error {
+  background: rgba($error, 0.1);
+  color: $error;
+}
+
+// ============================================
+// 图片样式 (Image Styles)
+// ============================================
+
+@mixin image-cover {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+@mixin image-contain {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+}
+
+// ============================================
+// 遮罩层 (Overlay)
+// ============================================
+
+@mixin overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: $bg-overlay;
+}
+
+@mixin overlay-gradient {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 0.6) 100%
+  );
+}

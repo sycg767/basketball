@@ -97,61 +97,6 @@
 
                 <el-divider />
 
-                <!-- 预订面板 -->
-                <div v-if="userStore.isLogin && venueDetail.status === 1" class="booking-panel">
-                  <h3 class="panel-title">立即预订</h3>
-
-                  <!-- 日期选择 -->
-                  <div class="booking-form">
-                    <el-form :model="bookingForm" label-width="80px">
-                      <el-form-item label="选择日期">
-                        <el-date-picker
-                          v-model="bookingForm.date"
-                          type="date"
-                          placeholder="请选择日期"
-                          :disabled-date="disabledDate"
-                          style="width: 100%"
-                        />
-                      </el-form-item>
-
-                      <el-form-item label="时间段">
-                        <el-time-picker
-                          v-model="bookingForm.startTime"
-                          placeholder="开始时间"
-                          format="HH:mm"
-                          value-format="HH:mm"
-                          style="width: 48%; margin-right: 4%"
-                        />
-                        <span style="margin: 0 4px">至</span>
-                        <el-time-picker
-                          v-model="bookingForm.endTime"
-                          placeholder="结束时间"
-                          format="HH:mm"
-                          value-format="HH:mm"
-                          style="width: 48%"
-                          :disabled="!bookingForm.startTime"
-                        />
-                      </el-form-item>
-
-                      <el-form-item label="预订备注">
-                        <el-input
-                          v-model="bookingForm.remark"
-                          type="textarea"
-                          :rows="2"
-                          placeholder="请输入特殊要求（选填）"
-                        />
-                      </el-form-item>
-
-                      <el-form-item>
-                        <el-button type="primary" @click="confirmBooking" :loading="bookingLoading">
-                          确认预订
-                        </el-button>
-                        <el-button @click="resetBookingForm">重置</el-button>
-                      </el-form-item>
-                    </el-form>
-                  </div>
-                </div>
-
                 <div class="action-buttons">
                   <el-button
                     v-if="venueDetail.status === 1"
@@ -217,13 +162,11 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, reactive, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import { getVenueDetail, getVenuePrices } from '@/api/venue';
 import { useUserStore } from '@/store/modules/user';
-import request from '@/utils/request';
-import { getMyBookingList, checkVenueAvailable } from '@/api/booking';
 
 const route = useRoute();
 const router = useRouter();
@@ -314,93 +257,6 @@ const fetchVenuePrices = async (venueId) => {
   }
 };
 
-// 预订表单
-const bookingForm = reactive({
-  date: '',
-  startTime: '',
-  endTime: '',
-  remark: ''
-});
-
-const bookingLoading = ref(false);
-
-// 禁用过去的日期
-const disabledDate = (time) => {
-  return time.getTime() < Date.now() - 24 * 60 * 60 * 1000;
-};
-
-// 重置预订表单
-const resetBookingForm = () => {
-  bookingForm.date = '';
-  bookingForm.startTime = '';
-  bookingForm.endTime = '';
-  bookingForm.remark = '';
-};
-
-// 确认预订
-const confirmBooking = async () => {
-  if (!bookingForm.date || !bookingForm.startTime || !bookingForm.endTime) {
-    ElMessage.warning('请选择预订日期和时间段');
-    return;
-  }
-
-  if (bookingForm.startTime >= bookingForm.endTime) {
-    ElMessage.warning('结束时间必须晚于开始时间');
-    return;
-  }
-
-  bookingLoading.value = true;
-  try {
-    const bookingData = {
-      venueId: venueDetail.value.id,
-      venueName: venueDetail.value.venueName,
-      date: bookingForm.date,
-      startTime: bookingForm.startTime,
-      endTime: bookingForm.endTime,
-      remark: bookingForm.remark || '',
-      totalPrice: calculateTotalPrice(bookingForm.startTime, bookingForm.endTime, priceList.value)
-    };
-
-    const res = await request.post('/api/booking', bookingData);
-    if (res.code === 200) {
-      ElMessage.success('预订成功');
-      resetBookingForm();
-      router.push(`/booking/list`);
-    } else {
-      ElMessage.error(res.msg || '预订失败');
-    }
-  } catch (error) {
-    console.error('预订失败：', error);
-    ElMessage.error('预订失败');
-  } finally {
-    bookingLoading.value = false;
-  }
-};
-
-// 计算总价格
-const calculateTotalPrice = (startTime, endTime, priceList) => {
-  if (!priceList || priceList.length === 0) return 0;
-
-  // 简化价格计算逻辑：根据时间段匹配价格
-  const hourStart = parseInt(startTime.split(':')[0]);
-  const hourEnd = parseInt(endTime.split(':')[0]);
-
-  let total = 0;
-  for (let hour = hourStart; hour < hourEnd; hour++) {
-    // 查找对应时段的价格（简化处理）
-    const priceItem = priceList.find(item => {
-      const itemHourStart = parseInt(item.startTime.split(':')[0]);
-      return itemHourStart === hour;
-    });
-    if (priceItem) {
-      // 判断是否为会员
-      const memberPrice = userStore.isMember ? priceItem.memberPrice : priceItem.price;
-      total += memberPrice;
-    }
-  }
-  return total;
-};
-
 // 返回
 const handleBack = () => {
   router.back();
@@ -418,59 +274,106 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
-.venue-detail-container {
-  padding: 20px;
+@use '@/styles/design-system/variables' as *;
+@use '@/styles/design-system/mixins' as *;
 
-  .page-title {
-    font-size: 18px;
-    font-weight: 600;
-    color: #303133;
+.venue-detail-container {
+  @include container;
+  padding: $spacing-8 $spacing-6;
+  min-height: 100vh;
+  background: $bg-secondary;
+
+  :deep(.el-page-header) {
+    margin-bottom: $spacing-6;
+
+    .el-page-header__back {
+      color: $primary;
+      font-weight: $font-weight-medium;
+      transition: $transition-fast;
+
+      &:hover {
+        color: $primary-hover;
+      }
+    }
+
+    .page-title {
+      @include text-heading-3;
+      font-size: $font-size-xl;
+    }
   }
 
   .detail-content {
-    margin-top: 20px;
-
     .info-card,
     .price-card {
-      margin-bottom: 20px;
+      @include card-base;
+      margin-bottom: $spacing-6;
+      border: none;
 
-      .card-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+      :deep(.el-card__header) {
+        padding: $spacing-5 $spacing-6;
+        border-bottom: 1px solid $border-color;
+        background: $bg-primary;
+
+        .card-header {
+          @include flex-between;
+          font-size: $font-size-lg;
+          font-weight: $font-weight-semibold;
+          color: $text-primary;
+        }
+      }
+
+      :deep(.el-card__body) {
+        padding: $spacing-6;
       }
     }
 
     .venue-images {
       .main-image {
         width: 100%;
-        height: 400px;
-        border-radius: 8px;
+        height: 420px;
+        border-radius: $radius-lg;
         overflow: hidden;
+        background: $gray-100;
+        box-shadow: $shadow-sm;
+
+        :deep(.el-image__inner) {
+          @include image-cover;
+        }
       }
 
       .thumbnail-list {
         display: flex;
-        gap: 10px;
-        margin-top: 10px;
+        gap: $spacing-3;
+        margin-top: $spacing-4;
 
         .thumbnail-item {
-          width: 80px;
-          height: 80px;
-          border-radius: 4px;
+          width: 88px;
+          height: 88px;
+          border-radius: $radius-md;
           overflow: hidden;
           cursor: pointer;
           border: 2px solid transparent;
-          transition: all 0.3s;
+          transition: all $duration-fast $ease-out;
+          background: $gray-100;
 
-          &:hover,
+          &:hover {
+            border-color: $primary;
+            transform: translateY(-2px);
+            box-shadow: $shadow-sm;
+          }
+
           &.active {
-            border-color: #409eff;
+            border-color: $primary;
+            box-shadow: 0 0 0 4px rgba($primary, 0.1);
           }
 
           .el-image {
             width: 100%;
             height: 100%;
+
+            :deep(.el-image__inner) {
+              @include image-cover;
+            }
           }
         }
       }
@@ -478,67 +381,119 @@ onMounted(() => {
 
     .venue-info-detail {
       .venue-name {
-        font-size: 28px;
-        font-weight: 600;
-        color: #303133;
-        margin-bottom: 10px;
+        @include text-heading-1;
+        font-size: $font-size-3xl;
+        margin-bottom: $spacing-3;
       }
 
       .venue-code {
-        font-size: 14px;
-        color: #909399;
-        margin-bottom: 0;
+        @include text-caption;
+        @include tag-base;
+        display: inline-block;
+        background: $gray-100;
+        margin-bottom: $spacing-5;
+      }
+
+      :deep(.el-divider) {
+        margin: $spacing-6 0;
+        border-color: $border-color;
       }
 
       .info-row {
         display: flex;
-        margin-bottom: 15px;
+        margin-bottom: $spacing-4;
 
         label {
-          min-width: 100px;
-          font-weight: 600;
-          color: #606266;
+          min-width: 110px;
+          font-weight: $font-weight-semibold;
+          color: $text-secondary;
+          font-size: $font-size-sm;
         }
 
         span {
-          color: #303133;
+          color: $text-primary;
+          font-size: $font-size-base;
         }
 
         .facilities {
           display: flex;
           flex-wrap: wrap;
-          gap: 8px;
+          gap: $spacing-2;
+
+          .el-tag {
+            @include tag-base;
+            background: $gray-100;
+            color: $text-secondary;
+            border: none;
+          }
         }
 
         .description {
           flex: 1;
-          line-height: 1.6;
-          color: #606266;
+          @include text-body;
+          line-height: $line-height-relaxed;
           margin: 0;
         }
       }
 
       .action-buttons {
         display: flex;
-        gap: 10px;
+        gap: $spacing-4;
+        margin-top: $spacing-6;
 
         .el-button {
           flex: 1;
+          @include button-base;
+          height: 48px;
+          font-size: $font-size-base;
+
+          &.el-button--primary {
+            @include button-primary;
+          }
+
+          &:not(.el-button--primary) {
+            @include button-secondary;
+          }
         }
       }
     }
 
     .price-list {
+      :deep(.el-table) {
+        border-radius: $radius-md;
+        overflow: hidden;
+
+        th {
+          background: $gray-50;
+          color: $text-secondary;
+          font-weight: $font-weight-semibold;
+          font-size: $font-size-sm;
+        }
+
+        td {
+          color: $text-primary;
+          font-size: $font-size-sm;
+        }
+
+        .el-table__row {
+          transition: $transition-fast;
+
+          &:hover {
+            background: $gray-50;
+          }
+        }
+      }
+
       .price {
-        color: #f56c6c;
-        font-weight: 600;
-        font-size: 16px;
+        color: $error;
+        font-weight: $font-weight-bold;
+        font-size: $font-size-lg;
       }
 
       .member-price {
-        color: #67c23a;
-        font-weight: 600;
-        font-size: 16px;
+        color: $success;
+        font-weight: $font-weight-bold;
+        font-size: $font-size-lg;
       }
     }
   }

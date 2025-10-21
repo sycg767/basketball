@@ -68,6 +68,7 @@ public class Booking extends BaseEntity {
     @Schema(description = "支付方式：1-在线支付，2-余额，3-会员卡，4-现场支付")
     private Integer paymentMethod;
 
+
     @Schema(description = "状态：0-待支付，1-已支付，2-已取消，3-已完成，4-已退款，5-超时取消")
     private Integer status;
 

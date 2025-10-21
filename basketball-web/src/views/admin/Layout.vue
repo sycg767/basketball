@@ -12,9 +12,6 @@
           :default-active="activeMenu"
           :collapse="isCollapse"
           :router="true"
-          background-color="#304156"
-          text-color="#bfcbd9"
-          active-text-color="#409eff"
         >
           <el-menu-item index="/admin/dashboard">
             <el-icon><DataAnalysis /></el-icon>
@@ -208,57 +205,130 @@ const handleCommand = (command) => {
 </script>
 
 <style lang="scss" scoped>
+@use '@/styles/design-system/variables' as *;
+
 .admin-layout {
   height: 100vh;
+  background-color: $bg-secondary;
 
   .el-container {
     height: 100%;
   }
 
   .sidebar {
-    background-color: #304156;
-    transition: width 0.3s;
+    background-color: $white;
+    border-right: 1px solid $border-color;
+    transition: width 0.3s $ease-in-out;
+    box-shadow: $shadow-sm;
 
     .logo {
-      height: 60px;
+      height: 64px;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 10px;
-      background-color: #2b3a4b;
+      gap: 12px;
+      padding: 0 16px;
+      border-bottom: 1px solid $border-color;
+
+      .el-icon {
+        color: $primary !important;
+      }
 
       h2 {
-        color: #ffffff;
-        font-size: 18px;
+        color: $text-primary;
+        font-size: 17px;
         font-weight: 600;
         margin: 0;
+        letter-spacing: -0.02em;
       }
     }
 
-    .el-menu {
+    :deep(.el-menu) {
       border-right: none;
+      background-color: transparent;
+      padding: 8px;
+
+      .el-menu-item,
+      .el-sub-menu__title {
+        height: 44px;
+        line-height: 44px;
+        border-radius: $radius-md;
+        margin-bottom: 4px;
+        color: $text-secondary;
+        transition: all $duration-fast $ease-in-out;
+
+        &:hover {
+          background-color: rgba($primary, 0.08);
+          color: $primary;
+        }
+
+        &.is-active {
+          background-color: rgba($primary, 0.12);
+          color: $primary;
+          font-weight: 500;
+        }
+
+        .el-icon {
+          color: inherit;
+        }
+      }
+
+      .el-sub-menu {
+        .el-menu-item {
+          height: 40px;
+          line-height: 40px;
+          padding-left: 48px !important;
+        }
+      }
     }
   }
 
   .header {
-    background-color: #ffffff;
-    border-bottom: 1px solid #e6e6e6;
+    background-color: $white;
+    border-bottom: 1px solid $border-color;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 20px;
+    padding: 0 24px;
+    height: 64px;
+    backdrop-filter: blur(10px);
 
     .header-left {
       display: flex;
       align-items: center;
-      gap: 20px;
+      gap: 24px;
 
       .collapse-icon {
         font-size: 20px;
         cursor: pointer;
+        color: $text-secondary;
+        transition: all $duration-fast $ease-in-out;
+        padding: 8px;
+        border-radius: $radius-sm;
 
         &:hover {
-          color: #409eff;
+          color: $primary;
+          background-color: rgba($primary, 0.08);
+        }
+      }
+
+      :deep(.el-breadcrumb) {
+        font-size: 14px;
+
+        .el-breadcrumb__item {
+          .el-breadcrumb__inner {
+            color: $text-secondary;
+            font-weight: 400;
+
+            &:hover {
+              color: $primary;
+            }
+          }
+
+          &:last-child .el-breadcrumb__inner {
+            color: $text-primary;
+            font-weight: 500;
+          }
         }
       }
     }
@@ -267,24 +337,29 @@ const handleCommand = (command) => {
       .user-dropdown {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 10px;
         cursor: pointer;
+        padding: 6px 12px;
+        border-radius: $radius-md;
+        transition: all $duration-fast $ease-in-out;
 
         .username {
           font-size: 14px;
-          color: #606266;
+          color: $text-primary;
+          font-weight: 500;
         }
 
         &:hover {
-          color: #409eff;
+          background-color: $bg-secondary;
         }
       }
     }
   }
 
   .main-content {
-    background-color: #f0f2f5;
-    padding: 20px;
+    background-color: $bg-secondary;
+    padding: 24px;
+    overflow-y: auto;
   }
 }
 </style>

@@ -358,211 +358,362 @@ onMounted(() => {
 });
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@use '@/styles/design-system/variables' as *;
+@use '@/styles/design-system/mixins' as *;
+
 .course-detail-container {
-  padding: 20px;
-  max-width: 1200px;
-  margin: 0 auto;
-}
+  @include container;
+  padding: $spacing-8 $spacing-6;
+  min-height: 100vh;
+  background: $bg-secondary;
 
-.course-card {
-  margin-bottom: 20px;
-}
+  .course-card {
+    @include card-base;
+    margin-bottom: $spacing-6;
+    border: none;
 
-.course-header {
-  display: flex;
-  gap: 30px;
-  margin-bottom: 20px;
-}
+    :deep(.el-card__body) {
+      padding: $spacing-8;
+    }
 
-.course-cover {
-  flex-shrink: 0;
-  width: 400px;
-  height: 300px;
-  border-radius: 8px;
-  overflow: hidden;
-}
+    .course-header {
+      display: flex;
+      gap: $spacing-8;
+      margin-bottom: $spacing-6;
 
-.cover-image {
-  width: 100%;
-  height: 100%;
-}
+      @include respond-to(md) {
+        flex-direction: row;
+      }
+    }
 
-.image-slot {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 100%;
-  background: var(--el-fill-color-light);
-  color: var(--el-text-color-secondary);
-  font-size: 50px;
-}
+    .course-cover {
+      flex-shrink: 0;
+      width: 100%;
+      max-width: 440px;
+      height: 330px;
+      border-radius: $radius-lg;
+      overflow: hidden;
+      background: $gray-100;
+      box-shadow: $shadow-md;
 
-.course-basic-info {
-  flex: 1;
-}
+      .cover-image {
+        width: 100%;
+        height: 100%;
 
-.course-header-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
+        :deep(.el-image__inner) {
+          @include image-cover;
+        }
+      }
 
-.course-name {
-  font-size: 28px;
-  font-weight: bold;
-  margin: 0;
-  color: #303133;
-}
+      .image-slot {
+        @include flex-center;
+        width: 100%;
+        height: 100%;
+        background: $gray-100;
+        color: $text-tertiary;
+        font-size: $font-size-5xl;
+      }
+    }
 
-.course-stats {
-  display: flex;
-  gap: 30px;
-  margin-bottom: 20px;
-  padding: 15px;
-  background: #f5f7fa;
-  border-radius: 8px;
-}
+    .course-basic-info {
+      flex: 1;
+      min-width: 0;
 
-.stat-item {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  color: #606266;
-  font-size: 14px;
-}
+      .course-header-top {
+        @include flex-between;
+        margin-bottom: $spacing-5;
+        gap: $spacing-4;
 
-.course-attributes {
-  margin-bottom: 20px;
-}
+        .course-name {
+          @include text-heading-1;
+          font-size: $font-size-3xl;
+          margin: 0;
+          flex: 1;
+        }
 
-.attr-row {
-  display: flex;
-  align-items: center;
-  margin-bottom: 12px;
-  font-size: 15px;
-}
+        .el-tag {
+          @include tag-base;
+          font-size: $font-size-sm;
+          padding: $spacing-2 $spacing-4;
+          flex-shrink: 0;
+        }
+      }
 
-.attr-label {
-  color: #909399;
-  margin-right: 10px;
-  min-width: 80px;
-}
+      .course-stats {
+        display: flex;
+        flex-wrap: wrap;
+        gap: $spacing-6;
+        margin-bottom: $spacing-5;
+        padding: $spacing-4;
+        background: $gray-50;
+        border-radius: $radius-md;
 
-.course-price {
-  padding: 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 8px;
-  color: white;
-}
+        .stat-item {
+          display: flex;
+          align-items: center;
+          gap: $spacing-2;
+          color: $text-secondary;
+          font-size: $font-size-sm;
 
-.price-item {
-  display: flex;
-  align-items: center;
-  margin-bottom: 10px;
-}
+          .el-icon {
+            font-size: $font-size-lg;
+            color: $text-tertiary;
+          }
+        }
+      }
 
-.price-item:last-child {
-  margin-bottom: 0;
-}
+      .course-attributes {
+        margin-bottom: $spacing-5;
 
-.price-label {
-  font-size: 14px;
-  margin-right: 10px;
-}
+        .attr-row {
+          display: flex;
+          align-items: center;
+          margin-bottom: $spacing-3;
+          font-size: $font-size-base;
 
-.price-value {
-  font-size: 28px;
-  font-weight: bold;
-}
+          &:last-child {
+            margin-bottom: 0;
+          }
 
-.price-value.member {
-  color: #ffd700;
-}
+          .attr-label {
+            color: $text-secondary;
+            margin-right: $spacing-3;
+            min-width: 90px;
+            font-weight: $font-weight-medium;
+          }
 
-.course-description h3,
-.course-syllabus h3,
-.course-video h3 {
-  font-size: 20px;
-  font-weight: bold;
-  margin: 0 0 15px 0;
-  color: #303133;
-}
+          span {
+            color: $text-primary;
+          }
 
-.course-description p {
-  line-height: 1.8;
-  color: #606266;
-  margin: 0;
-}
+          .el-tag {
+            @include tag-base;
+          }
+        }
+      }
 
-.course-syllabus ul {
-  margin: 0;
-  padding-left: 20px;
-}
+      .course-price {
+        padding: $spacing-6;
+        background: $primary-gradient;
+        border-radius: $radius-lg;
+        color: $white;
+        box-shadow: $shadow-md;
 
-.course-syllabus li {
-  line-height: 2;
-  color: #606266;
-  margin-bottom: 8px;
-}
+        .price-item {
+          display: flex;
+          align-items: center;
+          margin-bottom: $spacing-3;
 
-.video-player {
-  width: 100%;
-  max-height: 500px;
-  border-radius: 8px;
-}
+          &:last-child {
+            margin-bottom: 0;
+          }
 
-.schedule-card {
-  margin-bottom: 20px;
-}
+          .price-label {
+            font-size: $font-size-sm;
+            margin-right: $spacing-3;
+            opacity: 0.9;
+          }
 
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
+          .price-value {
+            font-size: $font-size-4xl;
+            font-weight: $font-weight-bold;
 
-.schedule-list {
-  display: grid;
-  gap: 15px;
-}
+            &.member {
+              color: #FFD700;
+            }
+          }
+        }
+      }
+    }
 
-.schedule-item {
-  cursor: pointer;
-}
+    :deep(.el-divider) {
+      margin: $spacing-8 0;
+      border-color: $border-color;
+    }
 
-.schedule-item :deep(.el-card__body) {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px;
-}
+    .course-description,
+    .course-syllabus,
+    .course-video {
+      h3 {
+        @include text-heading-3;
+        margin: 0 0 $spacing-5 0;
+      }
 
-.schedule-info {
-  display: flex;
-  gap: 30px;
-  flex: 1;
-}
+      p {
+        @include text-body;
+        line-height: $line-height-relaxed;
+        margin: 0;
+      }
+    }
 
-.schedule-date,
-.schedule-time,
-.schedule-venue,
-.schedule-seats {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  color: #606266;
-}
+    .course-syllabus {
+      ul {
+        margin: 0;
+        padding-left: $spacing-6;
 
-.schedule-action {
-  margin-left: 20px;
-}
+        li {
+          line-height: 2;
+          color: $text-secondary;
+          margin-bottom: $spacing-2;
+          font-size: $font-size-base;
 
-.price-text {
-  font-size: 20px;
-  font-weight: bold;
-  color: #f56c6c;
+          &::marker {
+            color: $primary;
+          }
+        }
+      }
+    }
+
+    .video-player {
+      width: 100%;
+      max-height: 500px;
+      border-radius: $radius-lg;
+      box-shadow: $shadow-md;
+    }
+  }
+
+  .schedule-card {
+    @include card-base;
+    margin-bottom: $spacing-6;
+    border: none;
+
+    :deep(.el-card__header) {
+      padding: $spacing-5 $spacing-6;
+      border-bottom: 1px solid $border-color;
+
+      .card-header {
+        @include flex-between;
+        font-size: $font-size-lg;
+        font-weight: $font-weight-semibold;
+        color: $text-primary;
+
+        .date-filter {
+          :deep(.el-date-editor) {
+            .el-input__wrapper {
+              @include input-base;
+              box-shadow: none;
+            }
+          }
+        }
+      }
+    }
+
+    :deep(.el-card__body) {
+      padding: $spacing-6;
+    }
+
+    .schedule-list {
+      display: grid;
+      gap: $spacing-4;
+
+      .schedule-item {
+        @include card-base;
+        cursor: pointer;
+        transition: all $duration-fast $ease-out;
+        border: 1px solid $border-color;
+
+        &:hover {
+          border-color: $primary;
+          box-shadow: $shadow-hover;
+        }
+
+        :deep(.el-card__body) {
+          @include flex-between;
+          padding: $spacing-5;
+        }
+
+        .schedule-info {
+          display: flex;
+          flex-wrap: wrap;
+          gap: $spacing-6;
+          flex: 1;
+
+          .schedule-date,
+          .schedule-time,
+          .schedule-venue,
+          .schedule-seats {
+            display: flex;
+            align-items: center;
+            gap: $spacing-2;
+            color: $text-secondary;
+            font-size: $font-size-sm;
+
+            .el-icon {
+              font-size: $font-size-base;
+              color: $text-tertiary;
+            }
+          }
+        }
+
+        .schedule-action {
+          margin-left: $spacing-5;
+          flex-shrink: 0;
+
+          .el-button {
+            @include button-base;
+
+            &.el-button--primary {
+              @include button-primary;
+            }
+          }
+
+          .el-tag {
+            @include tag-base;
+            font-weight: $font-weight-semibold;
+          }
+        }
+      }
+    }
+  }
+
+  :deep(.el-dialog) {
+    border-radius: $radius-lg;
+    box-shadow: $shadow-modal;
+
+    .el-dialog__header {
+      padding: $spacing-6;
+      border-bottom: 1px solid $border-color;
+
+      .el-dialog__title {
+        font-size: $font-size-xl;
+        font-weight: $font-weight-semibold;
+        color: $text-primary;
+      }
+    }
+
+    .el-dialog__body {
+      padding: $spacing-6;
+
+      .el-form-item__label {
+        font-size: $font-size-sm;
+        font-weight: $font-weight-medium;
+        color: $text-secondary;
+      }
+
+      .price-text {
+        font-size: $font-size-2xl;
+        font-weight: $font-weight-bold;
+        color: $error;
+      }
+    }
+
+    .el-dialog__footer {
+      padding: $spacing-5 $spacing-6;
+      border-top: 1px solid $border-color;
+
+      .el-button {
+        @include button-base;
+
+        &.el-button--primary {
+          @include button-primary;
+        }
+
+        &:not(.el-button--primary) {
+          @include button-secondary;
+        }
+      }
+    }
+  }
 }
 </style>

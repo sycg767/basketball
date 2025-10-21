@@ -50,6 +50,7 @@
               format="YYYY-MM-DD"
               value-format="YYYY-MM-DD"
               style="width: 100%"
+              @change="checkAvailability"
             />
           </el-form-item>
 
@@ -63,7 +64,6 @@
                     start="06:00"
                     end="22:00"
                     step="01:00"
-                    format="HH:mm"
                     @change="checkAvailability"
                     style="width: 100%"
                   />
@@ -77,7 +77,6 @@
                     start="07:00"
                     end="23:00"
                     step="01:00"
-                    format="HH:mm"
                     :min-time="bookingForm.startTime"
                     @change="checkAvailability"
                     style="width: 100%"
@@ -128,6 +127,7 @@
               placeholder="请输入备注信息"
             />
           </el-form-item>
+
 
           <el-form-item label="预计费用">
             <div class="price-summary">
@@ -268,6 +268,8 @@ const fetchVenueDetail = async () => {
     router.back();
   }
 };
+
+
 
 // 返回
 const goBack = () => {

@@ -1,0 +1,461 @@
+// ============================================
+// Apple Design System - Form Components
+// Apple风格表单组件
+// ============================================
+
+@use '../design-system/variables' as *;
+@use '../design-system/mixins' as *;
+
+// ============================================
+// 表单容器
+// ============================================
+
+.form {
+  width: 100%;
+
+  &-group {
+    margin-bottom: $spacing-6;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  &-row {
+    display: flex;
+    gap: $spacing-4;
+    margin-bottom: $spacing-6;
+
+    @media (max-width: $breakpoint-md) {
+      flex-direction: column;
+    }
+  }
+
+  &-col {
+    flex: 1;
+  }
+}
+
+// ============================================
+// 标签
+// ============================================
+
+.form-label {
+  display: block;
+  margin-bottom: $spacing-2;
+  font-size: $font-size-base;
+  font-weight: $font-weight-medium;
+  color: $text-primary;
+
+  &--required::after {
+    content: '*';
+    color: $error;
+    margin-left: $spacing-1;
+  }
+}
+
+// ============================================
+// 输入框
+// ============================================
+
+.form-input {
+  @include input-base;
+  @include touch-target; // 确保触摸目标尺寸
+
+  // 增强焦点样式
+  &:focus-visible {
+    @include focus-ring-inset;
+  }
+
+  &--sm {
+    padding: $spacing-2 $spacing-3;
+    font-size: $font-size-sm;
+    min-height: 32px;
+  }
+
+  &--lg {
+    padding: $spacing-4 $spacing-5;
+    font-size: $font-size-lg;
+    min-height: 48px;
+  }
+
+  // 错误状态 - 符合WCAG标准
+  &--error {
+    border-color: $error;
+    background-color: rgba($error, 0.02);
+
+    &:focus {
+      border-color: $error;
+      box-shadow: 0 0 0 4px rgba($error, 0.1);
+    }
+
+    // 无障碍属性
+    &[aria-invalid="true"] {
+      border-color: $error;
+    }
+  }
+
+  // 成功状态
+  &--success {
+    border-color: $success;
+    background-color: rgba($success, 0.02);
+
+    &:focus {
+      border-color: $success;
+      box-shadow: 0 0 0 4px rgba($success, 0.1);
+    }
+  }
+
+  // 禁用状态
+  &:disabled {
+    @include disabled-state;
+    background-color: $bg-secondary;
+  }
+}
+
+// ============================================
+// 文本域
+// ============================================
+
+.form-textarea {
+  @include input-base;
+  min-height: 100px;
+  resize: vertical;
+  font-family: $font-family;
+}
+
+// ============================================
+// 选择框
+// ============================================
+
+.form-select {
+  @include input-base;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236B7280' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right $spacing-4 center;
+  padding-right: $spacing-8;
+  cursor: pointer;
+
+  &:disabled {
+    cursor: not-allowed;
+  }
+}
+
+// ============================================
+// 复选框和单选框
+// ============================================
+
+.form-checkbox,
+.form-radio {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  @include touch-target; // 确保触摸目标尺寸
+
+  input {
+    width: 20px;
+    height: 20px;
+    margin: 0;
+    margin-right: $spacing-2;
+    cursor: pointer;
+    appearance: none;
+    border: 2px solid $border-color-dark;
+    background: $bg-primary;
+    transition: $transition-fast;
+    @include button-press-subtle; // 点击反馈
+
+    &:hover {
+      border-color: $primary;
+      transform: scale(1.05);
+    }
+
+    &:checked {
+      background: $primary;
+      border-color: $primary;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='white' d='M10 3L4.5 8.5L2 6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+
+    // 增强焦点样式
+    &:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 4px rgba($primary, 0.2);
+    }
+
+    &:disabled {
+      @include disabled-state;
+    }
+  }
+
+  label {
+    cursor: pointer;
+    font-size: $font-size-base;
+    color: $text-primary;
+  }
+}
+
+.form-checkbox input {
+  border-radius: $radius-sm;
+}
+
+.form-radio input {
+  border-radius: $radius-full;
+
+  &:checked {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Ccircle fill='white' cx='6' cy='6' r='3'/%3E%3C/svg%3E");
+  }
+}
+
+// ============================================
+// 开关
+// ============================================
+
+.form-switch {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+
+  input {
+    position: relative;
+    width: 48px;
+    height: 28px;
+    margin: 0;
+    margin-right: $spacing-2;
+    cursor: pointer;
+    appearance: none;
+    background: $gray-300;
+    border-radius: $radius-full;
+    transition: $transition-base;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 24px;
+      height: 24px;
+      background: $white;
+      border-radius: $radius-full;
+      transition: $transition-base;
+      box-shadow: $shadow-sm;
+    }
+
+    &:checked {
+      background: $primary;
+
+      &::before {
+        transform: translateX(20px);
+      }
+    }
+
+    &:focus {
+      outline: none;
+      box-shadow: 0 0 0 4px rgba($primary, 0.1);
+    }
+
+    &:disabled {
+      opacity: $opacity-disabled;
+      cursor: not-allowed;
+    }
+  }
+
+  label {
+    cursor: pointer;
+    font-size: $font-size-base;
+    color: $text-primary;
+  }
+}
+
+// ============================================
+// 输入组
+// ============================================
+
+.input-group {
+  display: flex;
+  width: 100%;
+
+  &__prepend,
+  &__append {
+    display: flex;
+    align-items: center;
+    padding: 0 $spacing-4;
+    background: $bg-secondary;
+    border: $border-width solid $border-color;
+    color: $text-secondary;
+    font-size: $font-size-base;
+    white-space: nowrap;
+  }
+
+  &__prepend {
+    border-right: none;
+    border-radius: $radius-sm 0 0 $radius-sm;
+  }
+
+  &__append {
+    border-left: none;
+    border-radius: 0 $radius-sm $radius-sm 0;
+  }
+
+  .form-input {
+    border-radius: 0;
+
+    &:first-child {
+      border-radius: $radius-sm 0 0 $radius-sm;
+    }
+
+    &:last-child {
+      border-radius: 0 $radius-sm $radius-sm 0;
+    }
+
+    &:only-child {
+      border-radius: $radius-sm;
+    }
+  }
+}
+
+// ============================================
+// 表单反馈
+// ============================================
+
+.form-help {
+  display: block;
+  margin-top: $spacing-2;
+  font-size: $font-size-sm;
+  color: $text-secondary;
+}
+
+.form-error {
+  display: block;
+  margin-top: $spacing-2;
+  font-size: $font-size-sm;
+  color: $error;
+}
+
+.form-success {
+  display: block;
+  margin-top: $spacing-2;
+  font-size: $font-size-sm;
+  color: $success;
+}
+
+// ============================================
+// Element Plus 表单覆盖
+// ============================================
+
+.el-form {
+  &-item {
+    margin-bottom: $spacing-6;
+
+    &__label {
+      font-size: $font-size-base;
+      font-weight: $font-weight-medium;
+      color: $text-primary;
+      line-height: $line-height-normal;
+    }
+
+    &__error {
+      font-size: $font-size-sm;
+      color: $error;
+      padding-top: $spacing-2;
+    }
+  }
+}
+
+.el-input {
+  &__wrapper {
+    @include input-base;
+    padding: 0;
+    box-shadow: none;
+
+    &:hover {
+      box-shadow: none;
+    }
+
+    &.is-focus {
+      box-shadow: 0 0 0 4px rgba($primary, 0.1);
+    }
+  }
+
+  &__inner {
+    padding: $spacing-3 $spacing-4;
+    border: none;
+    font-family: $font-family;
+    color: $text-primary;
+
+    &::placeholder {
+      color: $gray-400;
+    }
+  }
+}
+
+.el-textarea {
+  &__inner {
+    @include input-base;
+    min-height: 100px;
+    font-family: $font-family;
+  }
+}
+
+.el-select {
+  .el-input__wrapper {
+    cursor: pointer;
+  }
+}
+
+.el-checkbox {
+  &__input {
+    &.is-checked .el-checkbox__inner {
+      background-color: $primary;
+      border-color: $primary;
+    }
+  }
+
+  &__inner {
+    border-radius: $radius-sm;
+    border-color: $border-color-dark;
+
+    &:hover {
+      border-color: $primary;
+    }
+  }
+}
+
+.el-radio {
+  &__input {
+    &.is-checked .el-radio__inner {
+      background-color: $primary;
+      border-color: $primary;
+    }
+  }
+
+  &__inner {
+    border-color: $border-color-dark;
+
+    &:hover {
+      border-color: $primary;
+    }
+  }
+}
+
+.el-switch {
+  &.is-checked .el-switch__core {
+    background-color: $primary;
+  }
+
+  &__core {
+    background-color: $gray-300;
+    border: none;
+    height: 28px;
+    border-radius: $radius-full;
+
+    &::after {
+      width: 24px;
+      height: 24px;
+      box-shadow: $shadow-sm;
+    }
+  }
+}

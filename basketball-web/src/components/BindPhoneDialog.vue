@@ -4,6 +4,7 @@
     title="绑定手机号"
     width="450px"
     :close-on-click-modal="false"
+    class="bind-phone-dialog"
     @close="handleClose"
   >
     <el-form
@@ -35,7 +36,7 @@
             ref="smsCountdownRef"
             :disabled="!form.phone || !validatePhone(form.phone)"
             :loading="sendingCode"
-            text="发送验证码"
+            text="获取验证码"
             class="send-code-btn"
             @send="handleSendCode"
           />
@@ -44,8 +45,12 @@
     </el-form>
 
     <template #footer>
-      <el-button @click="visible = false">取消</el-button>
-      <el-button type="primary" :loading="loading" @click="handleBind">确认绑定</el-button>
+      <div class="dialog-footer">
+        <el-button @click="visible = false" class="cancel-btn">取消</el-button>
+        <el-button type="primary" :loading="loading" @click="handleBind" class="confirm-btn">
+          确认绑定
+        </el-button>
+      </div>
     </template>
   </el-dialog>
 </template>
@@ -133,14 +138,14 @@ const handleSendCode = async () => {
     });
 
     if (res.code === 200) {
-      ElMessage.success('验证码已发送,请注意查收');
+      ElMessage.success('验证码已发送');
       smsCountdownRef.value?.startCountdown();
     } else {
       ElMessage.error(res.message || '发送验证码失败');
     }
   } catch (error) {
     console.error('发送验证码失败:', error);
-    ElMessage.error('发送验证码失败,请稍后重试');
+    ElMessage.error('发送验证码失败');
   } finally {
     sendingCode.value = false;
   }
@@ -165,7 +170,7 @@ const handleBind = () => {
         }
       } catch (error) {
         console.error('绑定手机号失败:', error);
-        ElMessage.error('绑定失败,请检查验证码是否正确');
+        ElMessage.error('绑定失败');
       } finally {
         loading.value = false;
       }
@@ -185,18 +190,118 @@ const handleClose = () => {
 };
 </script>
 
-<style scoped>
-.code-input-wrapper {
-  display: flex;
-  gap: 10px;
-}
+<style lang="scss" scoped>
+@use '@/styles/design-system/variables' as *;
 
-.code-input-wrapper .el-input {
-  flex: 1;
-}
+.bind-phone-dialog {
+  :deep(.el-dialog) {
+    border-radius: $radius-2xl;
+    box-shadow: $shadow-2xl;
+  }
 
-.send-code-btn {
-  width: 120px;
-  flex-shrink: 0;
+  :deep(.el-dialog__header) {
+    padding: 24px 24px 16px;
+    border-bottom: 1px solid $border-color;
+  }
+
+  :deep(.el-dialog__title) {
+    font-size: 18px;
+    font-weight: 600;
+    color: $text-primary;
+  }
+
+  :deep(.el-dialog__body) {
+    padding: 24px;
+  }
+
+  :deep(.el-dialog__footer) {
+    padding: 16px 24px 24px;
+    border-top: 1px solid $border-color;
+  }
+
+  :deep(.el-form-item) {
+    margin-bottom: 20px;
+  }
+
+  :deep(.el-input__wrapper) {
+    padding: 12px 16px;
+    border-radius: $radius-lg;
+    box-shadow: none;
+    border: 1px solid $border-color;
+    transition: all $duration-fast $ease-in-out;
+
+    &:hover {
+      border-color: $primary-light;
+    }
+
+    &.is-focus {
+      border-color: $primary;
+      box-shadow: 0 0 0 3px rgba($primary, 0.1);
+    }
+  }
+
+  :deep(.el-input__inner) {
+    font-size: 15px;
+    color: $text-primary;
+
+    &::placeholder {
+      color: $text-tertiary;
+    }
+  }
+
+  .code-input-wrapper {
+    display: flex;
+    gap: 12px;
+
+    :deep(.el-input) {
+      flex: 1;
+    }
+
+    .send-code-btn {
+      flex-shrink: 0;
+    }
+  }
+
+  .dialog-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+
+    .cancel-btn,
+    .confirm-btn {
+      height: 40px;
+      padding: 0 24px;
+      font-size: 14px;
+      font-weight: 500;
+      border-radius: $radius-lg;
+      transition: all $duration-fast $ease-out;
+    }
+
+    .cancel-btn {
+      background: $bg-secondary;
+      border: 1px solid $border-color;
+      color: $text-secondary;
+
+      &:hover {
+        background: $gray-200;
+        border-color: $gray-300;
+      }
+    }
+
+    .confirm-btn {
+      background: $primary;
+      border: none;
+
+      &:hover {
+        background: $primary-dark;
+        transform: translateY(-1px);
+        box-shadow: $shadow-md;
+      }
+
+      &:active {
+        transform: translateY(0);
+      }
+    }
+  }
 }
 </style>

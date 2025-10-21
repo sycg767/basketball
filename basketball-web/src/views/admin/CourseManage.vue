@@ -800,35 +800,58 @@ onMounted(() => {
 });
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@use '@/styles/design-system/variables' as *;
+
 .course-manage-container {
-  padding: 20px;
-}
+  .filter-card, .table-card {
+    margin-bottom: 24px;
+    border-radius: $radius-lg;
+    border: 1px solid $border-color;
+    box-shadow: $shadow-sm;
 
-.filter-card {
-  margin-bottom: 20px;
-}
+    :deep(.el-card__body) {
+      padding: 24px;
+    }
 
-.search-form {
-  margin-bottom: 0;
-}
+    :deep(.el-button) {
+      border-radius: $radius-md;
+      font-weight: 500;
+      transition: all $duration-fast $ease-in-out;
 
-.table-card {
-  margin-bottom: 20px;
-}
+      &:hover {
+        transform: translateY(-1px);
+      }
+    }
 
-.member-price {
-  font-size: 12px;
-  color: #909399;
-}
+    :deep(.el-table) {
+      font-size: 14px;
 
-.pagination-container {
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
-}
+      th {
+        background-color: $bg-secondary;
+        color: $text-secondary;
+        font-weight: 500;
+      }
 
-.schedule-header {
-  margin-bottom: 20px;
+      td {
+        color: $text-primary;
+      }
+    }
+  }
+
+  .member-price {
+    font-size: 12px;
+    color: $text-tertiary;
+  }
+
+  .pagination-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 24px;
+  }
+
+  .schedule-header {
+    margin-bottom: 20px;
+  }
 }
 </style>

@@ -526,22 +526,49 @@ onMounted(() => {
 })
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@use '@/styles/design-system/variables' as *;
+
 .member-manage-container {
-  padding: 20px;
-}
+  .filter-card, .table-card {
+    margin-bottom: 24px;
+    border-radius: $radius-lg;
+    border: 1px solid $border-color;
+    box-shadow: $shadow-sm;
 
-.filter-card {
-  margin-bottom: 20px;
-}
+    :deep(.el-card__body) {
+      padding: 24px;
+    }
 
-.table-card {
-  margin-bottom: 20px;
-}
+    :deep(.el-button) {
+      border-radius: $radius-md;
+      font-weight: 500;
+      transition: all $duration-fast $ease-in-out;
 
-.pagination-container {
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
+      &:hover {
+        transform: translateY(-1px);
+      }
+    }
+
+    :deep(.el-table) {
+      font-size: 14px;
+
+      th {
+        background-color: $bg-secondary;
+        color: $text-secondary;
+        font-weight: 500;
+      }
+
+      td {
+        color: $text-primary;
+      }
+    }
+  }
+
+  .pagination-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 24px;
+  }
 }
 </style>

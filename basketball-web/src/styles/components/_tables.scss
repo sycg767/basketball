@@ -1,0 +1,368 @@
+// ============================================
+// Apple Design System - Table Components
+// Apple风格表格组件
+// ============================================
+
+@use '../design-system/variables' as *;
+@use '../design-system/mixins' as *;
+
+// ============================================
+// 基础表格样式
+// ============================================
+
+.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: $bg-primary;
+  border-radius: $radius-lg;
+  overflow: hidden;
+  box-shadow: $shadow-sm;
+
+  // 表头
+  thead {
+    background: $bg-secondary;
+
+    th {
+      padding: $spacing-4 $spacing-6;
+      text-align: left;
+      font-size: $font-size-sm;
+      font-weight: $font-weight-semibold;
+      color: $text-secondary;
+      text-transform: uppercase;
+      letter-spacing: $letter-spacing-wide;
+      border-bottom: 1px solid $border-color;
+    }
+  }
+
+  // 表体
+  tbody {
+    tr {
+      transition: $transition-fast;
+
+      &:hover {
+        background: $bg-secondary;
+      }
+
+      &:not(:last-child) td {
+        border-bottom: 1px solid $border-color;
+      }
+    }
+
+    td {
+      padding: $spacing-4 $spacing-6;
+      font-size: $font-size-base;
+      color: $text-primary;
+    }
+  }
+
+  // 表尾
+  tfoot {
+    background: $bg-secondary;
+    border-top: 2px solid $border-color-dark;
+
+    td {
+      padding: $spacing-4 $spacing-6;
+      font-weight: $font-weight-semibold;
+      color: $text-primary;
+    }
+  }
+
+  // 表格变体
+  &--striped {
+    tbody tr:nth-child(even) {
+      background: $bg-secondary;
+    }
+  }
+
+  &--bordered {
+    td,
+    th {
+      border-right: 1px solid $border-color;
+
+      &:last-child {
+        border-right: none;
+      }
+    }
+  }
+
+  &--compact {
+    thead th,
+    tbody td,
+    tfoot td {
+      padding: $spacing-2 $spacing-4;
+    }
+  }
+
+  &--spacious {
+    thead th,
+    tbody td,
+    tfoot td {
+      padding: $spacing-6 $spacing-8;
+    }
+  }
+}
+
+// ============================================
+// 表格单元格对齐
+// ============================================
+
+.table {
+  .text-left {
+    text-align: left;
+  }
+
+  .text-center {
+    text-align: center;
+  }
+
+  .text-right {
+    text-align: right;
+  }
+}
+
+// ============================================
+// 表格操作列
+// ============================================
+
+.table-actions {
+  display: flex;
+  gap: $spacing-2;
+  align-items: center;
+
+  .btn {
+    padding: $spacing-2 $spacing-3;
+    font-size: $font-size-sm;
+  }
+}
+
+// ============================================
+// 表格状态标签
+// ============================================
+
+.table-badge {
+  @include tag-base;
+
+  &--primary {
+    @include tag-primary;
+  }
+
+  &--success {
+    @include tag-success;
+  }
+
+  &--warning {
+    @include tag-warning;
+  }
+
+  &--error {
+    @include tag-error;
+  }
+
+  &--gray {
+    background: $gray-100;
+    color: $gray-600;
+  }
+}
+
+// ============================================
+// 响应式表格
+// ============================================
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  @include scrollbar-thin;
+
+  @media (max-width: $breakpoint-md) {
+    border-radius: $radius-lg;
+  }
+}
+
+// ============================================
+// 表格容器
+// ============================================
+
+.table-container {
+  background: $bg-primary;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+  overflow: hidden;
+
+  &__header {
+    padding: $spacing-6;
+    border-bottom: 1px solid $border-color;
+    @include flex-between;
+
+    &-title {
+      font-size: $font-size-xl;
+      font-weight: $font-weight-semibold;
+      color: $text-primary;
+      margin: 0;
+    }
+
+    &-actions {
+      display: flex;
+      gap: $spacing-2;
+    }
+  }
+
+  &__body {
+    overflow-x: auto;
+    @include scrollbar-thin;
+  }
+
+  &__footer {
+    padding: $spacing-6;
+    border-top: 1px solid $border-color;
+    @include flex-between;
+  }
+}
+
+// ============================================
+// 空状态
+// ============================================
+
+.table-empty {
+  padding: $spacing-12 $spacing-6;
+  text-align: center;
+
+  &__icon {
+    font-size: 48px;
+    color: $gray-300;
+    margin-bottom: $spacing-4;
+  }
+
+  &__text {
+    font-size: $font-size-base;
+    color: $text-secondary;
+  }
+}
+
+// ============================================
+// Element Plus 表格覆盖
+// ============================================
+
+.el-table {
+  background: $bg-primary;
+  border-radius: $radius-lg;
+  overflow: hidden;
+  box-shadow: $shadow-sm;
+  border: none;
+
+  &__header-wrapper {
+    th {
+      background: $bg-secondary;
+      border-bottom: 1px solid $border-color;
+      padding: $spacing-4 $spacing-6;
+      font-size: $font-size-sm;
+      font-weight: $font-weight-semibold;
+      color: $text-secondary;
+      text-transform: uppercase;
+      letter-spacing: $letter-spacing-wide;
+    }
+  }
+
+  &__body-wrapper {
+    .el-table__row {
+      transition: $transition-fast;
+
+      &:hover > td {
+        background: $bg-secondary;
+      }
+
+      td {
+        padding: $spacing-4 $spacing-6;
+        border-bottom: 1px solid $border-color;
+        font-size: $font-size-base;
+        color: $text-primary;
+      }
+    }
+  }
+
+  &__empty-block {
+    padding: $spacing-12 0;
+  }
+
+  &__empty-text {
+    color: $text-secondary;
+  }
+
+  // 去除默认边框
+  &::before,
+  &::after {
+    display: none;
+  }
+
+  th.el-table__cell,
+  td.el-table__cell {
+    border-right: none;
+  }
+
+  // 斑马纹
+  &--striped {
+    .el-table__body tr.el-table__row--striped td {
+      background: $bg-secondary;
+    }
+  }
+
+  // 边框
+  &--border {
+    th.el-table__cell,
+    td.el-table__cell {
+      border-right: 1px solid $border-color;
+
+      &:last-child {
+        border-right: none;
+      }
+    }
+  }
+}
+
+// 分页器
+.el-pagination {
+  padding: $spacing-4 0;
+  @include flex-center;
+  gap: $spacing-2;
+
+  .el-pager li {
+    min-width: 32px;
+    height: 32px;
+    line-height: 32px;
+    border-radius: $radius-sm;
+    font-size: $font-size-sm;
+    color: $text-primary;
+    background: transparent;
+    transition: $transition-fast;
+
+    &:hover {
+      background: $bg-secondary;
+      color: $primary;
+    }
+
+    &.is-active {
+      background: $primary;
+      color: $white;
+    }
+  }
+
+  .btn-prev,
+  .btn-next {
+    min-width: 32px;
+    height: 32px;
+    line-height: 32px;
+    border-radius: $radius-sm;
+    background: transparent;
+    transition: $transition-fast;
+
+    &:hover {
+      background: $bg-secondary;
+      color: $primary;
+    }
+
+    &:disabled {
+      opacity: $opacity-disabled;
+      cursor: not-allowed;
+    }
+  }
+}

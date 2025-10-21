@@ -462,7 +462,8 @@ const getStatusText = (status) => {
 
 // 支付
 const handlePay = () => {
-  payForm.paymentMethod = 1;
+  payFor.paymentMethod = 1;
+
   payForm.paymentType = 'wechat_native';
   showQRCode.value = false;
   qrCodeUrl.value = '';

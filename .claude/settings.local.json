@@ -44,7 +44,11 @@
       "Bash(java -cp target/classes)",
       "Bash(target/dependency/*)",
       "Bash(com.basketball.BasketballApplication)",
-      "Bash(java -cp \"target/classes;target/dependency/*\" com.basketball.BasketballApplication)"
+      "Bash(java -cp \"target/classes;target/dependency/*\" com.basketball.BasketballApplication)",
+      "Bash(while:*)",
+      "Bash(do sed:*)",
+      "Bash(done)",
+      "Bash(node:*)"
     ],
     "deny": [],
     "ask": []

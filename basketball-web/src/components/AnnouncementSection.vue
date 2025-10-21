@@ -276,6 +276,8 @@ onUnmounted(() => {
 </script>
 
 <style lang="scss" scoped>
+@use '@/styles/design-system/variables' as *;
+
 .announcement-section {
   margin-bottom: 32px;
 
@@ -288,71 +290,82 @@ onUnmounted(() => {
     .section-title {
       display: flex;
       align-items: center;
-      gap: 8px;
-      font-size: 18px;
+      gap: 10px;
+      font-size: 20px;
       font-weight: 600;
-      color: #1a202c;
+      color: $text-primary;
       margin: 0;
+      letter-spacing: -0.02em;
+    }
+
+    :deep(.el-button) {
+      font-weight: 500;
+      transition: all $duration-fast $ease-in-out;
+
+      &:hover {
+        transform: translateX(2px);
+      }
     }
   }
 
   .announcement-list {
     .empty-announcements {
-      padding: 40px 20px;
+      padding: 60px 20px;
       text-align: center;
+      background: $white;
+      border-radius: $radius-lg;
+      border: 1px solid $border-color;
 
       .empty-text {
-        color: #a0aec0;
+        color: $text-tertiary;
         font-size: 14px;
       }
     }
 
     .announcement-item {
-      background: #ffffff;
-      border-radius: 12px;
-      padding: 20px;
-      margin-bottom: 12px;
-      border: 1px solid #e2e8f0;
+      background: $white;
+      border-radius: $radius-lg;
+      padding: 24px;
+      margin-bottom: 16px;
+      border: 1px solid $border-color;
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition: all $duration-base $ease-in-out;
+      box-shadow: $shadow-sm;
 
       &:hover {
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+        box-shadow: $shadow-md;
         transform: translateY(-2px);
-        border-color: #667eea;
+        border-color: $primary;
       }
 
       .announcement-content {
         display: flex;
         flex-direction: column;
-        gap: 8px;
-
-        .announcement-type {
-          margin-bottom: 4px;
-        }
+        gap: 10px;
 
         .announcement-title {
           font-size: 16px;
           font-weight: 600;
-          color: #1a202c;
+          color: $text-primary;
           margin: 0 0 8px 0;
           line-height: 1.4;
+          letter-spacing: -0.01em;
 
           &:hover {
-            color: #667eea;
+            color: $primary;
           }
         }
 
         .announcement-desc {
           font-size: 14px;
-          color: #718096;
-          line-height: 1.5;
+          color: $text-secondary;
+          line-height: 1.6;
           margin: 0;
         }
 
         .announcement-meta {
           display: flex;
-          gap: 16px;
+          gap: 20px;
           align-items: center;
           margin-top: 8px;
 
@@ -360,9 +373,10 @@ onUnmounted(() => {
           .view-count {
             display: flex;
             align-items: center;
-            gap: 4px;
-            font-size: 12px;
-            color: #a0aec0;
+            gap: 6px;
+            font-size: 13px;
+            color: $text-tertiary;
+            font-weight: 500;
           }
         }
       }
@@ -381,25 +395,21 @@ onUnmounted(() => {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
-    padding-bottom: 16px;
-    border-bottom: 1px solid #e2e8f0;
-
-    .announcement-type-tag {
-      .el-tag {
-        font-size: 12px;
-        padding: 4px 8px;
-      }
-    }
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid $border-color;
 
     .announcement-time {
       font-size: 14px;
-      color: #718096;
+      color: $text-secondary;
+      font-weight: 500;
     }
   }
 
   .announcement-content-detail {
-    margin-bottom: 20px;
+    margin-bottom: 24px;
+    color: $text-primary;
+    line-height: 1.8;
 
     .content-text {
       font-size: 15px;

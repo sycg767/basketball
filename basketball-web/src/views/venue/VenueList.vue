@@ -214,45 +214,138 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
+@use '@/styles/design-system/variables' as *;
+@use '@/styles/design-system/mixins' as *;
+
 .venue-list-container {
-  padding: 20px;
+  @include container;
+  padding: $spacing-8 $spacing-6;
+  min-height: 100vh;
+  background: $bg-secondary;
 
   .page-header {
-    margin-bottom: 20px;
+    margin-bottom: $spacing-8;
 
     h2 {
-      font-size: 24px;
-      font-weight: 600;
-      color: #303133;
-      margin-bottom: 10px;
+      @include text-heading-2;
+      margin-bottom: $spacing-3;
+    }
+
+    :deep(.el-breadcrumb) {
+      font-size: $font-size-sm;
+
+      .el-breadcrumb__item {
+        .el-breadcrumb__inner {
+          color: $text-secondary;
+          font-weight: $font-weight-medium;
+          transition: $transition-fast;
+
+          &:hover {
+            color: $primary;
+          }
+        }
+
+        &:last-child .el-breadcrumb__inner {
+          color: $text-primary;
+        }
+      }
     }
   }
 
   .search-card {
-    margin-bottom: 20px;
+    @include card-base;
+    margin-bottom: $spacing-6;
+    border: none;
 
     :deep(.el-card__body) {
-      padding: 20px;
+      padding: $spacing-6;
     }
 
     .el-form {
       .el-form-item {
         margin-bottom: 0;
+        margin-right: $spacing-4;
+
+        :deep(.el-form-item__label) {
+          font-size: $font-size-sm;
+          font-weight: $font-weight-medium;
+          color: $text-secondary;
+        }
+
+        :deep(.el-input__wrapper) {
+          @include input-base;
+          box-shadow: none;
+        }
+
+        :deep(.el-select) {
+          .el-input__wrapper {
+            @include input-base;
+            box-shadow: none;
+          }
+        }
+      }
+
+      .el-button {
+        @include button-base;
+
+        &.el-button--primary {
+          @include button-primary;
+        }
       }
     }
   }
 
   .venue-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 20px;
-    margin-bottom: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: $spacing-6;
+    margin-bottom: $spacing-8;
+
+    @include respond-to(md) {
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    }
+
+    @include respond-to(lg) {
+      gap: $spacing-8;
+    }
   }
 
   .pagination-container {
-    display: flex;
-    justify-content: center;
-    margin-top: 30px;
+    @include flex-center;
+    margin-top: $spacing-10;
+    padding: $spacing-6 0;
+
+    :deep(.el-pagination) {
+      .el-pager li {
+        min-width: 36px;
+        height: 36px;
+        line-height: 36px;
+        border-radius: $radius-sm;
+        font-weight: $font-weight-medium;
+        transition: $transition-fast;
+
+        &.is-active {
+          background: $primary;
+          color: $white;
+        }
+
+        &:hover:not(.is-active) {
+          background: $gray-100;
+        }
+      }
+
+      .btn-prev,
+      .btn-next {
+        min-width: 36px;
+        height: 36px;
+        border-radius: $radius-sm;
+        transition: $transition-fast;
+
+        &:hover:not(:disabled) {
+          background: $gray-100;
+        }
+      }
+    }
   }
 }
 </style>

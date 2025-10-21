@@ -1,0 +1,513 @@
+// ============================================
+// Apple Design System - Modal Components
+// Apple风格弹窗组件
+// ============================================
+
+@use '../design-system/variables' as *;
+@use '../design-system/mixins' as *;
+
+// ============================================
+// 模态框遮罩
+// ============================================
+
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: $bg-overlay;
+  z-index: $z-index-modal-backdrop;
+  @include flex-center;
+  animation: fadeIn $duration-base $ease-out;
+}
+
+// ============================================
+// 模态框容器
+// ============================================
+
+.modal {
+  position: relative;
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh;
+  background: $bg-primary;
+  border-radius: $radius-xl;
+  box-shadow: $shadow-modal;
+  overflow: hidden;
+  animation: scaleIn $duration-base $ease-spring;
+  display: flex;
+  flex-direction: column;
+
+  // 尺寸变体
+  &--sm {
+    max-width: 400px;
+  }
+
+  &--md {
+    max-width: 600px;
+  }
+
+  &--lg {
+    max-width: 800px;
+  }
+
+  &--xl {
+    max-width: 1000px;
+  }
+
+  &--full {
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+    border-radius: 0;
+  }
+
+  // 全屏模态框（移动端）
+  @media (max-width: $breakpoint-md) {
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+    border-radius: 0;
+  }
+}
+
+// ============================================
+// 模态框头部
+// ============================================
+
+.modal-header {
+  padding: $spacing-6 $spacing-8;
+  border-bottom: 1px solid $border-color;
+  @include flex-between;
+  flex-shrink: 0;
+
+  &__title {
+    font-size: $font-size-2xl;
+    font-weight: $font-weight-semibold;
+    color: $text-primary;
+    margin: 0;
+  }
+
+  &__subtitle {
+    @include text-caption;
+    margin-top: $spacing-1;
+  }
+
+  &__close {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    border-radius: $radius-full;
+    color: $text-secondary;
+    cursor: pointer;
+    transition: $transition-fast;
+    @include flex-center;
+
+    &:hover {
+      background: $bg-secondary;
+      color: $text-primary;
+    }
+
+    &:active {
+      transform: scale(0.95);
+    }
+  }
+}
+
+// ============================================
+// 模态框主体
+// ============================================
+
+.modal-body {
+  padding: $spacing-8;
+  overflow-y: auto;
+  flex: 1;
+  @include scrollbar-thin;
+
+  &--no-padding {
+    padding: 0;
+  }
+
+  &--centered {
+    @include flex-center;
+    text-align: center;
+  }
+}
+
+// ============================================
+// 模态框底部
+// ============================================
+
+.modal-footer {
+  padding: $spacing-6 $spacing-8;
+  border-top: 1px solid $border-color;
+  background: $bg-secondary;
+  @include flex-between;
+  flex-shrink: 0;
+  gap: $spacing-3;
+
+  &--centered {
+    justify-content: center;
+  }
+
+  &--right {
+    justify-content: flex-end;
+  }
+
+  .btn {
+    min-width: 100px;
+  }
+}
+
+// ============================================
+// 抽屉（侧边弹出）
+// ============================================
+
+.drawer {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  width: 400px;
+  max-width: 90%;
+  background: $bg-primary;
+  box-shadow: $shadow-2xl;
+  z-index: $z-index-modal;
+  display: flex;
+  flex-direction: column;
+
+  &--left {
+    left: 0;
+    animation: slideInLeft $duration-base $ease-out;
+  }
+
+  &--right {
+    right: 0;
+    animation: slideInRight $duration-base $ease-out;
+  }
+
+  &--sm {
+    width: 300px;
+  }
+
+  &--md {
+    width: 400px;
+  }
+
+  &--lg {
+    width: 600px;
+  }
+
+  &--xl {
+    width: 800px;
+  }
+}
+
+// ============================================
+// 对话框（确认框）
+// ============================================
+
+.dialog {
+  position: relative;
+  width: 90%;
+  max-width: 400px;
+  background: $bg-primary;
+  border-radius: $radius-xl;
+  box-shadow: $shadow-modal;
+  padding: $spacing-8;
+  text-align: center;
+  animation: scaleIn $duration-base $ease-spring;
+
+  &__icon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto $spacing-6;
+    border-radius: $radius-full;
+    @include flex-center;
+    font-size: 32px;
+
+    &--success {
+      background: rgba($success, 0.1);
+      color: $success;
+    }
+
+    &--warning {
+      background: rgba($warning, 0.1);
+      color: $warning;
+    }
+
+    &--error {
+      background: rgba($error, 0.1);
+      color: $error;
+    }
+
+    &--info {
+      background: rgba($info, 0.1);
+      color: $info;
+    }
+  }
+
+  &__title {
+    font-size: $font-size-2xl;
+    font-weight: $font-weight-semibold;
+    color: $text-primary;
+    margin: 0 0 $spacing-3;
+  }
+
+  &__message {
+    @include text-body;
+    margin: 0 0 $spacing-8;
+  }
+
+  &__actions {
+    display: flex;
+    gap: $spacing-3;
+    justify-content: center;
+
+    .btn {
+      min-width: 100px;
+    }
+  }
+}
+
+// ============================================
+// 弹出框（Popover）
+// ============================================
+
+.popover {
+  position: absolute;
+  background: $bg-primary;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-lg;
+  padding: $spacing-4;
+  z-index: $z-index-popover;
+  animation: scaleIn $duration-fast $ease-out;
+  max-width: 300px;
+
+  &__arrow {
+    position: absolute;
+    width: 0;
+    height: 0;
+    border: 6px solid transparent;
+
+    &--top {
+      bottom: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-top-color: $bg-primary;
+    }
+
+    &--bottom {
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-bottom-color: $bg-primary;
+    }
+
+    &--left {
+      right: -12px;
+      top: 50%;
+      transform: translateY(-50%);
+      border-left-color: $bg-primary;
+    }
+
+    &--right {
+      left: -12px;
+      top: 50%;
+      transform: translateY(-50%);
+      border-right-color: $bg-primary;
+    }
+  }
+
+  &__title {
+    font-size: $font-size-base;
+    font-weight: $font-weight-semibold;
+    color: $text-primary;
+    margin: 0 0 $spacing-2;
+  }
+
+  &__content {
+    font-size: $font-size-sm;
+    color: $text-secondary;
+    line-height: $line-height-relaxed;
+  }
+}
+
+// ============================================
+// 提示框（Tooltip）
+// ============================================
+
+.tooltip {
+  position: absolute;
+  background: $gray-900;
+  color: $white;
+  padding: $spacing-2 $spacing-3;
+  border-radius: $radius-sm;
+  font-size: $font-size-sm;
+  white-space: nowrap;
+  z-index: $z-index-tooltip;
+  animation: fadeIn $duration-fast $ease-out;
+  pointer-events: none;
+
+  &__arrow {
+    position: absolute;
+    width: 0;
+    height: 0;
+    border: 4px solid transparent;
+
+    &--top {
+      bottom: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-top-color: $gray-900;
+    }
+
+    &--bottom {
+      top: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-bottom-color: $gray-900;
+    }
+
+    &--left {
+      right: -8px;
+      top: 50%;
+      transform: translateY(-50%);
+      border-left-color: $gray-900;
+    }
+
+    &--right {
+      left: -8px;
+      top: 50%;
+      transform: translateY(-50%);
+      border-right-color: $gray-900;
+    }
+  }
+}
+
+// ============================================
+// 动画关键帧
+// ============================================
+
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+// ============================================
+// Element Plus 对话框覆盖
+// ============================================
+
+.el-dialog {
+  background: $bg-primary;
+  border-radius: $radius-xl;
+  box-shadow: $shadow-modal;
+  padding: 0;
+
+  &__header {
+    padding: $spacing-6 $spacing-8;
+    border-bottom: 1px solid $border-color;
+  }
+
+  &__title {
+    font-size: $font-size-2xl;
+    font-weight: $font-weight-semibold;
+    color: $text-primary;
+  }
+
+  &__headerbtn {
+    top: $spacing-6;
+    right: $spacing-8;
+    width: 32px;
+    height: 32px;
+    border-radius: $radius-full;
+    transition: $transition-fast;
+
+    &:hover {
+      background: $bg-secondary;
+    }
+
+    .el-dialog__close {
+      color: $text-secondary;
+      font-size: 20px;
+
+      &:hover {
+        color: $text-primary;
+      }
+    }
+  }
+
+  &__body {
+    padding: $spacing-8;
+    color: $text-primary;
+  }
+
+  &__footer {
+    padding: $spacing-6 $spacing-8;
+    border-top: 1px solid $border-color;
+    background: $bg-secondary;
+  }
+}
+
+.el-overlay {
+  background: $bg-overlay;
+}
+
+.el-drawer {
+  background: $bg-primary;
+  box-shadow: $shadow-2xl;
+
+  &__header {
+    padding: $spacing-6 $spacing-8;
+    border-bottom: 1px solid $border-color;
+    margin-bottom: 0;
+  }
+
+  &__title {
+    font-size: $font-size-2xl;
+    font-weight: $font-weight-semibold;
+    color: $text-primary;
+  }
+
+  &__body {
+    padding: $spacing-8;
+  }
+}
+
+.el-popover {
+  background: $bg-primary;
+  border: none;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-lg;
+  padding: $spacing-4;
+}
+
+.el-tooltip__popper {
+  background: $gray-900;
+  border: none;
+  border-radius: $radius-sm;
+  padding: $spacing-2 $spacing-3;
+  font-size: $font-size-sm;
+
+  .el-popper__arrow::before {
+    background: $gray-900;
+    border: none;
+  }
+}

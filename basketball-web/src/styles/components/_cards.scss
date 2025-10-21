@@ -1,0 +1,347 @@
+// ============================================
+// Apple Design System - Card Components
+// Apple风格卡片组件
+// ============================================
+
+@use '../design-system/variables' as *;
+@use '../design-system/mixins' as *;
+
+// ============================================
+// 基础卡片样式
+// ============================================
+
+.card {
+  @include card-base;
+  overflow: hidden;
+
+  // 卡片悬停效果
+  &--hoverable {
+    cursor: pointer;
+    @include card-hover-subtle; // 使用优化的悬停效果
+    @include gpu-accelerated; // GPU加速
+
+    &:active {
+      @include card-active;
+      transform: scale(0.98); // 点击反馈
+    }
+
+    // 无障碍焦点
+    &:focus-visible {
+      @include focus-ring;
+    }
+  }
+
+  // 卡片尺寸
+  &--sm {
+    border-radius: $radius-md;
+    padding: $spacing-4;
+  }
+
+  &--md {
+    border-radius: $radius-lg;
+    padding: $spacing-6;
+  }
+
+  &--lg {
+    border-radius: $radius-xl;
+    padding: $spacing-8;
+  }
+
+  // 卡片阴影变体
+  &--flat {
+    box-shadow: none;
+    border: 1px solid $border-color;
+  }
+
+  &--elevated {
+    box-shadow: $shadow-lg;
+  }
+
+  // 卡片背景变体
+  &--secondary {
+    background: $bg-secondary;
+  }
+
+  &--gradient {
+    background: $primary-gradient;
+    color: $text-inverse;
+  }
+
+  // 卡片边框
+  &--bordered {
+    border: 1px solid $border-color;
+  }
+}
+
+// ============================================
+// 卡片内部元素
+// ============================================
+
+.card-header {
+  padding: $spacing-6;
+  border-bottom: 1px solid $border-color;
+
+  &__title {
+    @include text-heading-3;
+    margin: 0;
+  }
+
+  &__subtitle {
+    @include text-caption;
+    margin-top: $spacing-1;
+  }
+
+  &__actions {
+    display: flex;
+    gap: $spacing-2;
+    margin-left: auto;
+  }
+}
+
+.card-body {
+  padding: $spacing-6;
+
+  &--no-padding {
+    padding: 0;
+  }
+}
+
+.card-footer {
+  padding: $spacing-6;
+  border-top: 1px solid $border-color;
+  background: $bg-secondary;
+
+  &--actions {
+    @include flex-between;
+  }
+}
+
+// ============================================
+// 特殊卡片类型
+// ============================================
+
+// 图片卡片
+.card-image {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+
+  img {
+    @include image-cover;
+    @include optimized-animation; // 性能优化
+    transition: transform $duration-slow $ease-out;
+    loading: lazy; // 懒加载
+    decoding: async;
+  }
+
+  &:hover img {
+    transform: scale(1.05);
+  }
+
+  &__overlay {
+    @include overlay-gradient;
+    display: flex;
+    align-items: flex-end;
+    padding: $spacing-6;
+    opacity: 0;
+    transition: opacity $duration-base $ease-in-out;
+  }
+
+  &:hover &__overlay {
+    opacity: 1;
+  }
+
+  &__title {
+    color: $text-inverse;
+    font-size: $font-size-xl;
+    font-weight: $font-weight-bold;
+    margin: 0;
+  }
+}
+
+// 统计卡片
+.card-stat {
+  @include card-base;
+  padding: $spacing-6;
+  text-align: center;
+
+  &__value {
+    font-size: $font-size-4xl;
+    font-weight: $font-weight-bold;
+    color: $primary;
+    margin: 0;
+  }
+
+  &__label {
+    @include text-caption;
+    margin-top: $spacing-2;
+  }
+
+  &__trend {
+    display: inline-flex;
+    align-items: center;
+    gap: $spacing-1;
+    margin-top: $spacing-2;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+
+    &--up {
+      color: $success;
+    }
+
+    &--down {
+      color: $error;
+    }
+  }
+}
+
+// 用户卡片
+.card-user {
+  @include card-base;
+  padding: $spacing-6;
+  text-align: center;
+
+  &__avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: $radius-full;
+    margin: 0 auto $spacing-4;
+    overflow: hidden;
+
+    img {
+      @include image-cover;
+    }
+  }
+
+  &__name {
+    font-size: $font-size-xl;
+    font-weight: $font-weight-semibold;
+    color: $text-primary;
+    margin: 0;
+  }
+
+  &__role {
+    @include text-caption;
+    margin-top: $spacing-1;
+  }
+
+  &__stats {
+    display: flex;
+    justify-content: space-around;
+    margin-top: $spacing-6;
+    padding-top: $spacing-6;
+    border-top: 1px solid $border-color;
+  }
+
+  &__stat {
+    text-align: center;
+
+    &-value {
+      font-size: $font-size-xl;
+      font-weight: $font-weight-bold;
+      color: $text-primary;
+    }
+
+    &-label {
+      @include text-caption;
+      margin-top: $spacing-1;
+    }
+  }
+}
+
+// 产品卡片
+.card-product {
+  @include card-base;
+  overflow: hidden;
+  cursor: pointer;
+  @include card-hover-subtle; // 优化悬停效果
+  @include gpu-accelerated; // GPU加速
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+
+  &__image {
+    position: relative;
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+    background: $bg-secondary;
+
+    img {
+      @include image-cover;
+      transition: transform $duration-slow $ease-out;
+    }
+  }
+
+  &:hover &__image img {
+    transform: scale(1.05);
+  }
+
+  &__badge {
+    position: absolute;
+    top: $spacing-3;
+    right: $spacing-3;
+    @include tag-base;
+    @include tag-primary;
+  }
+
+  &__content {
+    padding: $spacing-6;
+  }
+
+  &__title {
+    font-size: $font-size-lg;
+    font-weight: $font-weight-semibold;
+    color: $text-primary;
+    margin: 0 0 $spacing-2;
+    @include text-ellipsis;
+  }
+
+  &__description {
+    @include text-body;
+    @include text-clamp(2);
+    margin: 0 0 $spacing-4;
+  }
+
+  &__footer {
+    @include flex-between;
+  }
+
+  &__price {
+    font-size: $font-size-2xl;
+    font-weight: $font-weight-bold;
+    color: $primary;
+
+    &-unit {
+      font-size: $font-size-sm;
+      font-weight: $font-weight-normal;
+      color: $text-secondary;
+    }
+  }
+}
+
+// ============================================
+// Element Plus 卡片覆盖
+// ============================================
+
+.el-card {
+  @include card-base;
+  border: none;
+
+  &__header {
+    padding: $spacing-6;
+    border-bottom: 1px solid $border-color;
+    background: transparent;
+  }
+
+  &__body {
+    padding: $spacing-6;
+  }
+
+  &.is-always-shadow,
+  &.is-hover-shadow:hover {
+    box-shadow: $shadow-hover;
+  }
+}

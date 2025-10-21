@@ -141,69 +141,108 @@ const handleBooking = () => {
 </script>
 
 <style lang="scss" scoped>
+@use '@/styles/design-system/variables' as *;
+@use '@/styles/design-system/mixins' as *;
+
 .venue-card {
   width: 100%;
+  @include card-base;
+  border: none;
+  overflow: hidden;
   cursor: pointer;
-  transition: all 0.3s;
+  transition: all $duration-base $ease-out;
 
   &:hover {
-    transform: translateY(-5px);
+    @include card-hover;
+  }
+
+  &:active {
+    @include card-active;
+  }
+
+  :deep(.el-card__body) {
+    padding: 0;
   }
 
   .venue-image {
     position: relative;
     width: 100%;
-    height: 200px;
+    height: 220px;
     overflow: hidden;
+    background: $gray-100;
 
     img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transition: transform 0.3s;
+      @include image-cover;
+      transition: transform $duration-slow $ease-out;
     }
 
     &:hover img {
-      transform: scale(1.1);
+      transform: scale(1.05);
+    }
+
+    // 图片遮罩渐变
+    &::after {
+      @include overlay-gradient;
+      opacity: 0.3;
+      transition: opacity $duration-base $ease-out;
+    }
+
+    &:hover::after {
+      opacity: 0.5;
     }
 
     .venue-status {
       position: absolute;
-      top: 10px;
-      right: 10px;
+      top: $spacing-3;
+      right: $spacing-3;
+      @include tag-base;
+      backdrop-filter: $backdrop-blur-sm;
+      background: rgba($white, 0.95);
+      font-weight: $font-weight-semibold;
+      z-index: 1;
+
+      &.el-tag--success {
+        color: $success;
+        background: rgba($white, 0.95);
+      }
+
+      &.el-tag--danger {
+        color: $error;
+        background: rgba($white, 0.95);
+      }
     }
   }
 
   .venue-info {
-    padding: 15px;
+    padding: $spacing-5;
 
     .venue-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 15px;
+      @include flex-between;
+      margin-bottom: $spacing-4;
 
       .venue-name {
-        font-size: 18px;
-        font-weight: 600;
-        color: #303133;
+        @include text-heading-3;
+        font-size: $font-size-lg;
         margin: 0;
+        @include text-ellipsis;
+        flex: 1;
       }
 
       .venue-code {
-        font-size: 12px;
-        color: #909399;
-        background-color: #f5f7fa;
-        padding: 4px 8px;
-        border-radius: 4px;
+        @include tag-base;
+        font-size: $font-size-xs;
+        color: $text-tertiary;
+        background: $gray-100;
+        margin-left: $spacing-2;
+        flex-shrink: 0;
       }
     }
 
     .venue-details {
-      margin-bottom: 15px;
+      margin-bottom: $spacing-4;
 
       .el-row {
-        margin-bottom: 8px;
+        margin-bottom: $spacing-2;
 
         &:last-child {
           margin-bottom: 0;
@@ -213,13 +252,17 @@ const handleBooking = () => {
       .detail-item {
         display: flex;
         align-items: center;
-        gap: 6px;
-        font-size: 14px;
-        color: #606266;
+        gap: $spacing-2;
+        font-size: $font-size-sm;
+        color: $text-secondary;
 
         .el-icon {
-          font-size: 16px;
-          color: #909399;
+          font-size: $font-size-base;
+          color: $text-tertiary;
+        }
+
+        span {
+          @include text-ellipsis;
         }
       }
     }
@@ -227,24 +270,40 @@ const handleBooking = () => {
     .venue-facilities {
       display: flex;
       flex-wrap: wrap;
-      gap: 6px;
-      margin-bottom: 15px;
-      min-height: 28px;
-      max-height: 28px;
+      gap: $spacing-2;
+      margin-bottom: $spacing-4;
+      min-height: 24px;
+      max-height: 24px;
       overflow: hidden;
 
       .el-tag {
-        font-size: 12px;
+        @include tag-base;
+        font-size: $font-size-xs;
+        background: $gray-100;
+        color: $text-secondary;
+        border: none;
       }
     }
 
     .venue-footer {
       display: flex;
-      justify-content: space-between;
-      gap: 10px;
+      gap: $spacing-3;
+      padding-top: $spacing-4;
+      border-top: 1px solid $border-color;
 
       .el-button {
         flex: 1;
+        @include button-base;
+        height: 40px;
+        font-size: $font-size-sm;
+
+        &.el-button--primary {
+          @include button-primary;
+        }
+
+        &:not(.el-button--primary) {
+          @include button-secondary;
+        }
       }
     }
   }

@@ -1,0 +1,221 @@
+// ============================================
+// Apple Design System - Core Variables
+// iOS风格设计系统核心变量
+// ============================================
+
+// ============================================
+// 色彩系统 (Color System)
+// ============================================
+
+// 基础颜色
+$white: #FFFFFF;                // 白色
+$black: #000000;                // 黑色
+
+// 主色调 - iOS蓝色系
+$primary: #007AFF;              // iOS标准蓝
+$primary-color: $primary;       // 主色别名（兼容性）
+$primary-light: #5AC8FA;        // 浅蓝
+$primary-dark: #0051D5;         // 深蓝
+$primary-hover: #0062CC;        // 悬停蓝
+$primary-gradient: linear-gradient(135deg, $primary 0%, $primary-light 100%); // 主色渐变
+
+// 中性色 - 灰度系统 (Gray Scale)
+$gray-50: #FAFAFA;              // 最浅灰 - 背景
+$gray-100: #F5F5F7;             // 浅灰 - 卡片背景
+$gray-200: #E5E5EA;             // 分割线
+$gray-300: #D1D1D6;             // 边框
+$gray-400: #C7C7CC;             // 禁用文本
+$gray-500: #8E8E93;             // 次要文本
+$gray-600: #636366;             // 正文
+$gray-700: #48484A;             // 标题
+$gray-800: #3A3A3C;             // 深色标题
+$gray-900: #1C1C1E;             // 黑色
+
+// 语义色 - 功能性颜色 (Semantic Colors)
+$success: #34C759;              // 成功/可用
+$warning: #FF9500;              // 警告
+$error: #FF3B30;                // 错误/危险
+$info: #5AC8FA;                 // 信息
+
+// 背景色 (Background Colors)
+$bg-primary: #FFFFFF;           // 主背景
+$bg-secondary: #F5F5F7;         // 次背景
+$bg-tertiary: #FAFAFA;          // 三级背景
+$bg-light: $gray-100;           // 浅色背景（别名）
+$bg-overlay: rgba(0, 0, 0, 0.4); // 遮罩层
+
+// 文本颜色 (Text Colors)
+$text-primary: $gray-900;       // 主要文本
+$text-secondary: $gray-600;     // 次要文本
+$text-tertiary: $gray-500;      // 三级文本
+$text-disabled: $gray-400;      // 禁用文本
+$text-inverse: #FFFFFF;         // 反色文本
+
+// ============================================
+// 字体系统 (Typography)
+// ============================================
+
+// 字体家族 - SF Pro优先
+$font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display',
+              'Helvetica Neue', 'Segoe UI', Arial, sans-serif;
+$font-family-mono: 'SF Mono', 'Monaco', 'Menlo', 'Consolas', monospace;
+
+// 字号系统 - 基于8px网格
+$font-size-xs: 11px;            // 辅助信息
+$font-size-sm: 13px;            // 次要文本
+$font-size-base: 15px;          // 正文
+$font-size-lg: 17px;            // 小标题
+$font-size-xl: 20px;            // 标题
+$font-size-2xl: 24px;           // 大标题
+$font-size-3xl: 28px;           // 页面标题
+$font-size-4xl: 34px;           // Hero标题
+$font-size-5xl: 40px;           // 超大标题
+
+// 字重 (Font Weight)
+$font-weight-light: 300;        // 细体
+$font-weight-regular: 400;      // 常规
+$font-weight-normal: 400;       // 正常（别名）
+$font-weight-medium: 500;       // 中等
+$font-weight-semibold: 600;     // 半粗
+$font-weight-bold: 700;         // 粗体
+
+// 行高 (Line Height)
+$line-height-tight: 1.2;        // 紧凑
+$line-height-normal: 1.5;       // 正常
+$line-height-relaxed: 1.7;      // 宽松
+
+// 字间距 (Letter Spacing)
+$letter-spacing-tight: -0.02em; // 紧凑
+$letter-spacing-normal: 0;      // 正常
+$letter-spacing-wide: 0.02em;   // 宽松
+
+// ============================================
+// 间距系统 (Spacing System)
+// 基于8px网格
+// ============================================
+
+$spacing-0: 0;                  // 0
+$spacing-1: 4px;                // 0.5x
+$spacing-2: 8px;                // 1x
+$spacing-3: 12px;               // 1.5x
+$spacing-4: 16px;               // 2x
+$spacing-5: 20px;               // 2.5x
+$spacing-6: 24px;               // 3x
+$spacing-7: 28px;               // 3.5x
+$spacing-8: 32px;               // 4x
+$spacing-10: 40px;              // 5x
+$spacing-12: 48px;              // 6x
+$spacing-16: 64px;              // 8x
+$spacing-20: 80px;              // 10x
+$spacing-24: 96px;              // 12x
+
+// ============================================
+// 圆角系统 (Border Radius)
+// ============================================
+
+$radius-none: 0;                // 无圆角
+$radius-sm: 6px;                // 小圆角 - 按钮、标签
+$radius-md: 10px;               // 中圆角 - 卡片
+$radius-lg: 14px;               // 大圆角 - 大卡片
+$radius-xl: 20px;               // 超大圆角 - Hero区域
+$radius-2xl: 24px;              // 特大圆角
+$radius-full: 9999px;           // 完全圆角 - 头像、徽章
+
+// ============================================
+// 阴影系统 (Shadow System)
+// Apple风格轻量级阴影
+// ============================================
+
+$shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+$shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
+$shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
+$shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.10);
+$shadow-xl: 0 12px 32px rgba(0, 0, 0, 0.12);
+$shadow-2xl: 0 16px 48px rgba(0, 0, 0, 0.14);
+
+// 悬浮阴影
+$shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.12);
+$shadow-active: 0 2px 8px rgba(0, 0, 0, 0.08);
+$shadow-card: $shadow-md;  // 卡片阴影（别名）
+$shadow-modal: $shadow-2xl;  // 模态框阴影（别名）
+
+// ============================================
+// 边框系统 (Border System)
+// ============================================
+
+$border-width: 1px;             // 标准边框
+$border-width-thick: 2px;       // 粗边框
+
+$border-color: $gray-200;       // 标准边框色
+$border-color-light: $gray-100; // 浅边框色
+$border-color-dark: $gray-300;  // 深边框色
+
+// ============================================
+// 动画系统 (Animation System)
+// Apple标准缓动函数
+// ============================================
+
+// 缓动函数 (Easing Functions)
+$ease-in-out: cubic-bezier(0.4, 0.0, 0.2, 1);      // 标准
+$ease-out: cubic-bezier(0.0, 0.0, 0.2, 1);         // 减速
+$ease-in: cubic-bezier(0.4, 0.0, 1, 1);            // 加速
+$ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275); // 弹性
+
+// 持续时间 (Duration)
+$duration-fast: 150ms;          // 快速
+$duration-base: 250ms;          // 基础
+$duration-slow: 350ms;          // 慢速
+$duration-slower: 500ms;        // 更慢
+
+// ============================================
+// Z-index系统 (Z-index System)
+// ============================================
+
+$z-index-dropdown: 1000;        // 下拉菜单
+$z-index-sticky: 1020;          // 粘性定位
+$z-index-fixed: 1030;           // 固定定位
+$z-index-modal-backdrop: 1040;  // 模态框背景
+$z-index-modal: 1050;           // 模态框
+$z-index-popover: 1060;         // 弹出框
+$z-index-tooltip: 1070;         // 提示框
+
+// ============================================
+// 断点系统 (Breakpoints)
+// 响应式设计断点
+// ============================================
+
+$breakpoint-xs: 375px;          // 小手机
+$breakpoint-sm: 640px;          // 手机
+$breakpoint-md: 768px;          // 平板
+$breakpoint-lg: 1024px;         // 小桌面
+$breakpoint-xl: 1280px;         // 桌面
+$breakpoint-2xl: 1536px;        // 大桌面
+
+// ============================================
+// 容器系统 (Container System)
+// ============================================
+
+$container-sm: 640px;           // 小容器
+$container-md: 768px;           // 中容器
+$container-lg: 1024px;          // 大容器
+$container-xl: 1280px;          // 超大容器
+
+// ============================================
+// 其他常用变量
+// ============================================
+
+// 毛玻璃效果
+$backdrop-blur: blur(20px);
+$backdrop-blur-sm: blur(10px);
+$backdrop-blur-lg: blur(30px);
+
+// 透明度
+$opacity-disabled: 0.4;
+$opacity-hover: 0.8;
+$opacity-active: 0.6;
+
+// 过渡
+$transition-base: all $duration-base $ease-in-out;
+$transition-fast: all $duration-fast $ease-in-out;
+$transition-slow: all $duration-slow $ease-in-out;
+$transition-transform: transform $duration-base $ease-in-out;
