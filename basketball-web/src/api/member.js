@@ -84,3 +84,36 @@ export const getUserBalance = () => {
     method: 'get'
   })
 }
+
+/**
+ * 激活会员卡
+ */
+export const activateCard = (cardId) => {
+  return request({
+    url: '/api/member/card/activate',
+    method: 'post',
+    params: { cardId }
+  })
+}
+
+/**
+ * 账户余额充值
+ */
+export const rechargeBalance = (data) => {
+  return request({
+    url: '/api/member/balance/recharge',
+    method: 'post',
+    data
+  })
+}
+
+/**
+ * 获取余额充值记录
+ */
+export const getBalanceRechargeRecords = (params) => {
+  return request({
+    url: '/api/member/balance/records',
+    method: 'get',
+    params
+  })
+}

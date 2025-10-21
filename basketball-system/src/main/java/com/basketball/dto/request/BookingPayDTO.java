@@ -21,4 +21,7 @@ public class BookingPayDTO {
 
     @Schema(description = "在线支付类型：wechat_native-微信扫码, alipay_page-支付宝扫码（当paymentMethod=1时必填）")
     private String paymentType;
+
+    @Schema(description = "会员卡ID（当paymentMethod=3时必填）")
+    private Long cardId;
 }

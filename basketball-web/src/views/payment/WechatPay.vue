@@ -57,6 +57,9 @@
         <el-button type="primary" size="large" @click="checkPaymentStatus">
           支付遇到问题?
         </el-button>
+        <el-button type="success" size="large" @click="handleMockPayment" v-if="paymentNo">
+          模拟支付成功
+        </el-button>
       </div>
     </el-card>
   </div>
@@ -66,7 +69,7 @@
 import { ref, reactive, onMounted, onBeforeUnmount } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { ElMessage, ElMessageBox } from 'element-plus';
-import { createWechatNativePay, queryPayment } from '@/api/payment';
+import { createPayment as createPaymentApi, queryPayment, mockPaymentSuccess } from '@/api/payment';
 import QrCodeDisplay from '@/components/QrCodeDisplay.vue';
 import PaymentStatusPoller from '@/components/PaymentStatusPoller.vue';
 
@@ -111,11 +114,12 @@ const createPayment = async () => {
   paymentNo.value = '';
 
   try {
-    const res = await createWechatNativePay({
+    const res = await createPaymentApi({
       businessNo: paymentInfo.businessNo,
       businessType: paymentInfo.businessType,
-      businessName: paymentInfo.businessName,
-      amount: parseFloat(paymentInfo.amount)
+      paymentType: 'wechat_native',
+      amount: parseFloat(paymentInfo.amount),
+      description: paymentInfo.businessName
     });
 
     if (res.code === 200) {
@@ -235,6 +239,30 @@ const handleCancel = async () => {
     router.back();
   } catch (error) {
     // 用户选择继续支付
+  }
+};
+
+const handleMockPayment = async () => {
+  if (!paymentNo.value) {
+    ElMessage.warning('支付订单不存在');
+    return;
+  }
+
+  try {
+    const res = await mockPaymentSuccess(paymentNo.value);
+
+    if (res.code === 200) {
+      ElMessage.success('模拟支付成功');
+      // 等待一下让后端处理完成
+      setTimeout(() => {
+        checkPaymentStatus();
+      }, 500);
+    } else {
+      ElMessage.error(res.message || '模拟支付失败');
+    }
+  } catch (error) {
+    console.error('模拟支付失败:', error);
+    ElMessage.error('模拟支付失败');
   }
 };
 

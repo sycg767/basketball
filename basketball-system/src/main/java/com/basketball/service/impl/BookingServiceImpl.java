@@ -15,11 +15,17 @@ import com.basketball.entity.User;
 import com.basketball.entity.Venue;
 import com.basketball.entity.VenuePrice;
 import com.basketball.entity.PointsRecord;
+import com.basketball.entity.MemberCard;
+import com.basketball.entity.MemberCardType;
+import com.basketball.entity.MemberCardRecord;
 import com.basketball.mapper.BookingMapper;
 import com.basketball.mapper.PointsRecordMapper;
 import com.basketball.mapper.UserMapper;
 import com.basketball.mapper.VenueMapper;
 import com.basketball.mapper.VenuePriceMapper;
+import com.basketball.mapper.MemberCardMapper;
+import com.basketball.mapper.MemberCardTypeMapper;
+import com.basketball.mapper.MemberCardRecordMapper;
 import com.basketball.service.IBookingService;
 import com.basketball.service.INotificationService;
 import com.basketball.service.IPaymentService;
@@ -77,6 +83,15 @@ public class BookingServiceImpl extends ServiceImpl<BookingMapper, Booking> impl
     @Resource
     private PointsRecordMapper pointsRecordMapper;
 
+    @Resource
+    private MemberCardMapper memberCardMapper;
+
+    @Resource
+    private MemberCardTypeMapper memberCardTypeMapper;
+
+    @Resource
+    private MemberCardRecordMapper memberCardRecordMapper;
+
     /**
      * 创建预订
      */
@@ -124,10 +139,36 @@ public class BookingServiceImpl extends ServiceImpl<BookingMapper, Booking> impl
                                                 createDTO.getStartTime(), user.getMemberLevel());
         BigDecimal totalPrice = pricePerHour.multiply(new BigDecimal(hours));
 
-        // 7. 生成订单号
+        // 7. 检查用户是否有有效的时间卡，如果有则应用折扣
+        BigDecimal actualPrice = totalPrice;
+        BigDecimal discountAmount = BigDecimal.ZERO;
+
+        // 查询用户有效的时间卡
+        LambdaQueryWrapper<MemberCard> cardQuery = new LambdaQueryWrapper<>();
+        cardQuery.eq(MemberCard::getUserId, userId)
+                .eq(MemberCard::getStatus, 1)
+                .ge(MemberCard::getExpireDate, LocalDate.now())
+                .orderByDesc(MemberCard::getCreateTime)
+                .last("LIMIT 1");
+        MemberCard timeCard = memberCardMapper.selectOne(cardQuery);
+
+        if (timeCard != null) {
+            MemberCardType cardType = memberCardTypeMapper.selectById(timeCard.getCardTypeId());
+            if (cardType != null && cardType.getCardType() == 1) {
+                // 时间卡：应用折扣
+                BigDecimal discount = cardType.getDiscount() != null ? cardType.getDiscount() : BigDecimal.ONE;
+                actualPrice = totalPrice.multiply(discount);
+                discountAmount = totalPrice.subtract(actualPrice);
+                log.info("应用时间卡折扣: userId={}, cardId={}, 原价={}, 折扣={}折, 实付={}",
+                        userId, timeCard.getId(), totalPrice,
+                        discount.multiply(new BigDecimal("10")).intValue(), actualPrice);
+            }
+        }
+
+        // 8. 生成订单号
         String bookingNo = "BK" + System.currentTimeMillis();
 
-        // 8. 创建预订
+        // 9. 创建预订
         Booking booking = new Booking();
         booking.setBookingNo(bookingNo);
         booking.setUserId(userId);
@@ -138,8 +179,8 @@ public class BookingServiceImpl extends ServiceImpl<BookingMapper, Booking> impl
         booking.setDuration(hours);
         booking.setBookingType(createDTO.getBookingType() != null ? createDTO.getBookingType() : 1);
         booking.setTotalPrice(totalPrice);
-        booking.setDiscountAmount(BigDecimal.ZERO);
-        booking.setActualPrice(totalPrice);
+        booking.setDiscountAmount(discountAmount);
+        booking.setActualPrice(actualPrice);
         booking.setStatus(0); // 待支付
         booking.setContactName(createDTO.getContactName());
         booking.setContactPhone(createDTO.getContactPhone());
@@ -373,12 +414,126 @@ public class BookingServiceImpl extends ServiceImpl<BookingMapper, Booking> impl
             
         } else if (payDTO.getPaymentMethod() == 3) {
             // 会员卡支付
-            // TODO: 实现会员卡支付逻辑
-            log.warn("会员卡支付功能未实现，当前为测试模式，直接标记为已支付");
-            booking.setPaymentMethod(payDTO.getPaymentMethod());
-            booking.setStatus(1); // 已支付（测试环境）
-            booking.setPayTime(LocalDateTime.now());
-            
+            if (payDTO.getCardId() == null) {
+                throw new BusinessException("请选择会员卡");
+            }
+
+            MemberCard card = memberCardMapper.selectById(payDTO.getCardId());
+            if (card == null || !card.getUserId().equals(booking.getUserId())) {
+                throw new BusinessException("会员卡不存在");
+            }
+            if (card.getStatus() != 1) {
+                throw new BusinessException("会员卡未激活或已失效");
+            }
+
+            MemberCardType cardType = memberCardTypeMapper.selectById(card.getCardTypeId());
+
+            if (cardType.getCardType() == 2) {
+                // 次卡：扣减1次，按原价获得积分
+                if (card.getRemainingTimes() == null || card.getRemainingTimes() < 1) {
+                    throw new BusinessException("会员卡次数不足");
+                }
+                card.setRemainingTimes(card.getRemainingTimes() - 1);
+                memberCardMapper.updateById(card);
+
+                // 记录消费
+                MemberCardRecord record = new MemberCardRecord();
+                record.setCardId(card.getId());
+                record.setUserId(booking.getUserId());
+                record.setRecordType(2);
+                record.setChangeTimes(-1);
+                record.setTimesBefore(card.getRemainingTimes() + 1);
+                record.setTimesAfter(card.getRemainingTimes());
+                record.setRelatedOrderNo(booking.getBookingNo());
+                record.setDescription("预订场地消费（次卡）");
+                memberCardRecordMapper.insert(record);
+
+                booking.setPaymentMethod(payDTO.getPaymentMethod());
+                booking.setStatus(1);
+                booking.setPayTime(LocalDateTime.now());
+                log.info("次卡支付成功: cardId={}, 剩余次数={}", card.getId(), card.getRemainingTimes());
+
+                // 次卡按原价获得积分
+                try {
+                    addPointsForPayment(booking.getUserId(), booking.getTotalPrice(), booking.getBookingNo());
+                } catch (Exception e) {
+                    log.error("增加积分失败: userId={}, bookingNo={}", booking.getUserId(), booking.getBookingNo(), e);
+                }
+
+            } else if (cardType.getCardType() == 3) {
+                // 储值卡：扣减余额，按实际扣除金额获得积分
+                if (card.getBalance() == null || card.getBalance().compareTo(booking.getActualPrice()) < 0) {
+                    throw new BusinessException("会员卡余额不足");
+                }
+                BigDecimal balanceBefore = card.getBalance();
+                card.setBalance(card.getBalance().subtract(booking.getActualPrice()));
+                memberCardMapper.updateById(card);
+
+                // 记录消费
+                MemberCardRecord record = new MemberCardRecord();
+                record.setCardId(card.getId());
+                record.setUserId(booking.getUserId());
+                record.setRecordType(2);
+                record.setChangeAmount(booking.getActualPrice().negate());
+                record.setBalanceBefore(balanceBefore);
+                record.setBalanceAfter(card.getBalance());
+                record.setRelatedOrderNo(booking.getBookingNo());
+                record.setDescription("预订场地消费（储值卡）");
+                memberCardRecordMapper.insert(record);
+
+                booking.setPaymentMethod(payDTO.getPaymentMethod());
+                booking.setStatus(1);
+                booking.setPayTime(LocalDateTime.now());
+                log.info("储值卡支付成功: cardId={}, 扣除金额={}, 剩余余额={}",
+                        card.getId(), booking.getActualPrice(), card.getBalance());
+
+                // 储值卡按实际扣除金额获得积分
+                try {
+                    addPointsForPayment(booking.getUserId(), booking.getActualPrice(), booking.getBookingNo());
+                } catch (Exception e) {
+                    log.error("增加积分失败: userId={}, bookingNo={}", booking.getUserId(), booking.getBookingNo(), e);
+                }
+
+            } else if (cardType.getCardType() == 1) {
+                // 时间卡：应用折扣扣除金额，按原价获得积分
+                if (card.getExpireDate() != null && LocalDate.now().isAfter(card.getExpireDate())) {
+                    throw new BusinessException("会员卡已过期");
+                }
+
+                // 应用会员卡折扣
+                BigDecimal discount = cardType.getDiscount() != null ? cardType.getDiscount() : BigDecimal.ONE;
+                BigDecimal discountedAmount = booking.getTotalPrice().multiply(discount);
+
+                // 记录消费（包含折扣信息）
+                MemberCardRecord record = new MemberCardRecord();
+                record.setCardId(card.getId());
+                record.setUserId(booking.getUserId());
+                record.setRecordType(2);
+                record.setChangeAmount(discountedAmount.negate());
+                record.setRelatedOrderNo(booking.getBookingNo());
+                record.setDescription("时间卡预订场地（原价¥" + booking.getTotalPrice() +
+                                    "，折扣" + discount.multiply(new BigDecimal("10")).intValue() +
+                                    "折，实付¥" + discountedAmount + "）");
+                memberCardRecordMapper.insert(record);
+
+                booking.setPaymentMethod(payDTO.getPaymentMethod());
+                booking.setStatus(1);
+                booking.setPayTime(LocalDateTime.now());
+                log.info("时间卡支付成功: cardId={}, 原价={}, 折扣={}折, 实付={}",
+                        card.getId(), booking.getTotalPrice(),
+                        discount.multiply(new BigDecimal("10")).intValue(), discountedAmount);
+
+                // 时间卡按原价获得积分
+                try {
+                    addPointsForPayment(booking.getUserId(), booking.getTotalPrice(), booking.getBookingNo());
+                } catch (Exception e) {
+                    log.error("增加积分失败: userId={}, bookingNo={}", booking.getUserId(), booking.getBookingNo(), e);
+                }
+
+            } else {
+                throw new BusinessException("不支持的会员卡类型");
+            }
+
         } else if (payDTO.getPaymentMethod() == 4) {
             // 现场支付 - 只更新支付方式，不修改状态
             booking.setPaymentMethod(payDTO.getPaymentMethod());

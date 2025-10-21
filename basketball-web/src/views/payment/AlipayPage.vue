@@ -13,27 +13,22 @@
 
       <div v-if="loading" class="loading-box">
         <el-icon class="is-loading" :size="48"><Loading /></el-icon>
-        <p>正在跳转到支付宝...</p>
+        <p>正在生成支付二维码...</p>
       </div>
 
       <div v-else-if="paymentUrl" class="payment-content">
-        <div class="info-box">
-          <el-icon :size="64" color="#1677FF"><InfoFilled /></el-icon>
-          <h3>即将跳转到支付宝</h3>
-          <p>页面将自动跳转到支付宝完成支付</p>
-
-          <div class="manual-jump">
-            <p>如果页面没有自动跳转,请点击下方按钮:</p>
-            <el-button type="primary" size="large" @click="jumpToAlipay">
-              立即跳转支付宝
-            </el-button>
+        <div class="qrcode-box">
+          <div class="qrcode-image">
+            <img :src="paymentUrl" alt="支付宝支付二维码" />
           </div>
+          <h3>请使用支付宝扫码支付</h3>
+          <p>打开支付宝APP，扫描二维码完成支付</p>
 
           <el-alert type="info" :closable="false" show-icon class="tips">
             <template #title>
               <div class="tips-content">
-                <p>• 支付完成后请返回本页面</p>
-                <p>• 支付过程中请勿关闭浏览器</p>
+                <p>• 请在5分钟内完成支付</p>
+                <p>• 支付完成后会自动跳转</p>
               </div>
             </template>
           </el-alert>
@@ -51,11 +46,14 @@
           @failed="handlePaymentFailed"
         />
 
-        <!-- 确认按钮 -->
-        <div class="confirm-actions">
+        <!-- 操作按钮 -->
+        <div class="payment-actions">
           <el-button size="large" @click="handleCancel">取消支付</el-button>
-          <el-button type="success" size="large" @click="confirmPayment">
-            我已完成支付
+          <el-button type="primary" size="large" @click="confirmPayment">
+            支付遇到问题?
+          </el-button>
+          <el-button type="success" size="large" @click="handleMockPayment" v-if="paymentNo">
+            模拟支付成功
           </el-button>
         </div>
       </div>
@@ -74,7 +72,7 @@ import { ref, reactive, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { Loading, InfoFilled, CircleCloseFilled } from '@element-plus/icons-vue';
-import { createAlipayPagePay, queryPayment } from '@/api/payment';
+import { createPayment as createPaymentApi, queryPayment, mockPaymentSuccess } from '@/api/payment';
 import PaymentStatusPoller from '@/components/PaymentStatusPoller.vue';
 
 const route = useRoute();
@@ -117,23 +115,29 @@ const createPayment = async () => {
   paymentNo.value = '';
 
   try {
-    const res = await createAlipayPagePay({
+    const res = await createPaymentApi({
       businessNo: paymentInfo.businessNo,
       businessType: paymentInfo.businessType,
-      businessName: paymentInfo.businessName,
-      amount: parseFloat(paymentInfo.amount)
+      paymentType: 'alipay_page',
+      amount: parseFloat(paymentInfo.amount),
+      description: paymentInfo.businessName
     });
 
     if (res.code === 200) {
-      paymentUrl.value = res.data.paymentUrl || res.data.formHtml;
+      paymentUrl.value = res.data.qrCodeUrl || res.data.paymentUrl || res.data.formHtml;
       paymentNo.value = res.data.paymentNo;
 
       ElMessage.success('支付订单已创建');
 
-      // 自动跳转
-      setTimeout(() => {
-        jumpToAlipay();
-      }, 2000);
+      // 如果是二维码URL，不自动跳转
+      if (res.data.qrCodeUrl) {
+        ElMessage.info('请扫描二维码完成支付');
+      } else {
+        // 自动跳转
+        setTimeout(() => {
+          jumpToAlipay();
+        }, 2000);
+      }
     } else {
       ElMessage.error(res.message || '创建支付失败');
     }
@@ -234,6 +238,30 @@ const handleCancel = async () => {
     // 用户选择继续支付
   }
 };
+
+const handleMockPayment = async () => {
+  if (!paymentNo.value) {
+    ElMessage.warning('支付订单不存在');
+    return;
+  }
+
+  try {
+    const res = await mockPaymentSuccess(paymentNo.value);
+
+    if (res.code === 200) {
+      ElMessage.success('模拟支付成功');
+      // 等待一下让后端处理完成
+      setTimeout(() => {
+        confirmPayment();
+      }, 500);
+    } else {
+      ElMessage.error(res.message || '模拟支付失败');
+    }
+  } catch (error) {
+    console.error('模拟支付失败:', error);
+    ElMessage.error('模拟支付失败');
+  }
+};
 </script>
 
 <style lang="scss" scoped>
@@ -289,6 +317,47 @@ const handleCancel = async () => {
     }
 
     .payment-content {
+      .qrcode-box {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+        padding: 40px 20px;
+
+        .qrcode-image {
+          width: 260px;
+          height: 260px;
+          padding: 20px;
+          background: #fff;
+          border: 1px solid #e4e7ed;
+          border-radius: 8px;
+          box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+
+          img {
+            width: 100%;
+            height: 100%;
+            display: block;
+          }
+        }
+
+        h3 {
+          margin: 0;
+          font-size: 18px;
+          color: #303133;
+        }
+
+        p {
+          margin: 0;
+          font-size: 14px;
+          color: #909399;
+        }
+
+        .tips {
+          width: 100%;
+          margin-top: 20px;
+        }
+      }
+
       .info-box {
         display: flex;
         flex-direction: column;
@@ -333,7 +402,7 @@ const handleCancel = async () => {
         }
       }
 
-      .confirm-actions {
+      .payment-actions {
         display: flex;
         justify-content: center;
         gap: 12px;

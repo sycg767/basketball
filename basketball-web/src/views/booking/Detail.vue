@@ -218,6 +218,26 @@
           </div>
         </div>
 
+        <!-- 会员卡支付 -->
+        <div
+          class="payment-method-card"
+          :class="{ active: payForm.paymentMethod === 3 }"
+          @click="selectPaymentMethod('membercard')"
+        >
+          <div class="method-icon membercard-icon">
+            <el-icon :size="32"><CreditCard /></el-icon>
+          </div>
+          <div class="method-info">
+            <div class="method-name">会员卡支付</div>
+            <div class="method-desc">使用会员卡次数或余额支付</div>
+          </div>
+          <div class="method-check">
+            <el-icon v-if="payForm.paymentMethod === 3" color="#E6A23C" :size="24">
+              <SuccessFilled />
+            </el-icon>
+          </div>
+        </div>
+
         <!-- 现场支付 -->
         <div
           class="payment-method-card"
@@ -236,6 +256,33 @@
               <SuccessFilled />
             </el-icon>
           </div>
+        </div>
+      </div>
+
+      <!-- 会员卡选择 -->
+      <div v-if="payForm.paymentMethod === 3" class="membercard-selection">
+        <el-divider />
+        <div class="section-title">选择会员卡</div>
+        <el-select
+          v-model="selectedCardId"
+          placeholder="请选择会员卡"
+          style="width: 100%;"
+          @change="handleCardChange"
+        >
+          <el-option
+            v-for="card in availableCards"
+            :key="card.id"
+            :label="`${card.cardName} (${getCardInfo(card)})`"
+            :value="card.id"
+          />
+        </el-select>
+
+        <!-- 显示使用规则 -->
+        <div v-if="selectedCard" class="card-rules-info">
+          <el-button type="text" @click="showRulesDialog = true">
+            <el-icon><InfoFilled /></el-icon>
+            查看使用规则
+          </el-button>
         </div>
       </div>
 
@@ -301,7 +348,7 @@
             size="large"
             @click="handleConfirmPay"
             :loading="paying"
-            :disabled="!payForm.paymentType && payForm.paymentMethod !== 2 && payForm.paymentMethod !== 4"
+            :disabled="isPayButtonDisabled()"
           >
             确认支付
           </el-button>
@@ -339,6 +386,13 @@
         <el-button type="danger" @click="confirmCancel" :loading="canceling">确认取消</el-button>
       </template>
     </el-dialog>
+
+    <!-- 会员卡规则对话框 -->
+    <CardRulesDialog
+      v-model="showRulesDialog"
+      :card-type="selectedCard?.cardType"
+      :card-info="selectedCard"
+    />
   </div>
 </template>
 
@@ -353,14 +407,18 @@ import {
   Clock,
   Loading,
   Wallet,
-  Money
+  Money,
+  CreditCard,
+  InfoFilled
 } from '@element-plus/icons-vue';
 import {
   getBookingDetail,
   payBooking,
   cancelBooking
 } from '@/api/booking';
+import { getMyCards } from '@/api/member';
 import BackButton from '@/components/common/BackButton.vue';
+import CardRulesDialog from '@/components/common/CardRulesDialog.vue';
 
 const route = useRoute();
 const router = useRouter();
@@ -392,12 +450,32 @@ const showPaymentStatus = () => {
   return paymentStatus.value && paymentStatus.value !== '';
 };
 
+// 判断确认支付按钮是否禁用
+const isPayButtonDisabled = () => {
+  // 在线支付需要选择支付类型
+  if (payForm.paymentMethod === 1 && !payForm.paymentType) {
+    return true;
+  }
+  // 会员卡支付需要选择会员卡
+  if (payForm.paymentMethod === 3 && !selectedCardId.value) {
+    return true;
+  }
+  // 余额支付和现场支付不需要额外条件
+  return false;
+};
+
 // 取消相关
 const cancelDialogVisible = ref(false);
 const canceling = ref(false);
 const cancelForm = reactive({
   cancelReason: ''
 });
+
+// 会员卡相关
+const availableCards = ref([]);
+const selectedCardId = ref(null);
+const selectedCard = ref(null);
+const showRulesDialog = ref(false);
 
 // 获取预订详情
 const fetchBookingDetail = async () => {
@@ -411,6 +489,35 @@ const fetchBookingDetail = async () => {
   } finally {
     loading.value = false;
   }
+};
+
+// 获取可用会员卡
+const fetchAvailableCards = async () => {
+  try {
+    const res = await getMyCards({ current: 1, size: 100 });
+    if (res.code === 200) {
+      availableCards.value = res.data?.records?.filter(card => card.status === 1) || [];
+    }
+  } catch (error) {
+    console.error('获取会员卡失败:', error);
+  }
+};
+
+// 获取会员卡信息显示
+const getCardInfo = (card) => {
+  if (card.cardType === 2) {
+    return `剩余${card.remainingTimes}次`;
+  } else if (card.cardType === 3) {
+    return `余额¥${card.balance}`;
+  } else if (card.cardType === 1) {
+    return `期限卡`;
+  }
+  return '';
+};
+
+// 会员卡选择变化
+const handleCardChange = (cardId) => {
+  selectedCard.value = availableCards.value.find(card => card.id === cardId);
 };
 
 
@@ -481,6 +588,11 @@ const selectPaymentMethod = (method) => {
   } else if (method === 'balance') {
     payForm.paymentMethod = 2;
     payForm.paymentType = '';
+  } else if (method === 'membercard') {
+    payForm.paymentMethod = 3;
+    payForm.paymentType = '';
+    // 加载会员卡列表
+    fetchAvailableCards();
   } else if (method === 'onsite') {
     payForm.paymentMethod = 4;
     payForm.paymentType = '';
@@ -552,10 +664,22 @@ const startPaymentPolling = () => {
 const generateQRCode = async () => {
   refreshing.value = true;
   try {
-    const res = await payBooking(bookingDetail.value.id, {
+    const payData = {
       paymentMethod: payForm.paymentMethod,
       paymentType: payForm.paymentType
-    });
+    };
+
+    // 如果是会员卡支付，添加cardId
+    if (payForm.paymentMethod === 3) {
+      if (!selectedCardId.value) {
+        ElMessage.warning('请选择会员卡');
+        refreshing.value = false;
+        return;
+      }
+      payData.cardId = selectedCardId.value;
+    }
+
+    const res = await payBooking(bookingDetail.value.id, payData);
 
     paymentResult.value = res.data;
 
@@ -640,11 +764,24 @@ const confirmPay = async () => {
   if (isOnlinePayment()) {
     await generateQRCode();
   } else {
+    // 会员卡支付需要验证
+    if (payForm.paymentMethod === 3 && !selectedCardId.value) {
+      ElMessage.warning('请选择会员卡');
+      return;
+    }
+
     paying.value = true;
     try {
-      await payBooking(bookingDetail.value.id, {
+      const payData = {
         paymentMethod: payForm.paymentMethod
-      });
+      };
+
+      // 如果是会员卡支付，添加cardId
+      if (payForm.paymentMethod === 3) {
+        payData.cardId = selectedCardId.value;
+      }
+
+      await payBooking(bookingDetail.value.id, payData);
       ElMessage.success('支付成功');
       payDialogVisible.value = false;
       fetchBookingDetail();
@@ -940,6 +1077,11 @@ onUnmounted(() => {
           color: #F56C6C;
         }
 
+        &.membercard-icon {
+          background: #FFF7E6;
+          color: #E6A23C;
+        }
+
         &.onsite-icon {
           background: #F5F5F5;
           color: #909399;
@@ -969,6 +1111,22 @@ onUnmounted(() => {
         align-items: center;
         justify-content: center;
       }
+    }
+  }
+
+  .membercard-selection {
+    margin-top: 16px;
+
+    .section-title {
+      font-size: 14px;
+      font-weight: 500;
+      color: #303133;
+      margin-bottom: 12px;
+    }
+
+    .card-rules-info {
+      margin-top: 12px;
+      text-align: center;
     }
   }
 

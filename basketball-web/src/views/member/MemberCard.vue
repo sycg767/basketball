@@ -76,6 +76,15 @@
           <!-- 卡片底部操作 -->
           <div class="card-actions" @click.stop>
             <el-button
+              v-if="card.status === 0"
+              type="primary"
+              size="small"
+              @click="handleActivate(card)"
+              class="card-action-btn"
+            >
+              激活
+            </el-button>
+            <el-button
               v-if="card.cardType === 3 && card.status === 1"
               type="primary"
               size="small"
@@ -190,6 +199,19 @@
         @current-change="handleRecordPageChange"
       />
     </el-dialog>
+
+    <!-- 激活会员卡对话框 -->
+    <CardRulesDialog
+      v-model="activateDialogVisible"
+      title="激活会员卡"
+      :card-info="currentCard"
+      :card-type="currentCard?.cardType"
+      :show-confirm="true"
+      confirm-text="确认激活"
+      :show-activate-warning="currentCard?.cardType === 1"
+      :loading="activateLoading"
+      @confirm="handleConfirmActivate"
+    />
   </div>
 </template>
 
@@ -198,8 +220,9 @@ import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus, Document, CreditCard } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
-import { getMyCards, rechargeCard, getCardRecords } from '@/api/member'
+import { getMyCards, rechargeCard, getCardRecords, activateCard } from '@/api/member'
 import BackButton from '@/components/common/BackButton.vue'
+import CardRulesDialog from '@/components/common/CardRulesDialog.vue'
 
 const router = useRouter()
 
@@ -240,6 +263,10 @@ const recordQueryParams = reactive({
   page: 1,
   pageSize: 10
 })
+
+// 激活对话框
+const activateDialogVisible = ref(false)
+const activateLoading = ref(false)
 
 // 获取会员卡列表
 const fetchCardList = async () => {
@@ -306,6 +333,29 @@ const handleConfirmRecharge = async () => {
     ElMessage.error(error.message || '充值失败')
   } finally {
     rechargeLoading.value = false
+  }
+}
+
+// 处理激活
+const handleActivate = (card) => {
+  currentCard.value = card
+  activateDialogVisible.value = true
+}
+
+// 确认激活
+const handleConfirmActivate = async () => {
+  activateLoading.value = true
+  try {
+    const res = await activateCard(currentCard.value.id)
+    if (res.code === 200) {
+      ElMessage.success('激活成功')
+      activateDialogVisible.value = false
+      fetchCardList()
+    }
+  } catch (error) {
+    ElMessage.error(error.message || '激活失败')
+  } finally {
+    activateLoading.value = false
   }
 }
 

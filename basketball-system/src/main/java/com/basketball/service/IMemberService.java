@@ -104,4 +104,31 @@ public interface IMemberService {
      * @param orderNo 订单号
      */
     void addPoints(Long userId, java.math.BigDecimal amount, String orderNo);
+
+    /**
+     * 激活会员卡
+     *
+     * @param userId 用户ID
+     * @param cardId 会员卡ID
+     */
+    void activateCard(Long userId, Long cardId);
+
+    /**
+     * 账户余额充值
+     *
+     * @param userId 用户ID
+     * @param dto 充值请求
+     * @return 支付结果
+     */
+    com.basketball.dto.response.PaymentResultVO rechargeBalance(Long userId, com.basketball.dto.request.BalanceRechargeDTO dto);
+
+    /**
+     * 获取余额充值记录
+     *
+     * @param userId 用户ID
+     * @param page   页码
+     * @param pageSize 每页大小
+     * @return 充值记录列表
+     */
+    PageResult<com.basketball.vo.BalanceRechargeRecordVO> getBalanceRechargeRecords(Long userId, Integer page, Integer pageSize);
 }

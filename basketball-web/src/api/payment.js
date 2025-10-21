@@ -125,3 +125,23 @@ export function closeAlipayment(paymentNo) {
     method: 'post'
   });
 }
+
+/**
+ * 模拟支付成功（仅测试环境）
+ */
+export function mockPaymentSuccess(paymentNo) {
+  return request({
+    url: `/api/mock/payment/scan-success/${paymentNo}`,
+    method: 'post'
+  });
+}
+
+/**
+ * 模拟支付失败（仅测试环境）
+ */
+export function mockPaymentFail(paymentNo) {
+  return request({
+    url: `/api/mock/payment/scan-fail/${paymentNo}`,
+    method: 'post'
+  });
+}

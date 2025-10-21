@@ -57,7 +57,7 @@
           </div>
           <div class="account-item">
             <div class="account-label">会员到期</div>
-            <div class="account-value">{{ memberExpireDate || '永久有效' }}</div>
+            <div class="account-value">{{ memberExpireDate || '未开通' }}</div>
           </div>
         </div>
       </div>
@@ -215,7 +215,8 @@ import {
   Money,
   Bell,
   ArrowRight,
-  Refresh
+  Refresh,
+  Wallet
 } from '@element-plus/icons-vue';
 
 const router = useRouter();
@@ -250,10 +251,58 @@ const loadUserData = async () => {
     }
     if (cardsRes.code === 200) {
       userCards.value = cardsRes.data?.records || [];
-      // 设置会员到期时间（取最早的有效会员卡）
-      const validCard = userCards.value.find(card => card.status === 1);
-      if (validCard && validCard.expireTime) {
-        memberExpireDate.value = new Date(validCard.expireTime).toLocaleDateString('zh-CN');
+      // 设置会员到期时间（取最晚的有效会员卡）
+      const validCards = userCards.value.filter(card => card.status === 1 || card.status === '1');
+
+      console.log('会员卡数据:', userCards.value);
+      console.log('有效会员卡:', validCards);
+
+      if (validCards.length > 0) {
+        // 找到最晚到期的会员卡
+        const latestCard = validCards.reduce((latest, card) => {
+          if (!latest.expireDate) return card;
+          if (!card.expireDate) return latest;
+          return new Date(card.expireDate) > new Date(latest.expireDate) ? card : latest;
+        });
+
+        if (latestCard && latestCard.expireDate) {
+          // 处理日期字符串 (格式: YYYY-MM-DD)
+          let expireDate;
+          if (typeof latestCard.expireDate === 'number') {
+            expireDate = new Date(latestCard.expireDate);
+          } else {
+            // 日期字符串格式: "2026-10-21"
+            expireDate = new Date(latestCard.expireDate);
+          }
+
+          // 验证日期有效性
+          if (!isNaN(expireDate.getTime())) {
+            const now = new Date();
+            // 设置时间为当天结束，避免当天误判为过期
+            now.setHours(0, 0, 0, 0);
+            expireDate.setHours(0, 0, 0, 0);
+
+            // 检查是否已过期
+            if (expireDate < now) {
+              memberExpireDate.value = '已过期';
+            } else {
+              // 格式化日期为 YYYY/MM/DD
+              const year = expireDate.getFullYear();
+              const month = String(expireDate.getMonth() + 1).padStart(2, '0');
+              const day = String(expireDate.getDate()).padStart(2, '0');
+              memberExpireDate.value = `${year}/${month}/${day}`;
+            }
+
+            console.log('会员到期时间:', memberExpireDate.value);
+          } else {
+            console.error('无效的会员到期时间:', latestCard.expireDate);
+            memberExpireDate.value = '未开通';
+          }
+        } else {
+          memberExpireDate.value = '未开通';
+        }
+      } else {
+        memberExpireDate.value = '未开通';
       }
     }
   } catch (error) {
@@ -329,6 +378,10 @@ const goToPayment = () => {
 
 const goToNotifications = () => {
   router.push('/notification/list');
+};
+
+const goProfile = () => {
+  router.push('/profile');
 };
 </script>
 
@@ -524,11 +577,12 @@ const goToNotifications = () => {
           border-radius: $radius-lg;
           padding: 20px;
           text-align: center;
-          height: 100px;
           display: flex;
           flex-direction: column;
           justify-content: center;
           align-items: center;
+          width: 354.07px;
+          height: 100px;
 
           .account-label {
             font-size: 13px;
@@ -538,13 +592,15 @@ const goToNotifications = () => {
           }
 
           .account-value {
-            font-size: 16px;
+            font-size: 20px;
             font-weight: 600;
             color: $primary;
             line-height: 1.2;
             word-break: break-word;
             overflow: hidden;
             text-overflow: ellipsis;
+
+            }
           }
         }
       }
@@ -1033,5 +1089,5 @@ const goToNotifications = () => {
       }
     }
   }
-}
+
 </style>

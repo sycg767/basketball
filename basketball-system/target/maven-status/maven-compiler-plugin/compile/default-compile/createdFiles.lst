@@ -114,6 +114,7 @@ com\basketball\mapper\CoursePopularityAnalysisMapper.class
 com\basketball\service\ICourseEnrollmentService.class
 com\basketball\service\impl\WechatPayServiceImpl.class
 com\basketball\common\exception\GlobalExceptionHandler.class
+com\basketball\dto\request\BalanceRechargeDTO.class
 com\basketball\mapper\UserOauthMapper.class
 com\basketball\entity\Venue.class
 com\basketball\controller\WechatController.class
@@ -166,6 +167,7 @@ com\basketball\config\WebMvcConfig.class
 com\basketball\mapper\StatisticsCacheMapper.class
 com\basketball\entity\PaymentConfig.class
 com\basketball\service\IOperationLogService.class
+com\basketball\vo\BalanceRechargeRecordVO.class
 com\basketball\service\IUserService.class
 com\basketball\service\impl\MemberServiceImpl$1.class
 com\basketball\entity\OperationLog.class

@@ -31,6 +31,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -66,6 +67,9 @@ public class PaymentServiceImpl implements IPaymentService {
     @Resource
     private PointsRecordMapper pointsRecordMapper;
 
+    @Resource
+    private com.basketball.mapper.FinancialRecordMapper financialRecordMapper;
+
     /**
      * 创建支付订单
      */
@@ -87,15 +91,21 @@ public class PaymentServiceImpl implements IPaymentService {
             // throw new BusinessException("不支持的支付方式");
         }
 
-        // 2. 检查是否已有待支付订单
+        // 2. 检查是否已有待支付订单，自动取消所有旧订单
         LambdaQueryWrapper<PaymentOrder> existQuery = new LambdaQueryWrapper<>();
         existQuery.eq(PaymentOrder::getBusinessNo, createDTO.getBusinessNo())
                 .in(PaymentOrder::getStatus, 0, 1); // 待支付或支付中
-        PaymentOrder existOrder = paymentOrderMapper.selectOne(existQuery);
+        List<PaymentOrder> existOrders = paymentOrderMapper.selectList(existQuery);
 
-        if (existOrder != null) {
-            log.info("业务订单已存在待支付订单: paymentNo={}", existOrder.getPaymentNo());
-            return convertToVO(existOrder);
+        if (!existOrders.isEmpty()) {
+            // 自动取消所有未支付的旧订单
+            for (PaymentOrder existOrder : existOrders) {
+                existOrder.setStatus(4); // 已取消
+                existOrder.setErrorMsg("创建新订单，旧订单自动取消");
+                existOrder.setUpdateTime(LocalDateTime.now());
+                paymentOrderMapper.updateById(existOrder);
+                log.info("自动取消旧订单: paymentNo={}", existOrder.getPaymentNo());
+            }
         }
 
         // 3. 创建支付订单
@@ -237,29 +247,33 @@ public class PaymentServiceImpl implements IPaymentService {
                 order.setUpdateTime(LocalDateTime.now());
                 paymentOrderMapper.updateById(order);
 
-                // TODO: 更新业务订单状态 (预订订单、会员卡订单等)
-                // 更新预订订单状态为已支付
-                LambdaQueryWrapper<Booking> bookingQuery = new LambdaQueryWrapper<>();
-                bookingQuery.eq(Booking::getBookingNo, order.getBusinessNo());
-                Booking booking = bookingMapper.selectOne(bookingQuery);
+                // 更新业务订单状态
+                if ("booking".equals(order.getBusinessType())) {
+                    // 预订订单
+                    LambdaQueryWrapper<Booking> bookingQuery = new LambdaQueryWrapper<>();
+                    bookingQuery.eq(Booking::getBookingNo, order.getBusinessNo());
+                    Booking booking = bookingMapper.selectOne(bookingQuery);
 
-                if (booking != null) {
-                    booking.setStatus(1); // 已支付
-                    booking.setPayTime(LocalDateTime.now());
-                    booking.setUpdateTime(LocalDateTime.now());
-                    bookingMapper.updateById(booking);
+                    if (booking != null) {
+                        booking.setStatus(1);
+                        booking.setPayTime(LocalDateTime.now());
+                        booking.setUpdateTime(LocalDateTime.now());
+                        bookingMapper.updateById(booking);
 
-                    log.info("预订订单状态更新成功: bookingId={}, bookingNo={}, status=1",
-                            booking.getId(), booking.getBookingNo());
+                        log.info("预订订单状态更新成功: bookingId={}, bookingNo={}, status=1",
+                                booking.getId(), booking.getBookingNo());
 
-                    // 增加积分：消费金额的1%转换为积分（1元=1积分）
-                    try {
-                        addPointsForPayment(booking.getUserId(), booking.getActualPrice(), booking.getBookingNo());
-                    } catch (Exception e) {
-                        log.error("增加积分失败: userId={}, bookingNo={}", booking.getUserId(), booking.getBookingNo(), e);
+                        try {
+                            addPointsForPayment(booking.getUserId(), booking.getActualPrice(), booking.getBookingNo());
+                        } catch (Exception e) {
+                            log.error("增加积分失败: userId={}, bookingNo={}", booking.getUserId(), booking.getBookingNo(), e);
+                        }
+                    } else {
+                        log.warn("未找到对应的预订订单: businessNo={}", order.getBusinessNo());
                     }
-                } else {
-                    log.warn("未找到对应的预订订单: businessNo={}", order.getBusinessNo());
+                } else if ("balance_recharge".equals(order.getBusinessType())) {
+                    // 余额充值
+                    handleBalanceRecharge(order);
                 }
 
                 log.info("支付成功: paymentNo={}, tradeNo={}", paymentNo, tradeNo);
@@ -399,6 +413,62 @@ public class PaymentServiceImpl implements IPaymentService {
         String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
         String random = String.format("%06d", (int) (Math.random() * 1000000));
         return "PAY" + timestamp + random;
+    }
+
+    /**
+     * 处理余额充值
+     */
+    private void handleBalanceRecharge(PaymentOrder order) {
+        User user = userMapper.selectById(order.getUserId());
+        if (user == null) {
+            log.error("用户不存在，余额充值失败: userId={}", order.getUserId());
+            return;
+        }
+
+        BigDecimal balanceBefore = user.getBalance() != null ? user.getBalance() : BigDecimal.ZERO;
+        BigDecimal balanceAfter = balanceBefore.add(order.getActualAmount());
+
+        // 更新用户余额
+        user.setBalance(balanceAfter);
+        user.setUpdateTime(LocalDateTime.now());
+        userMapper.updateById(user);
+
+        // 创建财务流水记录
+        com.basketball.entity.FinancialRecord record = new com.basketball.entity.FinancialRecord();
+        record.setRecordNo(generateRecordNo());
+        record.setRecordType(1); // 1-收入
+        record.setBusinessType(5); // 5-余额充值
+        record.setOrderNo(order.getPaymentNo());
+        record.setUserId(order.getUserId());
+        record.setAmount(order.getActualAmount());
+        record.setBalanceBefore(balanceBefore);
+        record.setBalanceAfter(balanceAfter);
+        record.setPaymentMethod(getPaymentMethodCode(order.getPaymentType()));
+        record.setDescription("账户余额充值");
+        record.setCreateTime(LocalDateTime.now());
+        financialRecordMapper.insert(record);
+
+        log.info("余额充值成功: userId={}, amount={}, balanceBefore={}, balanceAfter={}, recordNo={}",
+                user.getId(), order.getActualAmount(), balanceBefore, balanceAfter, record.getRecordNo());
+    }
+
+    /**
+     * 生成财务流水号
+     */
+    private String generateRecordNo() {
+        String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
+        String random = String.format("%06d", (int) (Math.random() * 1000000));
+        return "REC" + timestamp + random;
+    }
+
+    /**
+     * 获取支付方式代码
+     */
+    private Integer getPaymentMethodCode(String paymentType) {
+        if (paymentType == null) return 0;
+        if (paymentType.startsWith("wechat")) return 1; // 微信支付
+        if (paymentType.startsWith("alipay")) return 2; // 支付宝
+        return 0; // 其他
     }
 
     /**

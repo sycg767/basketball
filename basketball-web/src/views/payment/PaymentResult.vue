@@ -55,7 +55,7 @@
             size="large"
             @click="handleViewOrder"
           >
-            查看订单
+            查看支付记录
           </el-button>
           <el-button
             v-else
@@ -76,10 +76,10 @@
           >
             <template #title>
               <div class="tips-content">
-                <p v-if="isSuccess">• 您可以在"我的订单"中查看订单详情</p>
+                <p v-if="isSuccess">• 您可以在"支付记录"中查看所有支付详情</p>
                 <p v-if="isSuccess">• 如有疑问，请联系客服</p>
                 <p v-if="!isSuccess">• 如果已完成支付但显示失败，请联系客服</p>
-                <p v-if="!isSuccess">• 您也可以稍后在"我的订单"中继续支付</p>
+                <p v-if="!isSuccess">• 您也可以稍后重新支付</p>
               </div>
             </template>
           </el-alert>
@@ -142,8 +142,8 @@ const handleBackHome = () => {
 };
 
 const handleViewOrder = () => {
-  // 跳转到订单列表页面
-  router.push('/user/orders');
+  // 跳转到支付记录页面
+  router.push('/payment/method');
 };
 
 const handleRetry = () => {

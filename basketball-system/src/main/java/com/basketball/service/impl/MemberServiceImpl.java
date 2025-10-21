@@ -57,6 +57,12 @@ public class MemberServiceImpl implements IMemberService {
     @Resource
     private ObjectMapper objectMapper;
 
+    @Resource
+    private com.basketball.service.IPaymentService paymentService;
+
+    @Resource
+    private PaymentOrderMapper paymentOrderMapper;
+
     @Override
     public PageResult<MemberCardTypeVO> listCardTypes() {
         // 查询上架的会员卡类型
@@ -125,10 +131,12 @@ public class MemberServiceImpl implements IMemberService {
         record.setDescription("购买会员卡");
         cardRecordMapper.insert(record);
 
-        // 5. 更新用户会员等级
+        // 5. 更新用户会员等级（只在购买更高等级会员卡时更新）
         User user = userMapper.selectById(userId);
-        if (user.getMemberLevel() < cardType.getMemberLevel()) {
-            user.setMemberLevel(cardType.getMemberLevel());
+        Integer currentLevel = user.getMemberLevel() != null ? user.getMemberLevel() : 0;
+        Integer cardLevel = cardType.getMemberLevel() != null ? cardType.getMemberLevel() : 0;
+        if (currentLevel < cardLevel) {
+            user.setMemberLevel(cardLevel);
             userMapper.updateById(user);
         }
 
@@ -395,5 +403,92 @@ public class MemberServiceImpl implements IMemberService {
             return java.math.BigDecimal.ZERO;
         }
         return user.getBalance() != null ? user.getBalance() : java.math.BigDecimal.ZERO;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void activateCard(Long userId, Long cardId) {
+        MemberCard card = memberCardMapper.selectById(cardId);
+        if (card == null || !card.getUserId().equals(userId)) {
+            throw new BusinessException("会员卡不存在");
+        }
+        if (card.getStatus() == 1) {
+            throw new BusinessException("会员卡已激活");
+        }
+
+        MemberCardType cardType = cardTypeMapper.selectById(card.getCardTypeId());
+
+        // 激活会员卡
+        card.setStatus(1);
+        card.setActivateTime(LocalDateTime.now());
+
+        // 时间卡设置生效日期
+        if (cardType.getCardType() == 1) {
+            card.setStartDate(LocalDate.now());
+            card.setExpireDate(LocalDate.now().plusDays(cardType.getDuration()));
+        }
+
+        memberCardMapper.updateById(card);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public com.basketball.dto.response.PaymentResultVO rechargeBalance(Long userId, com.basketball.dto.request.BalanceRechargeDTO dto) {
+        User user = userMapper.selectById(userId);
+        if (user == null) {
+            throw new BusinessException("用户不存在");
+        }
+
+        // 创建支付订单
+        com.basketball.dto.request.PaymentCreateDTO paymentDTO = new com.basketball.dto.request.PaymentCreateDTO();
+        paymentDTO.setBusinessNo("RECHARGE" + System.currentTimeMillis());
+        paymentDTO.setBusinessType("balance_recharge");
+        paymentDTO.setAmount(dto.getAmount());
+        paymentDTO.setDescription("账户余额充值");
+        paymentDTO.setPaymentType(dto.getPaymentType());
+        paymentDTO.setClientIp(dto.getClientIp());
+
+        return paymentService.createPayment(userId, paymentDTO);
+    }
+
+    @Override
+    public PageResult<com.basketball.vo.BalanceRechargeRecordVO> getBalanceRechargeRecords(Long userId, Integer page, Integer pageSize) {
+        Page<PaymentOrder> pageParam = new Page<>(page, pageSize);
+        LambdaQueryWrapper<PaymentOrder> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(PaymentOrder::getUserId, userId)
+                .eq(PaymentOrder::getBusinessType, "balance_recharge")
+                .orderByDesc(PaymentOrder::getCreateTime);
+
+        Page<PaymentOrder> result = paymentOrderMapper.selectPage(pageParam, wrapper);
+
+        List<com.basketball.vo.BalanceRechargeRecordVO> voList = result.getRecords().stream()
+                .map(this::convertToBalanceRechargeRecordVO)
+                .collect(Collectors.toList());
+
+        return PageResult.of(voList, result.getTotal(), (long) page, (long) pageSize);
+    }
+
+    private com.basketball.vo.BalanceRechargeRecordVO convertToBalanceRechargeRecordVO(PaymentOrder order) {
+        com.basketball.vo.BalanceRechargeRecordVO vo = new com.basketball.vo.BalanceRechargeRecordVO();
+        vo.setId(order.getId());
+        vo.setPaymentNo(order.getPaymentNo());
+        vo.setOrderNo(order.getBusinessNo());
+        vo.setAmount(order.getAmount());
+        vo.setStatus(order.getStatus());
+        vo.setPayTime(order.getPaidTime());
+        vo.setCreateTime(order.getCreateTime());
+
+        // 转换支付方式名称
+        String payMethodName = "未知";
+        if (order.getPaymentType() != null) {
+            if (order.getPaymentType().startsWith("wechat")) {
+                payMethodName = "微信支付";
+            } else if (order.getPaymentType().startsWith("alipay")) {
+                payMethodName = "支付宝";
+            }
+        }
+        vo.setPayMethodName(payMethodName);
+
+        return vo;
     }
 }

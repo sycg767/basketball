@@ -110,4 +110,36 @@ public class MemberController {
         Long userId = jwtTokenProvider.getUserIdFromRequest(request);
         return Result.success(memberService.getPointsRecords(userId, page, pageSize));
     }
+
+    @PostMapping("/card/activate")
+    @Operation(summary = "激活会员卡")
+    public Result<Void> activateCard(
+            @RequestParam Long cardId,
+            HttpServletRequest request
+    ) {
+        Long userId = jwtTokenProvider.getUserIdFromRequest(request);
+        memberService.activateCard(userId, cardId);
+        return Result.success();
+    }
+
+    @PostMapping("/balance/recharge")
+    @Operation(summary = "账户余额充值")
+    public Result<com.basketball.dto.response.PaymentResultVO> rechargeBalance(
+            @Valid @RequestBody com.basketball.dto.request.BalanceRechargeDTO dto,
+            HttpServletRequest request
+    ) {
+        Long userId = jwtTokenProvider.getUserIdFromRequest(request);
+        return Result.success(memberService.rechargeBalance(userId, dto));
+    }
+
+    @GetMapping("/balance/records")
+    @Operation(summary = "获取余额充值记录")
+    public Result<PageResult<com.basketball.vo.BalanceRechargeRecordVO>> getBalanceRechargeRecords(
+            @RequestParam(defaultValue = "1") Integer page,
+            @RequestParam(defaultValue = "10") Integer pageSize,
+            HttpServletRequest request
+    ) {
+        Long userId = jwtTokenProvider.getUserIdFromRequest(request);
+        return Result.success(memberService.getBalanceRechargeRecords(userId, page, pageSize));
+    }
 }

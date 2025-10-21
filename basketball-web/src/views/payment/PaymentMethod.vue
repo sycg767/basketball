@@ -4,7 +4,7 @@
     <h2 class="page-title">支付管理</h2>
 
     <!-- 标签页切换 -->
-    <el-tabs v-model="activeTab" class="payment-tabs">
+    <el-tabs v-model="activeTab" class="payment-tabs" @tab-change="handleTabChange">
       <!-- 支付方式选择 -->
       <el-tab-pane label="支付方式" name="method" v-if="showPaymentForm">
         <el-card class="payment-card">
@@ -125,25 +125,40 @@
             style="width: 100%"
             stripe
           >
-            <el-table-column prop="bookingNo" label="订单号" width="180" />
-            <el-table-column prop="venueName" label="场地名称" width="150" />
-            <el-table-column prop="actualPrice" label="支付金额" width="120">
+            <el-table-column prop="orderNo" label="订单号" width="180" />
+            <el-table-column label="业务类型" width="120">
               <template #default="{ row }">
-                <span class="amount-text">¥{{ row.actualPrice?.toFixed(2) }}</span>
+                <el-tag :type="row.businessType === 'balance_recharge' ? 'warning' : 'primary'">
+                  {{ row.businessType === 'balance_recharge' ? '余额充值' : '场地预订' }}
+                </el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column prop="businessName" label="业务名称" width="150" />
+            <el-table-column prop="amount" label="支付金额" width="120">
+              <template #default="{ row }">
+                <span class="amount-text">¥{{ row.amount?.toFixed(2) }}</span>
               </template>
             </el-table-column>
             <el-table-column prop="payMethodName" label="支付方式" width="120" />
             <el-table-column prop="payTime" label="支付时间" width="180" />
             <el-table-column prop="status" label="状态" width="100">
               <template #default="{ row }">
-                <el-tag :type="getStatusType(row.status)">
-                  {{ getStatusText(row.status) }}
+                <el-tag :type="getStatusType(row.status, row.businessType)">
+                  {{ getStatusText(row.status, row.businessType) }}
                 </el-tag>
               </template>
             </el-table-column>
             <el-table-column label="操作" width="150">
               <template #default="{ row }">
-                <el-button link type="primary" @click="viewDetail(row.id)">查看详情</el-button>
+                <el-button
+                  link
+                  type="primary"
+                  @click="viewDetail(row)"
+                  v-if="row.businessType !== 'balance_recharge'"
+                >
+                  查看详情
+                </el-button>
+                <span v-else style="color: #909399;">-</span>
               </template>
             </el-table-column>
           </el-table>
@@ -334,7 +349,7 @@ import { ElMessage, ElMessageBox } from 'element-plus';
 import { Wallet, Refresh, ChatDotRound, CreditCard } from '@element-plus/icons-vue';
 import { useUserStore } from '@/store/modules/user';
 import { payBooking, getMyBookingList } from '@/api/booking';
-import { getUserBalance } from '@/api/member';
+import { getUserBalance, getBalanceRechargeRecords } from '@/api/member';
 import BackButton from '@/components/common/BackButton.vue';
 
 const route = useRoute();
@@ -424,16 +439,57 @@ const loadOrderInfo = () => {
 const loadPaymentRecords = async () => {
   recordsLoading.value = true;
   try {
-    const response = await getMyBookingList({
+    // 获取预订支付记录
+    const bookingResponse = await getMyBookingList({
       page: recordsPage.value,
       pageSize: recordsPageSize.value,
       status: 1 // 只查询已支付的订单
     });
 
-    if (response.code === 200) {
-      paymentRecords.value = response.data.records || [];
-      recordsTotal.value = response.data.total || 0;
+    // 尝试获取余额充值记录（如果API不存在则忽略）
+    let rechargeResponse = null;
+    try {
+      rechargeResponse = await getBalanceRechargeRecords({
+        page: recordsPage.value,
+        pageSize: recordsPageSize.value
+      });
+    } catch (error) {
+      console.warn('余额充值记录API暂未实现，跳过');
     }
+
+    // 合并两种记录
+    const bookingRecords = (bookingResponse.code === 200 ? bookingResponse.data.records || [] : []).map(record => ({
+      id: record.id,
+      orderNo: record.bookingNo,
+      businessType: 'booking',
+      businessName: record.venueName,
+      amount: record.actualPrice,
+      payMethodName: record.payMethodName || '未知',
+      payTime: record.payTime,
+      status: record.status
+    }));
+
+    const rechargeRecords = (rechargeResponse?.code === 200 ? rechargeResponse.data.records || [] : []).map(record => ({
+      id: record.id,
+      orderNo: record.paymentNo || record.orderNo,
+      businessType: 'balance_recharge',
+      businessName: '账户余额充值',
+      amount: record.amount,
+      payMethodName: record.payMethodName || '在线支付',
+      payTime: record.payTime || record.createTime,
+      status: record.status
+    }));
+
+    // 合并并按支付时间排序
+    const allRecords = [...bookingRecords, ...rechargeRecords];
+    allRecords.sort((a, b) => {
+      const timeA = new Date(a.payTime || 0).getTime();
+      const timeB = new Date(b.payTime || 0).getTime();
+      return timeB - timeA; // 降序排列，最新的在前
+    });
+
+    paymentRecords.value = allRecords;
+    recordsTotal.value = (bookingResponse.data?.total || 0) + (rechargeResponse?.data?.total || 0);
   } catch (error) {
     console.error('获取支付记录失败:', error);
     ElMessage.error('获取支付记录失败');
@@ -446,33 +502,63 @@ const loadPaymentRecords = async () => {
 const loadBills = async () => {
   billsLoading.value = true;
   try {
-    // 模拟账单数据（实际应该调用后端API）
-    const response = await getMyBookingList({
+    // 获取预订支付记录
+    const bookingResponse = await getMyBookingList({
       page: billsPage.value,
-      pageSize: billsPageSize.value
+      pageSize: billsPageSize.value,
+      status: 1 // 只查询已支付的订单
     });
 
-    if (response.code === 200) {
-      // 转换为账单格式
-      const records = response.data.records || [];
-      bills.value = records.map(record => ({
-        createTime: record.payTime || record.createTime,
-        description: `${record.venueName} - ${record.bookingDate} ${record.timeSlot}`,
-        amount: record.actualPrice || 0,
-        type: 'expense',
-        balance: 0 // 实际应该从后端获取
-      }));
-      billsTotal.value = response.data.total || 0;
-
-      // 计算统计数据
-      billSummary.totalExpense = bills.value.reduce((sum, bill) =>
-        bill.type === 'expense' ? sum + bill.amount : sum, 0
-      );
-      billSummary.totalIncome = bills.value.reduce((sum, bill) =>
-        bill.type === 'income' ? sum + bill.amount : sum, 0
-      );
-      billSummary.totalCount = bills.value.length;
+    // 获取余额充值记录
+    let rechargeResponse = null;
+    try {
+      rechargeResponse = await getBalanceRechargeRecords({
+        page: billsPage.value,
+        pageSize: billsPageSize.value
+      });
+    } catch (error) {
+      console.warn('余额充值记录API暂未实现，跳过');
     }
+
+    // 转换预订记录为账单格式
+    const bookingBills = (bookingResponse.code === 200 ? bookingResponse.data.records || [] : []).map(record => ({
+      createTime: record.payTime || record.createTime,
+      description: `场地预订 - ${record.venueName}`,
+      amount: record.actualPrice || 0,
+      type: 'expense',
+      balance: 0
+    }));
+
+    // 转换充值记录为账单格式
+    const rechargeBills = (rechargeResponse?.code === 200 ? rechargeResponse.data.records || [] : [])
+      .filter(record => record.status === 2) // 只显示支付成功的
+      .map(record => ({
+        createTime: record.payTime || record.createTime,
+        description: '账户余额充值',
+        amount: record.amount || 0,
+        type: 'income',
+        balance: 0
+      }));
+
+    // 合并并按时间排序
+    const allBills = [...bookingBills, ...rechargeBills];
+    allBills.sort((a, b) => {
+      const timeA = new Date(a.createTime || 0).getTime();
+      const timeB = new Date(b.createTime || 0).getTime();
+      return timeB - timeA;
+    });
+
+    bills.value = allBills;
+    billsTotal.value = (bookingResponse.data?.total || 0) + (rechargeResponse?.data?.total || 0);
+
+    // 计算统计数据
+    billSummary.totalExpense = bills.value.reduce((sum, bill) =>
+      bill.type === 'expense' ? sum + bill.amount : sum, 0
+    );
+    billSummary.totalIncome = bills.value.reduce((sum, bill) =>
+      bill.type === 'income' ? sum + bill.amount : sum, 0
+    );
+    billSummary.totalCount = bills.value.length;
   } catch (error) {
     console.error('获取账单失败:', error);
     ElMessage.error('获取账单失败');
@@ -482,34 +568,67 @@ const loadBills = async () => {
 };
 
 // 查看详情
-const viewDetail = (id) => {
-  router.push(`/booking/detail/${id}`);
+const viewDetail = (row) => {
+  if (row.businessType === 'booking') {
+    router.push(`/booking/detail/${row.id}`);
+  }
 };
 
-// 获取状态类型
-const getStatusType = (status) => {
-  const typeMap = {
-    0: 'warning',
-    1: 'success',
-    2: 'info',
-    3: 'success',
-    4: 'danger',
-    5: 'info'
-  };
-  return typeMap[status] || 'info';
+// 获取状态类型（根据业务类型区分）
+const getStatusType = (status, businessType) => {
+  // 场馆预订状态: 0-待支付, 1-已支付, 2-已取消, 3-已完成, 4-已退款
+  // 支付订单状态: 0-待支付, 1-支付中, 2-支付成功, 3-支付失败, 4-已取消, 5-已退款
+
+  if (businessType === 'balance_recharge') {
+    // 余额充值使用支付订单状态
+    const typeMap = {
+      0: 'warning',    // 待支付
+      1: 'info',       // 支付中
+      2: 'success',    // 支付成功
+      3: 'danger',     // 支付失败
+      4: 'info',       // 已取消
+      5: 'warning'     // 已退款
+    };
+    return typeMap[status] || 'info';
+  } else {
+    // 场馆预订使用预订状态
+    const typeMap = {
+      0: 'warning',    // 待支付
+      1: 'success',    // 已支付
+      2: 'info',       // 已取消
+      3: 'success',    // 已完成
+      4: 'warning',    // 已退款
+      5: 'info'        // 超时取消
+    };
+    return typeMap[status] || 'info';
+  }
 };
 
-// 获取状态文本
-const getStatusText = (status) => {
-  const textMap = {
-    0: '待支付',
-    1: '已支付',
-    2: '已取消',
-    3: '已完成',
-    4: '已退款',
-    5: '超时取消'
-  };
-  return textMap[status] || '未知';
+// 获取状态文本（根据业务类型区分）
+const getStatusText = (status, businessType) => {
+  if (businessType === 'balance_recharge') {
+    // 余额充值使用支付订单状态
+    const textMap = {
+      0: '待支付',
+      1: '支付中',
+      2: '支付成功',
+      3: '支付失败',
+      4: '已取消',
+      5: '已退款'
+    };
+    return textMap[status] || '未知';
+  } else {
+    // 场馆预订使用预订状态
+    const textMap = {
+      0: '待支付',
+      1: '已支付',
+      2: '已取消',
+      3: '已完成',
+      4: '已退款',
+      5: '超时取消'
+    };
+    return textMap[status] || '未知';
+  }
 };
 
 const loadUserBalance = async () => {
@@ -736,12 +855,22 @@ const removeMethod = async (id) => {
 
 // 去充值
 const goToRecharge = () => {
-  ElMessage.info('充值功能开发中');
-  // router.push('/member/recharge');
+  router.push('/member/balance-recharge');
 };
 
 const goBack = () => {
   router.back();
+};
+
+// 标签页切换事件
+const handleTabChange = (tabName) => {
+  if (tabName === 'manage') {
+    // 切换到支付方式管理时，刷新余额
+    loadUserBalance();
+  } else if (tabName === 'bills') {
+    // 切换到账单管理时，加载账单
+    loadBills();
+  }
 };
 </script>
 

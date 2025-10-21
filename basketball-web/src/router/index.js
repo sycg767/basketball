@@ -103,6 +103,12 @@ const routes = [
     component: () => import('@/views/member/Points.vue'),
     meta: { title: '我的积分', requireAuth: true }
   },
+  {
+    path: '/member/balance-recharge',
+    name: 'BalanceRecharge',
+    component: () => import('@/views/member/BalanceRecharge.vue'),
+    meta: { title: '余额充值', requireAuth: true }
+  },
   // 支付相关路由
   {
     path: '/payment/method',

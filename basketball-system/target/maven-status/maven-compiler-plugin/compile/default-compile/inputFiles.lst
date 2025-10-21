@@ -52,6 +52,7 @@ C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\ser
 C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\config\CorsConfig.java
 C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\task\MemberActivityScheduledTask.java
 C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\controller\SystemConfigController.java
+C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\vo\BalanceRechargeRecordVO.java
 C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\controller\PaymentController.java
 C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\BasketballApplication.java
 C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\dto\request\CourseQueryDTO.java
@@ -218,6 +219,7 @@ C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\dto
 C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\dto\request\CourseEnrollmentDTO.java
 C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\service\impl\SmsServiceImpl.java
 C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\vo\BookingVO.java
+C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\dto\request\BalanceRechargeDTO.java
 C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\entity\BaseEntity.java
 C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\entity\PaymentNotifyLog.java
 C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\controller\VenueAnalyticsController.java
