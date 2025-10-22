@@ -181,13 +181,19 @@ public class NotificationServiceImpl implements INotificationService {
      * 获取所有通知列表
      */
     @Override
-    public PageResult<NotificationVO> getAllNotifications(Long userId, Integer page, Integer pageSize) {
+    public PageResult<NotificationVO> getAllNotifications(Long userId, Integer page, Integer pageSize, String templateCode) {
         Page<NotificationRecord> pageParam = new Page<>(page, pageSize);
 
         LambdaQueryWrapper<NotificationRecord> query = new LambdaQueryWrapper<>();
         query.eq(NotificationRecord::getUserId, userId)
-                .eq(NotificationRecord::getSendStatus, 2)
-                .orderByDesc(NotificationRecord::getCreateTime);
+                .eq(NotificationRecord::getSendStatus, 2);
+
+        // 如果指定了模板编码，添加筛选条件
+        if (templateCode != null && !templateCode.isEmpty()) {
+            query.eq(NotificationRecord::getTemplateCode, templateCode);
+        }
+
+        query.orderByDesc(NotificationRecord::getCreateTime);
 
         Page<NotificationRecord> recordPage = notificationRecordMapper.selectPage(pageParam, query);
 
@@ -274,6 +280,28 @@ public class NotificationServiceImpl implements INotificationService {
                 .eq(NotificationRecord::getSendStatus, 2);
 
         return notificationRecordMapper.selectCount(query);
+    }
+
+    /**
+     * 获取通知统计信息
+     */
+    @Override
+    public Map<String, Long> getNotificationStatistics(Long userId) {
+        LambdaQueryWrapper<NotificationRecord> query = new LambdaQueryWrapper<>();
+        query.eq(NotificationRecord::getUserId, userId)
+                .eq(NotificationRecord::getSendStatus, 2)
+                .select(NotificationRecord::getTemplateCode);
+
+        List<NotificationRecord> records = notificationRecordMapper.selectList(query);
+
+        // 统计各类型通知数量
+        Map<String, Long> statistics = new java.util.HashMap<>();
+        for (NotificationRecord record : records) {
+            String code = record.getTemplateCode();
+            statistics.put(code, statistics.getOrDefault(code, 0L) + 1);
+        }
+
+        return statistics;
     }
 
     /**

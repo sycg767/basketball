@@ -65,3 +65,13 @@ export function deleteNotification(id) {
     method: 'delete'
   });
 }
+
+/**
+ * 获取通知统计信息
+ */
+export function getNotificationStatistics() {
+  return request({
+    url: '/api/notification/statistics',
+    method: 'get'
+  });
+}

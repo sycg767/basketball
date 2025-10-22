@@ -1,26 +1,30 @@
 package com.basketball.entity;
 
+import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
  * 用户行为日志实体类
+ * 注意：此表不继承BaseEntity，因为数据库表中没有update_time字段
  *
  * @author Basketball Team
  * @date 2025-10-18
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
 @TableName("user_behavior_log")
 @Schema(description = "用户行为日志")
-public class UserBehaviorLog extends BaseEntity {
+public class UserBehaviorLog implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @TableId(type = IdType.AUTO)
     @Schema(description = "日志ID")
@@ -44,19 +48,21 @@ public class UserBehaviorLog extends BaseEntity {
     @Schema(description = "设备类型: web, ios, android, mini-program")
     private String deviceType;
 
-    @Schema(description = "设备ID")
-    private String deviceId;
-
     @Schema(description = "IP地址")
     private String ipAddress;
 
     @Schema(description = "浏览器UA")
     private String userAgent;
 
-    @Schema(description = "扩展参数(JSON)")
-    private String extraParams;
+    @Schema(description = "备注")
+    private String remark;
 
     @Schema(description = "行为时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime behaviorTime;
+
+    @Schema(description = "创建时间")
+    @TableField(fill = FieldFill.INSERT)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime createTime;
 }

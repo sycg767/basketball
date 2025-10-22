@@ -9,7 +9,7 @@
           <el-input v-model="searchForm.username" placeholder="请输入用户名" clearable />
         </el-form-item>
         <el-form-item label="会员等级">
-          <el-select v-model="searchForm.memberLevel" placeholder="请选择会员等级" clearable>
+          <el-select v-model="searchForm.memberLevel" placeholder="请选择会员等级" clearable style="width: 180px">
             <el-option label="全部" value="" />
             <el-option label="普通用户" :value="0" />
             <el-option label="银卡会员" :value="1" />

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
+import java.util.Map;
 
 /**
  * 通知控制器
@@ -72,10 +73,12 @@ public class NotificationController {
             @Parameter(description = "页码", required = true)
             @RequestParam(defaultValue = "1") Integer page,
             @Parameter(description = "每页数量", required = true)
-            @RequestParam(defaultValue = "10") Integer pageSize) {
+            @RequestParam(defaultValue = "10") Integer pageSize,
+            @Parameter(description = "模板编码", required = false)
+            @RequestParam(required = false) String templateCode) {
 
-        log.info("获取所有通知: userId={}, page={}, pageSize={}", userId, page, pageSize);
-        PageResult<NotificationVO> result = notificationService.getAllNotifications(userId, page, pageSize);
+        log.info("获取所有通知: userId={}, page={}, pageSize={}, templateCode={}", userId, page, pageSize, templateCode);
+        PageResult<NotificationVO> result = notificationService.getAllNotifications(userId, page, pageSize, templateCode);
         return Result.success(result);
     }
 
@@ -137,5 +140,19 @@ public class NotificationController {
         log.info("获取未读数量: userId={}", userId);
         Long count = notificationService.getUnreadCount(userId);
         return Result.success(count);
+    }
+
+    /**
+     * 获取通知统计信息
+     */
+    @Operation(summary = "获取通知统计", description = "获取当前用户各类型通知的统计信息")
+    @GetMapping("/statistics")
+    public Result<Map<String, Long>> getStatistics(
+            @Parameter(description = "用户ID", required = true)
+            @CurrentUserId Long userId) {
+
+        log.info("获取通知统计: userId={}", userId);
+        Map<String, Long> statistics = notificationService.getNotificationStatistics(userId);
+        return Result.success(statistics);
     }
 }

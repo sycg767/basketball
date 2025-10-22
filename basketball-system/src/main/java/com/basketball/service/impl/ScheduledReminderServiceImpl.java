@@ -295,13 +295,14 @@ public class ScheduledReminderServiceImpl implements IScheduledReminderService {
     private String getReminderTemplateCode(String reminderType) {
         switch (reminderType) {
             case "member_expire_7":
+                return "MEMBER_EXPIRE_7DAYS";  // 修改：使用数据库中实际的模板编码
             case "member_expire_3":
             case "member_expire_1":
-                return "MEMBER_EXPIRE_REMINDER";
+                return "MEMBER_EXPIRE_3DAYS";  // 修改：使用数据库中实际的模板编码
             case "course_start":
-                return "COURSE_START_REMINDER";
+                return "COURSE_START_REMIND";  // 修改：使用数据库中实际的模板编码
             case "booking_start":
-                return "BOOKING_START_REMINDER";
+                return "BOOKING_START_REMINDER";  // 使用即将添加的预订开始提醒模板
             default:
                 return "SYSTEM_NOTIFICATION";
         }

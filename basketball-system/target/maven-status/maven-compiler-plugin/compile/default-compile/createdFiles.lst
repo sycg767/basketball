@@ -9,6 +9,7 @@ com\basketball\entity\NotificationTemplate.class
 com\basketball\service\ICourseService.class
 com\basketball\service\impl\AdminMemberServiceImpl.class
 com\basketball\entity\UserProfileTag.class
+com\basketball\utils\NotificationEventPublisher.class
 com\basketball\dto\request\UserUpdateDTO.class
 com\basketball\mapper\NotificationSubscribeMapper.class
 com\basketball\entity\PaymentOrder.class
@@ -22,6 +23,7 @@ com\basketball\service\IPaymentService.class
 com\basketball\mapper\UserMapper.class
 com\basketball\BasketballApplication.class
 com\basketball\service\impl\FinancialRecordServiceImpl.class
+com\basketball\service\INotificationTemplateService.class
 com\basketball\controller\CourseController.class
 com\basketball\mapper\PermissionMapper.class
 com\basketball\utils\VerificationCodeGenerator.class
@@ -30,6 +32,7 @@ com\basketball\utils\RedisUtil.class
 com\basketball\entity\NotificationSubscribe.class
 com\basketball\service\impl\ScheduledReminderServiceImpl.class
 com\basketball\mapper\UserProfileTagMapper.class
+com\basketball\annotation\OperationLog.class
 com\basketball\mapper\RoleMapper.class
 com\basketball\vo\UserVO.class
 com\basketball\service\impl\VenueUsageServiceImpl.class
@@ -113,6 +116,7 @@ com\basketball\entity\MemberActivityAnalysis.class
 com\basketball\dto\request\CoursePriceDTO.class
 com\basketball\entity\VenuePrice.class
 com\basketball\service\IPointsService.class
+com\basketball\config\AsyncConfig.class
 com\basketball\mapper\CourseScheduleMapper.class
 com\basketball\scheduled\VenueUsageScheduledTask.class
 com\basketball\controller\FinancialRecordController.class
@@ -130,6 +134,7 @@ com\basketball\controller\OperationLogController.class
 com\basketball\service\impl\CoursePopularityServiceImpl.class
 com\basketball\controller\AlipayController.class
 com\basketball\entity\MemberCard.class
+com\basketball\controller\AdminNotificationTemplateController.class
 com\basketball\vo\MemberCardRecordVO.class
 com\basketball\mapper\SmsVerificationCodeMapper.class
 com\basketball\entity\CourseEnrollment.class
@@ -145,12 +150,14 @@ com\basketball\controller\SystemConfigController.class
 com\basketball\entity\Role.class
 com\basketball\vo\PointsRecordVO.class
 com\basketball\dto\request\VenueUpdateDTO.class
+com\basketball\service\impl\NotificationTemplateServiceImpl.class
 com\basketball\entity\FinancialRecord.class
 com\basketball\interceptor\SmsRateLimitInterceptor.class
 com\basketball\mapper\FinancialRecordMapper.class
 com\basketball\service\impl\VenueServiceImpl$1.class
 com\basketball\entity\UserRole.class
 com\basketball\mapper\CoachInfoMapper.class
+com\basketball\service\impl\AsyncNotificationService.class
 com\basketball\entity\NotificationRecord.class
 com\basketball\dto\request\UserLoginDTO.class
 com\basketball\service\impl\SystemConfigServiceImpl.class
@@ -167,6 +174,7 @@ com\basketball\vo\CoursePriceVO.class
 com\basketball\entity\SystemConfig.class
 com\basketball\service\impl\OperationLogServiceImpl.class
 com\basketball\service\IBookingService.class
+com\basketball\aspect\OperationLogAspect.class
 com\basketball\service\ILoginLogService.class
 com\basketball\service\impl\BookingServiceImpl.class
 com\basketball\service\impl\CourseServiceImpl$1.class
@@ -205,6 +213,7 @@ com\basketball\common\result\Result.class
 com\basketball\interceptor\SmsRateLimitInterceptor$RateLimitCounter.class
 com\basketball\mapper\NotificationRecordMapper.class
 com\basketball\entity\Permission.class
+com\basketball\utils\UserAgentParser.class
 com\basketball\entity\Booking.class
 com\basketball\dto\request\CardRechargeDTO.class
 com\basketball\dto\request\SmsSendDTO.class
@@ -221,6 +230,7 @@ com\basketball\service\impl\MemberServiceImpl.class
 com\basketball\mapper\AnnouncementMapper.class
 com\basketball\dto\request\PaymentCreateDTO.class
 com\basketball\mapper\DictionaryMapper.class
+com\basketball\utils\IpUtils.class
 com\basketball\dto\response\WechatAuthUrlVO.class
 com\basketball\mapper\SystemConfigMapper.class
 com\basketball\entity\CoachInfo.class

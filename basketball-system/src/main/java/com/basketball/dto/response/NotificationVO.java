@@ -19,6 +19,9 @@ public class NotificationVO {
     @Schema(description = "记录ID")
     private Long id;
 
+    @Schema(description = "模板编码")
+    private String templateCode;
+
     @Schema(description = "通知类型")
     private String notificationType;
 

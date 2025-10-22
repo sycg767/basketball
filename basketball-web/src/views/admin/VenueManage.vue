@@ -9,7 +9,7 @@
           <el-input v-model="searchForm.name" placeholder="请输入场地名称" clearable />
         </el-form-item>
         <el-form-item label="场地类型">
-          <el-select v-model="searchForm.type" placeholder="请选择场地类型" clearable>
+          <el-select v-model="searchForm.type" placeholder="请选择场地类型" clearable style="width: 180px">
             <el-option label="全部" :value="null" />
             <el-option label="室内全场" :value="1" />
             <el-option label="室内半场" :value="2" />

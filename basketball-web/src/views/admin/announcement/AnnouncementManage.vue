@@ -10,7 +10,7 @@
 
       <el-form :model="searchForm" inline>
         <el-form-item label="公告类型">
-          <el-select v-model="searchForm.type" placeholder="请选择类型" clearable>
+          <el-select v-model="searchForm.type" placeholder="请选择类型" clearable style="width: 180px">
             <el-option label="系统通知" :value="1" />
             <el-option label="活动公告" :value="2" />
             <el-option label="维护公告" :value="3" />
@@ -19,7 +19,7 @@
         </el-form-item>
 
         <el-form-item label="状态">
-          <el-select v-model="searchForm.status" placeholder="请选择状态" clearable>
+          <el-select v-model="searchForm.status" placeholder="请选择状态" clearable style="width: 180px">
             <el-option label="草稿" :value="0" />
             <el-option label="已发布" :value="1" />
             <el-option label="已下架" :value="2" />

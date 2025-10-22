@@ -10,7 +10,7 @@
 
       <el-form :model="searchForm" inline>
         <el-form-item label="记录类型">
-          <el-select v-model="searchForm.recordType" placeholder="请选择类型" clearable>
+          <el-select v-model="searchForm.recordType" placeholder="请选择类型" clearable style="width: 180px">
             <el-option label="收入" :value="1" />
             <el-option label="支出" :value="2" />
             <el-option label="退款" :value="3" />
@@ -18,7 +18,7 @@
         </el-form-item>
 
         <el-form-item label="业务类型">
-          <el-select v-model="searchForm.businessType" placeholder="请选择业务类型" clearable>
+          <el-select v-model="searchForm.businessType" placeholder="请选择业务类型" clearable style="width: 180px">
             <el-option label="场地" :value="1" />
             <el-option label="课程" :value="2" />
             <el-option label="会员卡" :value="3" />

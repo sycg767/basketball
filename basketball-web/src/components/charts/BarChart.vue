@@ -69,8 +69,18 @@ watch(() => props.data, () => {
 const initChart = () => {
   if (!chartRef.value) return;
 
-  chartInstance = echarts.init(chartRef.value);
-  updateChart();
+  // 使用 nextTick 确保 DOM 完全渲染
+  const tryInit = () => {
+    if (chartRef.value && chartRef.value.clientWidth > 0) {
+      chartInstance = echarts.init(chartRef.value);
+      updateChart();
+    } else {
+      // 如果还没准备好，再等一下
+      setTimeout(tryInit, 50);
+    }
+  };
+
+  setTimeout(tryInit, 0);
 };
 
 const updateChart = () => {
@@ -96,10 +106,10 @@ const updateChart = () => {
       data: props.data.series?.map(s => s.name) || []
     },
     grid: {
-      left: '3%',
-      right: '4%',
-      bottom: '3%',
-      top: props.title ? 70 : 45,
+      left: props.horizontal ? 10 : 60,
+      right: props.horizontal ? 10 : 50,
+      bottom: props.horizontal ? 10 : 60,
+      top: props.title ? 70 : 50,
       containLabel: true
     },
     xAxis: {
@@ -110,19 +120,28 @@ const updateChart = () => {
     yAxis: {
       type: props.horizontal ? 'category' : 'value',
       data: props.horizontal ? (props.data.xAxisData || []) : undefined,
-      name: props.horizontal ? '' : props.yAxisName
+      name: props.horizontal ? '' : props.yAxisName,
+      axisLabel: props.horizontal ? {
+        interval: 0,
+        fontSize: 13
+      } : undefined,
+      inverse: props.horizontal ? true : false
     },
     series: (props.data.series || []).map(item => ({
       name: item.name,
       type: 'bar',
       data: item.data,
       stack: props.stack ? 'total' : undefined,
+      barWidth: props.horizontal ? 16 : undefined,
       label: {
-        show: false
+        show: props.horizontal,
+        position: props.horizontal ? 'right' : 'top',
+        fontSize: 12
       },
       emphasis: {
         label: {
-          show: true
+          show: true,
+          position: props.horizontal ? 'right' : 'top'
         }
       }
     }))

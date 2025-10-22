@@ -24,7 +24,7 @@
         </el-form-item>
 
         <el-form-item label="登录状态">
-          <el-select v-model="searchForm.status" placeholder="请选择状态" clearable>
+          <el-select v-model="searchForm.status" placeholder="请选择状态" clearable style="width: 180px">
             <el-option label="成功" :value="1" />
             <el-option label="失败" :value="0" />
           </el-select>
@@ -110,7 +110,7 @@
         </el-form-item>
 
         <el-form-item label="操作状态">
-          <el-select v-model="searchForm.status" placeholder="请选择状态" clearable>
+          <el-select v-model="searchForm.status" placeholder="请选择状态" clearable style="width: 180px">
             <el-option label="成功" :value="1" />
             <el-option label="失败" :value="0" />
           </el-select>
@@ -271,6 +271,7 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted, computed } from 'vue'
 import { ElMessage } from 'element-plus'
+import { CircleCheck, CircleClose } from '@element-plus/icons-vue'
 import type { FormInstance } from 'element-plus'
 import { request } from '@/utils/request.js'
 

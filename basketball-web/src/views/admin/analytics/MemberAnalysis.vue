@@ -1,7 +1,5 @@
 <template>
   <div class="member-analysis-container">
-    <h2 class="page-title">会员活跃度分析</h2>
-
     <!-- 核心指标卡片 -->
     <el-row :gutter="20" class="stats-row">
       <el-col :xs="24" :sm="8">
@@ -138,23 +136,36 @@ const loadActivityTrend = async () => {
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - trendDays.value);
 
+    console.log('👥 [会员活跃度趋势] 请求参数:', {
+      startDate: startDate.toISOString().split('T')[0],
+      endDate: endDate.toISOString().split('T')[0]
+    });
+
     const res = await getMemberActivityTrend({
       startDate: startDate.toISOString().split('T')[0],
       endDate: endDate.toISOString().split('T')[0]
     });
+
+    console.log('👥 [会员活跃度趋势] 响应数据:', res);
+    console.log('👥 [会员活跃度趋势] 数据长度:', res.data?.length);
+    console.log('👥 [会员活跃度趋势] 数据内容:', res.data);
+
     if (res.code === 200 && res.data && res.data.length > 0) {
       activityTrendData.value = {
-        xAxisData: res.data.map(item => item.analysisDate || item.date),
+        xAxisData: res.data.map(item => item.date || item.analysisDate),
         series: [
           {
             name: '活跃用户数',
-            data: res.data.map(item => item.loginCount || item.activeCount || 0)
+            data: res.data.map(item => item.activeUserCount || item.totalLoginCount || item.loginCount || item.activeCount || 0)
           }
         ]
       };
+      console.log('✅ [会员活跃度趋势] 图表数据已设置:', activityTrendData.value);
+    } else {
+      console.warn('⚠️ [会员活跃度趋势] 无数据或数据为空');
     }
   } catch (error) {
-    console.error('获取活跃度趋势失败:', error);
+    console.error('❌ [会员活跃度趋势] 获取失败:', error);
     ElMessage.error('获取活跃度趋势失败');
   }
 };
@@ -165,6 +176,8 @@ const loadMemberList = async () => {
     let res;
     const params = { page: currentPage.value, size: pageSize.value };
 
+    console.log('📋 [会员列表] 请求参数:', { listType: listType.value, ...params });
+
     if (listType.value === 'active') {
       res = await getActiveUsers(params);
     } else if (listType.value === 'inactive') {
@@ -173,9 +186,16 @@ const loadMemberList = async () => {
       res = await getChurnRiskUsers(params);
     }
 
+    console.log('📋 [会员列表] 响应数据:', res);
+    console.log('📋 [会员列表] 数据长度:', res.data?.records?.length || res.data?.length);
+
     if (res.code === 200) {
-      memberList.value = res.data.records || [];
-      total.value = res.data.total || 0;
+      memberList.value = res.data.records || res.data || [];
+      total.value = res.data.total || res.data?.length || 0;
+      console.log('✅ [会员列表] 列表数据已设置:', {
+        count: memberList.value.length,
+        total: total.value
+      });
     }
   } catch (error) {
     ElMessage.error('获取会员列表失败');
@@ -186,22 +206,33 @@ const loadMemberList = async () => {
 
 const loadStats = async () => {
   try {
+    console.log('📊 [会员统计] 开始获取统计数据...');
+
     const [activeRes, churnRes] = await Promise.all([
       getActiveUsers({ page: 1, size: 1 }),
       getChurnRiskUsers({ page: 1, size: 1 })
     ]);
 
-    totalMembers.value = (activeRes.data?.total || 0) + 100; // 简化统计
-    activeMembers.value = activeRes.data?.total || 0;
-    churnRiskMembers.value = churnRes.data?.total || 0;
+    console.log('📊 [会员统计] 活跃用户响应:', activeRes);
+    console.log('📊 [会员统计] 流失风险响应:', churnRes);
+
+    totalMembers.value = activeRes.data?.total || activeRes.data?.length || 0;
+    activeMembers.value = activeRes.data?.total || activeRes.data?.length || 0;
+    churnRiskMembers.value = churnRes.data?.total || churnRes.data?.length || 0;
+
+    console.log('✅ [会员统计] 统计数据已设置:', {
+      totalMembers: totalMembers.value,
+      activeMembers: activeMembers.value,
+      churnRiskMembers: churnRiskMembers.value
+    });
   } catch (error) {
-    console.error('获取统计数据失败:', error);
+    console.error('❌ [会员统计] 获取失败:', error);
   }
 };
 
 const getScoreType = (score) => {
   if (score >= 80) return 'success';
-  if (score >= 60) return '';
+  if (score >= 60) return 'info';
   if (score >= 40) return 'warning';
   return 'danger';
 };

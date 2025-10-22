@@ -15,18 +15,13 @@
         >
           <el-menu-item index="/admin/dashboard">
             <el-icon><DataAnalysis /></el-icon>
-            <template #title>数据统计</template>
+            <template #title>数据概览</template>
           </el-menu-item>
 
-          <el-sub-menu index="analytics">
-            <template #title>
-              <el-icon><TrendCharts /></el-icon>
-              <span>数据分析</span>
-            </template>
-            <el-menu-item index="/admin/analytics/member">会员活跃度</el-menu-item>
-            <el-menu-item index="/admin/analytics/course">课程热度</el-menu-item>
-            <el-menu-item index="/admin/analytics/venue">场地使用</el-menu-item>
-          </el-sub-menu>
+          <el-menu-item index="/admin/analytics">
+            <el-icon><TrendCharts /></el-icon>
+            <template #title>数据分析</template>
+          </el-menu-item>
 
           <el-menu-item index="/admin/venues">
             <el-icon><House /></el-icon>
@@ -53,14 +48,19 @@
             <template #title>会员管理</template>
           </el-menu-item>
 
+          <el-menu-item index="/admin/financial">
+            <el-icon><Money /></el-icon>
+            <template #title>财务管理</template>
+          </el-menu-item>
+
           <el-menu-item index="/admin/announcements">
             <el-icon><Bell /></el-icon>
             <template #title>公告管理</template>
           </el-menu-item>
 
-          <el-menu-item index="/admin/financial">
-            <el-icon><Money /></el-icon>
-            <template #title>财务管理</template>
+          <el-menu-item index="/admin/notification-templates">
+            <el-icon><Message /></el-icon>
+            <template #title>通知模板</template>
           </el-menu-item>
 
           <el-menu-item index="/admin/logs">
@@ -136,6 +136,7 @@ import {
   User,
   CreditCard,
   Bell,
+  Message,
   Money,
   Document,
   Setting,
@@ -158,16 +159,15 @@ const activeMenu = computed(() => route.path);
 // 面包屑
 const breadcrumb = computed(() => {
   const titleMap = {
-    '/admin/dashboard': '数据统计',
-    '/admin/analytics/member': '会员活跃度分析',
-    '/admin/analytics/course': '课程热度分析',
-    '/admin/analytics/venue': '场地使用分析',
+    '/admin/dashboard': '数据概览',
+    '/admin/analytics': '数据分析',
     '/admin/venues': '场地管理',
     '/admin/bookings': '预订管理',
     '/admin/courses': '课程管理',
     '/admin/users': '用户管理',
     '/admin/member': '会员管理',
     '/admin/announcements': '公告管理',
+    '/admin/notification-templates': '通知模板',
     '/admin/financial': '财务管理',
     '/admin/logs': '日志管理',
     '/admin/settings': '系统设置'

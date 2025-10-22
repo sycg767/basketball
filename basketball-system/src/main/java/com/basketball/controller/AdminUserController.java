@@ -1,5 +1,6 @@
 package com.basketball.controller;
 
+import com.basketball.annotation.OperationLog;
 import com.basketball.common.result.PageResult;
 import com.basketball.common.result.Result;
 import com.basketball.dto.request.UserUpdateDTO;
@@ -49,6 +50,7 @@ public class AdminUserController {
      * 更新用户信息
      */
     @Operation(summary = "更新用户信息", description = "管理员更新用户信息")
+    @OperationLog("更新用户信息")
     @PutMapping("/{id}")
     public Result<Void> updateUser(
             @Parameter(description = "用户ID", required = true) @PathVariable Long id,
@@ -61,6 +63,7 @@ public class AdminUserController {
      * 启用/禁用用户
      */
     @Operation(summary = "启用/禁用用户", description = "管理员启用或禁用用户")
+    @OperationLog("启用/禁用用户")
     @PutMapping("/{id}/status")
     public Result<Void> toggleUserStatus(
             @Parameter(description = "用户ID", required = true) @PathVariable Long id,
@@ -74,6 +77,7 @@ public class AdminUserController {
      * 删除用户
      */
     @Operation(summary = "删除用户", description = "管理员删除用户（软删除）")
+    @OperationLog("删除用户")
     @DeleteMapping("/{id}")
     public Result<Void> deleteUser(
             @Parameter(description = "用户ID", required = true) @PathVariable Long id) {

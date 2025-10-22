@@ -81,7 +81,9 @@ const loadQrCode = async () => {
   try {
     const res = await getWechatAuthUrl();
     if (res.code === 200) {
-      qrCodeUrl.value = res.data.qrCodeUrl;
+      // 将授权URL转换为二维码图片
+      const authUrl = res.data.authUrl;
+      qrCodeUrl.value = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(authUrl)}`;
       startPolling();
     } else {
       ElMessage.error(res.message || '获取二维码失败');

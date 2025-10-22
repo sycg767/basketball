@@ -83,7 +83,7 @@
               />
             </el-form-item>
             <el-form-item label="状态">
-              <el-select v-model="cardSearchForm.status" placeholder="请选择" clearable>
+              <el-select v-model="cardSearchForm.status" placeholder="请选择" clearable style="width: 180px">
                 <el-option label="全部" value="" />
                 <el-option label="未激活" :value="0" />
                 <el-option label="有效" :value="1" />
@@ -101,7 +101,7 @@
         <el-card class="table-card">
           <el-table :data="cardList" stripe border v-loading="cardLoading">
             <el-table-column prop="id" label="ID" width="80" />
-            <el-table-column prop="cardNo" label="卡号" width="180" />
+            <el-table-column prop="cardNo" label="卡号" width="220" />
             <el-table-column prop="cardName" label="卡类型" width="120" />
             <el-table-column prop="realName" label="持卡人" width="100">
               <template #default="{ row }">

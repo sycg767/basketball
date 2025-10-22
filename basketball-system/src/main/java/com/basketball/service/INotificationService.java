@@ -5,6 +5,7 @@ import com.basketball.dto.request.NotificationSendDTO;
 import com.basketball.dto.response.NotificationVO;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 通知服务接口
@@ -48,9 +49,10 @@ public interface INotificationService {
      * @param userId 用户ID
      * @param page   页码
      * @param pageSize 每页数量
+     * @param templateCode 模板编码（可选，用于筛选）
      * @return 通知列表
      */
-    PageResult<NotificationVO> getAllNotifications(Long userId, Integer page, Integer pageSize);
+    PageResult<NotificationVO> getAllNotifications(Long userId, Integer page, Integer pageSize, String templateCode);
 
     /**
      * 标记通知为已读
@@ -82,4 +84,12 @@ public interface INotificationService {
      * @return 未读数量
      */
     Long getUnreadCount(Long userId);
+
+    /**
+     * 获取通知统计信息
+     *
+     * @param userId 用户ID
+     * @return 统计信息Map，key为模板编码，value为数量
+     */
+    Map<String, Long> getNotificationStatistics(Long userId);
 }

@@ -23,12 +23,12 @@
       <!-- 筛选器 -->
       <div class="filter-bar">
         <el-radio-group v-model="filterType" @change="handleFilterChange">
-          <el-radio-button value="">全部</el-radio-button>
-          <el-radio-button value="unread">未读</el-radio-button>
-          <el-radio-button value="BOOKING_SUCCESS">预订通知</el-radio-button>
-          <el-radio-button value="COURSE_ENROLL_SUCCESS">课程通知</el-radio-button>
-          <el-radio-button value="PAYMENT_SUCCESS">支付通知</el-radio-button>
-          <el-radio-button value="MEMBER_CARD_EXPIRE_SOON">会员提醒</el-radio-button>
+          <el-radio-button label="">全部</el-radio-button>
+          <el-radio-button label="unread">未读</el-radio-button>
+          <el-radio-button label="BOOKING_SUCCESS">预订通知</el-radio-button>
+          <el-radio-button label="COURSE_ENROLL_SUCCESS">课程通知</el-radio-button>
+          <el-radio-button label="PAYMENT_SUCCESS">支付通知</el-radio-button>
+          <el-radio-button label="MEMBER_CARD_EXPIRE_SOON">会员提醒</el-radio-button>
         </el-radio-group>
       </div>
 
@@ -47,9 +47,9 @@
             @click="handleNotificationClick(item)"
           >
             <div class="notification-left">
-              <div class="notification-icon" :style="{ backgroundColor: getTypeBgColor(item.type) }">
-                <el-icon :size="24" :color="getTypeColor(item.type)">
-                  <component :is="getTypeIcon(item.type)" />
+              <div class="notification-icon" :style="{ backgroundColor: getTypeBgColor(item.templateCode) }">
+                <el-icon :size="24" :color="getTypeColor(item.templateCode)">
+                  <component :is="getTypeIcon(item.templateCode)" />
                 </el-icon>
               </div>
             </div>
@@ -118,7 +118,11 @@ import {
   SuccessFilled,
   InfoFilled,
   WarningFilled,
-  MessageBox
+  CircleClose,
+  Bell,
+  Wallet,
+  CreditCard,
+  Timer
 } from '@element-plus/icons-vue';
 import {
   getNotificationList,
@@ -157,7 +161,7 @@ const loadNotifications = async () => {
       res = await getNotificationList({
         page: currentPage.value,
         size: pageSize.value,
-        type: filterType.value || undefined
+        templateCode: filterType.value || undefined
       });
     }
 
@@ -257,30 +261,30 @@ const handleDelete = async (item) => {
 const getTypeIcon = (type) => {
   const iconMap = {
     BOOKING_SUCCESS: SuccessFilled,
-    BOOKING_CANCEL: WarningFilled,
+    BOOKING_CANCEL: CircleClose,
+    BOOKING_START_REMINDER: Timer,
     COURSE_ENROLL_SUCCESS: SuccessFilled,
-    COURSE_ENROLL_CANCEL: WarningFilled,
-    PAYMENT_SUCCESS: SuccessFilled,
-    REFUND_SUCCESS: InfoFilled,
-    MEMBER_CARD_EXPIRE_SOON: WarningFilled,
-    COURSE_START_REMINDER: InfoFilled,
-    BOOKING_START_REMINDER: InfoFilled
+    COURSE_ENROLL_CANCEL: CircleClose,
+    COURSE_START_REMINDER: Bell,
+    PAYMENT_SUCCESS: Wallet,
+    REFUND_SUCCESS: CreditCard,
+    MEMBER_CARD_EXPIRE_SOON: WarningFilled
   };
 
-  return iconMap[type] || MessageBox;
+  return iconMap[type] || InfoFilled;
 };
 
 const getTypeColor = (type) => {
   const colorMap = {
     BOOKING_SUCCESS: '#67C23A',
-    BOOKING_CANCEL: '#E6A23C',
+    BOOKING_CANCEL: '#F56C6C',
+    BOOKING_START_REMINDER: '#409EFF',
     COURSE_ENROLL_SUCCESS: '#67C23A',
-    COURSE_ENROLL_CANCEL: '#E6A23C',
+    COURSE_ENROLL_CANCEL: '#F56C6C',
+    COURSE_START_REMINDER: '#E6A23C',
     PAYMENT_SUCCESS: '#67C23A',
     REFUND_SUCCESS: '#409EFF',
-    MEMBER_CARD_EXPIRE_SOON: '#E6A23C',
-    COURSE_START_REMINDER: '#409EFF',
-    BOOKING_START_REMINDER: '#409EFF'
+    MEMBER_CARD_EXPIRE_SOON: '#E6A23C'
   };
 
   return colorMap[type] || '#909399';
@@ -289,14 +293,14 @@ const getTypeColor = (type) => {
 const getTypeBgColor = (type) => {
   const colorMap = {
     BOOKING_SUCCESS: '#F0F9FF',
-    BOOKING_CANCEL: '#FEF6EC',
+    BOOKING_CANCEL: '#FEF0F0',
+    BOOKING_START_REMINDER: '#ECF5FF',
     COURSE_ENROLL_SUCCESS: '#F0F9FF',
-    COURSE_ENROLL_CANCEL: '#FEF6EC',
+    COURSE_ENROLL_CANCEL: '#FEF0F0',
+    COURSE_START_REMINDER: '#FDF6EC',
     PAYMENT_SUCCESS: '#F0F9FF',
-    REFUND_SUCCESS: '#EFF6FF',
-    MEMBER_CARD_EXPIRE_SOON: '#FEF6EC',
-    COURSE_START_REMINDER: '#EFF6FF',
-    BOOKING_START_REMINDER: '#EFF6FF'
+    REFUND_SUCCESS: '#ECF5FF',
+    MEMBER_CARD_EXPIRE_SOON: '#FDF6EC'
   };
 
   return colorMap[type] || '#F5F7FA';

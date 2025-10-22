@@ -160,4 +160,5 @@ export const request = {
   upload
 }
 
-export default request
+// 默认导出service实例，支持直接调用
+export default service

@@ -15,7 +15,10 @@ import com.basketball.mapper.UserSessionMapper;
 import com.basketball.security.JwtTokenProvider;
 import com.basketball.service.ISmsService;
 import com.basketball.service.IUserService;
+import com.basketball.service.ILoginLogService;
 import com.basketball.utils.RedisUtil;
+import com.basketball.utils.IpUtils;
+import com.basketball.utils.UserAgentParser;
 import com.basketball.vo.UserVO;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -53,6 +56,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 
     @Resource
     private ISmsService smsService;
+
+    @Resource
+    private ILoginLogService loginLogService;
 
     @Resource
     private HttpServletRequest request;
@@ -120,42 +126,66 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
      */
     @Override
     public Map<String, Object> login(UserLoginDTO loginDTO) {
-        // 1. 查询用户
-        LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(User::getUsername, loginDTO.getUsername());
-        User user = userMapper.selectOne(queryWrapper);
+        // 获取请求信息
+        String ip = IpUtils.getIpAddress(request);
+        String userAgent = request.getHeader("User-Agent");
+        String browser = UserAgentParser.getBrowser(userAgent);
+        String os = UserAgentParser.getOperatingSystem(userAgent);
 
-        if (user == null) {
-            throw new BusinessException(ErrorCode.USER_NOT_FOUND);
+        try {
+            // 1. 查询用户
+            LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
+            queryWrapper.eq(User::getUsername, loginDTO.getUsername());
+            User user = userMapper.selectOne(queryWrapper);
+
+            if (user == null) {
+                // 记录登录失败日志
+                loginLogService.recordLoginLog(null, loginDTO.getUsername(), 1, ip, null, browser, os, 0, "用户不存在");
+                throw new BusinessException(ErrorCode.USER_NOT_FOUND);
+            }
+
+            // 2. 校验密码
+            if (!passwordEncoder.matches(loginDTO.getPassword(), user.getPassword())) {
+                // 记录登录失败日志
+                loginLogService.recordLoginLog(user.getId(), user.getUsername(), 1, ip, null, browser, os, 0, "密码错误");
+                throw new BusinessException(ErrorCode.PASSWORD_ERROR);
+            }
+
+            // 3. 校验账号状态
+            if (user.getStatus() == 0) {
+                // 记录登录失败日志
+                loginLogService.recordLoginLog(user.getId(), user.getUsername(), 1, ip, null, browser, os, 0, "账号已禁用");
+                throw new BusinessException(ErrorCode.USER_DISABLED);
+            }
+
+            // 4. 生成JWT Token
+            String token = jwtTokenProvider.generateToken(user.getId());
+
+            // 5. 将Token存入Redis（暂时注释）
+//            String redisKey = RedisKeyConstant.USER_TOKEN_PREFIX + user.getId();
+//            redisUtil.set(redisKey, token, 604800L);
+
+            // 6. 更新最后登录时间
+            user.setLastLoginTime(LocalDateTime.now());
+            userMapper.updateById(user);
+
+            // 7. 记录登录成功日志
+            loginLogService.recordLoginLog(user.getId(), user.getUsername(), 1, ip, null, browser, os, 1, "登录成功");
+
+            // 8. 返回登录信息
+            Map<String, Object> result = new HashMap<>();
+            result.put("token", token);
+            result.put("userInfo", convertToVO(user));
+
+            return result;
+        } catch (BusinessException e) {
+            // 业务异常直接抛出（已记录日志）
+            throw e;
+        } catch (Exception e) {
+            // 其他异常记录日志
+            loginLogService.recordLoginLog(null, loginDTO.getUsername(), 1, ip, null, browser, os, 0, "系统异常: " + e.getMessage());
+            throw e;
         }
-
-        // 2. 校验密码
-        if (!passwordEncoder.matches(loginDTO.getPassword(), user.getPassword())) {
-            throw new BusinessException(ErrorCode.PASSWORD_ERROR);
-        }
-
-        // 3. 校验账号状态
-        if (user.getStatus() == 0) {
-            throw new BusinessException(ErrorCode.USER_DISABLED);
-        }
-
-        // 4. 生成JWT Token
-        String token = jwtTokenProvider.generateToken(user.getId());
-
-        // 5. 将Token存入Redis（暂时注释）
-//        String redisKey = RedisKeyConstant.USER_TOKEN_PREFIX + user.getId();
-//        redisUtil.set(redisKey, token, 604800L);
-
-        // 6. 更新最后登录时间
-        user.setLastLoginTime(LocalDateTime.now());
-        userMapper.updateById(user);
-
-        // 7. 返回登录信息
-        Map<String, Object> result = new HashMap<>();
-        result.put("token", token);
-        result.put("userInfo", convertToVO(user));
-
-        return result;
     }
 
     /**
@@ -315,69 +345,87 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> loginByPhone(SmsLoginDTO loginDTO) {
-        // 1. 验证验证码
-        boolean verified = smsService.verifyCode(loginDTO.getPhone(), loginDTO.getCode(), "login");
-        if (!verified) {
-            throw new BusinessException(ErrorCode.VERIFICATION_CODE_ERROR);
+        // 获取请求信息
+        String ip = IpUtils.getIpAddress(request);
+        String userAgent = request.getHeader("User-Agent");
+        String browser = UserAgentParser.getBrowser(userAgent);
+        String os = UserAgentParser.getOperatingSystem(userAgent);
+
+        try {
+            // 1. 验证验证码
+            boolean verified = smsService.verifyCode(loginDTO.getPhone(), loginDTO.getCode(), "login");
+            if (!verified) {
+                loginLogService.recordLoginLog(null, loginDTO.getPhone(), 2, ip, null, browser, os, 0, "验证码错误");
+                throw new BusinessException(ErrorCode.VERIFICATION_CODE_ERROR);
+            }
+
+            // 2. 查询用户是否存在
+            LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
+            queryWrapper.eq(User::getPhone, loginDTO.getPhone());
+            User user = userMapper.selectOne(queryWrapper);
+
+            // 3. 如果用户不存在，自动注册
+            if (user == null) {
+                user = new User();
+                user.setPhone(loginDTO.getPhone());
+                user.setUsername("user_" + loginDTO.getPhone().substring(7)); // 使用手机号后4位
+                user.setPassword(passwordEncoder.encode("123456")); // 默认密码
+                user.setStatus(1); // 默认启用
+                user.setCreateTime(LocalDateTime.now());
+                user.setUpdateTime(LocalDateTime.now());
+                userMapper.insert(user);
+
+                // 分配默认角色（普通用户）
+                UserRole userRole = new UserRole();
+                userRole.setUserId(user.getId());
+                userRole.setRoleId(3L); // 3=普通用户
+                userRole.setCreateTime(LocalDateTime.now());
+                userRoleMapper.insert(userRole);
+            }
+
+            // 4. 校验账号状态
+            if (user.getStatus() == 0) {
+                loginLogService.recordLoginLog(user.getId(), user.getUsername(), 2, ip, null, browser, os, 0, "账号已禁用");
+                throw new BusinessException(ErrorCode.USER_DISABLED);
+            }
+
+            // 5. 生成JWT Token
+            String token = jwtTokenProvider.generateToken(user.getId());
+
+            // 6. 创建会话记录
+            UserSession session = new UserSession();
+            session.setUserId(user.getId());
+            session.setToken(token);
+            session.setLoginType(2); // 2-手机验证码登录
+            session.setDeviceType(getDeviceType());
+            session.setIpAddress(getClientIp());
+            session.setExpireTime(LocalDateTime.now().plusDays(7));
+            session.setStatus(1);
+            session.setCreateTime(LocalDateTime.now());
+            userSessionMapper.insert(session);
+
+            // 7. 更新最后登录时间
+            user.setLastLoginTime(LocalDateTime.now());
+            userMapper.updateById(user);
+
+            // 8. 记录登录成功日志
+            loginLogService.recordLoginLog(user.getId(), user.getUsername(), 2, ip, null, browser, os, 1, "登录成功");
+
+            // 9. 清除已使用的验证码
+            smsService.clearCode(loginDTO.getPhone(), "login");
+
+            // 10. 返回登录信息
+            Map<String, Object> result = new HashMap<>();
+            result.put("token", token);
+            result.put("userInfo", convertToVO(user));
+
+            return result;
+        } catch (BusinessException e) {
+            throw e;
+        } catch (Exception e) {
+            loginLogService.recordLoginLog(null, loginDTO.getPhone(), 2, ip, null, browser, os, 0, "系统异常: " + e.getMessage());
+            throw e;
         }
-
-        // 2. 查询用户是否存在
-        LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(User::getPhone, loginDTO.getPhone());
-        User user = userMapper.selectOne(queryWrapper);
-
-        // 3. 如果用户不存在，自动注册
-        if (user == null) {
-            user = new User();
-            user.setPhone(loginDTO.getPhone());
-            user.setUsername("user_" + loginDTO.getPhone().substring(7)); // 使用手机号后4位
-            user.setPassword(passwordEncoder.encode("123456")); // 默认密码
-            user.setStatus(1); // 默认启用
-            user.setCreateTime(LocalDateTime.now());
-            user.setUpdateTime(LocalDateTime.now());
-            userMapper.insert(user);
-
-            // 分配默认角色（普通用户）
-            UserRole userRole = new UserRole();
-            userRole.setUserId(user.getId());
-            userRole.setRoleId(3L); // 3=普通用户
-            userRole.setCreateTime(LocalDateTime.now());
-            userRoleMapper.insert(userRole);
-        }
-
-        // 4. 校验账号状态
-        if (user.getStatus() == 0) {
-            throw new BusinessException(ErrorCode.USER_DISABLED);
-        }
-
-        // 5. 生成JWT Token
-        String token = jwtTokenProvider.generateToken(user.getId());
-
-        // 6. 创建会话记录
-        UserSession session = new UserSession();
-        session.setUserId(user.getId());
-        session.setToken(token);
-        session.setLoginType(2); // 2-手机验证码登录
-        session.setDeviceType(getDeviceType());
-        session.setIpAddress(getClientIp());
-        session.setExpireTime(LocalDateTime.now().plusDays(7));
-        session.setStatus(1);
-        session.setCreateTime(LocalDateTime.now());
-        userSessionMapper.insert(session);
-
-        // 7. 更新最后登录时间
-        user.setLastLoginTime(LocalDateTime.now());
-        userMapper.updateById(user);
-
-        // 8. 清除已使用的验证码
-        smsService.clearCode(loginDTO.getPhone(), "login");
-
-        // 9. 返回登录信息
-        Map<String, Object> result = new HashMap<>();
-        result.put("token", token);
-        result.put("userInfo", convertToVO(user));
-
-        return result;
     }
 
     /**

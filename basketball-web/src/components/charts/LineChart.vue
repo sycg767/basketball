@@ -70,8 +70,18 @@ watch(() => props.data, () => {
 const initChart = () => {
   if (!chartRef.value) return;
 
-  chartInstance = echarts.init(chartRef.value);
-  updateChart();
+  // 使用 nextTick 确保 DOM 完全渲染
+  const tryInit = () => {
+    if (chartRef.value && chartRef.value.clientWidth > 0) {
+      chartInstance = echarts.init(chartRef.value);
+      updateChart();
+    } else {
+      // 如果还没准备好，再等一下
+      setTimeout(tryInit, 50);
+    }
+  };
+
+  setTimeout(tryInit, 0);
 };
 
 const updateChart = () => {
@@ -97,10 +107,10 @@ const updateChart = () => {
       data: props.data.series?.map(s => s.name) || []
     },
     grid: {
-      left: '3%',
-      right: '4%',
-      bottom: '3%',
-      top: props.title ? 70 : 45,
+      left: 10,
+      right: 10,
+      bottom: 10,
+      top: props.title ? 70 : 50,
       containLabel: true
     },
     xAxis: {

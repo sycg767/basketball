@@ -1,7 +1,5 @@
 <template>
   <div class="course-analysis-container">
-    <h2 class="page-title">课程热度分析</h2>
-
     <!-- 热度排行榜 -->
     <el-card>
       <template #header>
@@ -94,24 +92,38 @@ const loadRanking = async () => {
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - rankingDays.value);
 
+    console.log('📊 [课程热度] 请求参数:', {
+      startDate: startDate.toISOString().split('T')[0],
+      endDate: endDate.toISOString().split('T')[0],
+      limit: 10
+    });
+
     const res = await getCoursePopularityRanking({
       startDate: startDate.toISOString().split('T')[0],
       endDate: endDate.toISOString().split('T')[0],
       limit: 10
     });
+
+    console.log('📊 [课程热度] 响应数据:', res);
+    console.log('📊 [课程热度] 数据长度:', res.data?.length);
+    console.log('📊 [课程热度] 数据内容:', res.data);
+
     if (res.code === 200 && res.data && res.data.length > 0) {
       rankingData.value = {
         xAxisData: res.data.map(item => item.courseName),
         series: [
           {
             name: '热度分数',
-            data: res.data.map(item => item.popularityScore || item.score || 0)
+            data: res.data.map(item => item.avgPopularityScore || item.popularityScore || item.score || 0)
           }
         ]
       };
+      console.log('✅ [课程热度] 图表数据已设置:', rankingData.value);
+    } else {
+      console.warn('⚠️ [课程热度] 无数据或数据为空');
     }
   } catch (error) {
-    console.error('获取课程排行榜失败:', error);
+    console.error('❌ [课程热度] 获取失败:', error);
     ElMessage.error('获取课程排行榜失败');
   } finally {
     loading.value = false;

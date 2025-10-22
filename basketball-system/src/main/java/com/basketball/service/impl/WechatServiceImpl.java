@@ -66,17 +66,29 @@ public class WechatServiceImpl implements IWechatService {
      */
     private static final Map<String, Long> stateMap = new ConcurrentHashMap<>();
 
-    /**
-     * 微信配置 (生产环境需要从配置文件读取)
-     */
-    private static final String WECHAT_APP_ID = "wx_demo_appid";
-    private static final String WECHAT_REDIRECT_URI = "http://localhost:8080/api/wechat/auth/callback";
+    @org.springframework.beans.factory.annotation.Value("${wechat.oauth.enabled:false}")
+    private Boolean wechatEnabled;
+
+    @org.springframework.beans.factory.annotation.Value("${wechat.oauth.app-id:}")
+    private String wechatAppId;
+
+    @org.springframework.beans.factory.annotation.Value("${wechat.oauth.app-secret:}")
+    private String wechatAppSecret;
+
+    @org.springframework.beans.factory.annotation.Value("${wechat.oauth.redirect-uri:http://localhost:8080/api/wechat/auth/callback}")
+    private String wechatRedirectUri;
 
     /**
      * 获取微信授权URL
      */
     @Override
     public WechatAuthUrlVO getAuthorizationUrl() {
+        // 检查是否配置了真实的微信AppID
+        if (!wechatEnabled || StringUtils.isBlank(wechatAppId) || "YOUR_WECHAT_APP_ID".equals(wechatAppId)) {
+            throw new BusinessException("微信登录功能未配置，请在application.yml中配置真实的微信开放平台AppID。\n" +
+                    "申请地址: https://open.weixin.qq.com/");
+        }
+
         // 生成state防CSRF
         String state = UUID.randomUUID().toString().replace("-", "");
         stateMap.put(state, System.currentTimeMillis());
@@ -84,8 +96,8 @@ public class WechatServiceImpl implements IWechatService {
         // 构建微信授权URL
         String authUrl = String.format(
                 "https://open.weixin.qq.com/connect/qrconnect?appid=%s&redirect_uri=%s&response_type=code&scope=snsapi_login&state=%s#wechat_redirect",
-                WECHAT_APP_ID,
-                WECHAT_REDIRECT_URI,
+                wechatAppId,
+                wechatRedirectUri,
                 state
         );
 

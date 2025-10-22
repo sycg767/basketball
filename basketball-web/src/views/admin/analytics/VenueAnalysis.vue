@@ -1,7 +1,5 @@
 <template>
   <div class="venue-analysis-container">
-    <h2 class="page-title">场地使用分析</h2>
-
     <!-- 场地使用率排行 -->
     <el-card>
       <template #header>
@@ -43,14 +41,13 @@
         <span>高峰时段分布</span>
       </template>
       <el-table v-loading="loading" :data="peakPeriods" stripe>
-        <el-table-column prop="period" label="时段" width="120" />
+        <el-table-column prop="periodName" label="时段" width="200" />
         <el-table-column prop="bookingCount" label="预订次数" width="120" />
-        <el-table-column prop="usageRate" label="使用率" width="120">
+        <el-table-column prop="percentage" label="占比" width="200">
           <template #default="{ row }">
-            <el-progress :percentage="row.usageRate" :color="getProgressColor(row.usageRate)" />
+            <el-progress :percentage="row.percentage" :color="getProgressColor(row.percentage)" />
           </template>
         </el-table-column>
-        <el-table-column prop="revenue" label="收入(元)" />
       </el-table>
     </el-card>
   </div>
@@ -94,24 +91,38 @@ const loadRanking = async () => {
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - rankingDays.value);
 
+    console.log('🏀 [场地使用率] 请求参数:', {
+      startDate: startDate.toISOString().split('T')[0],
+      endDate: endDate.toISOString().split('T')[0],
+      limit: 10
+    });
+
     const res = await getVenueUsageRanking({
       startDate: startDate.toISOString().split('T')[0],
       endDate: endDate.toISOString().split('T')[0],
       limit: 10
     });
+
+    console.log('🏀 [场地使用率] 响应数据:', res);
+    console.log('🏀 [场地使用率] 数据长度:', res.data?.length);
+    console.log('🏀 [场地使用率] 数据内容:', res.data);
+
     if (res.code === 200 && res.data && res.data.length > 0) {
       rankingData.value = {
         xAxisData: res.data.map(item => item.venueName),
         series: [
           {
             name: '使用率',
-            data: res.data.map(item => item.usageRate || item.rate || 0)
+            data: res.data.map(item => item.avgUsageRate || item.usageRate || item.rate || 0)
           }
         ]
       };
+      console.log('✅ [场地使用率] 图表数据已设置:', rankingData.value);
+    } else {
+      console.warn('⚠️ [场地使用率] 无数据或数据为空');
     }
   } catch (error) {
-    console.error('获取场地排行榜失败:', error);
+    console.error('❌ [场地使用率] 获取失败:', error);
     ElMessage.error('获取场地排行榜失败');
   } finally {
     loading.value = false;
@@ -124,13 +135,23 @@ const loadRevenueAnalysis = async () => {
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - 30);
 
+    console.log('💰 [场地收入] 请求参数:', {
+      startDate: startDate.toISOString().split('T')[0],
+      endDate: endDate.toISOString().split('T')[0]
+    });
+
     const res = await getVenueRevenueAnalysis({
       startDate: startDate.toISOString().split('T')[0],
       endDate: endDate.toISOString().split('T')[0]
     });
+
+    console.log('💰 [场地收入] 响应数据:', res);
+    console.log('💰 [场地收入] 数据长度:', res.data?.length);
+    console.log('💰 [场地收入] 数据内容:', res.data);
+
     if (res.code === 200 && res.data && res.data.length > 0) {
       revenueData.value = {
-        xAxisData: res.data.map(item => item.analysisDate || item.date),
+        xAxisData: res.data.map(item => item.venueName || item.analysisDate || item.date),
         series: [
           {
             name: '总收入',
@@ -138,6 +159,9 @@ const loadRevenueAnalysis = async () => {
           }
         ]
       };
+      console.log('✅ [场地收入] 图表数据已设置:', revenueData.value);
+    } else {
+      console.warn('⚠️ [场地收入] 无数据或数据为空');
     }
   } catch (error) {
     console.error('获取收入分析失败:', error);
@@ -150,15 +174,28 @@ const loadPeakPeriods = async () => {
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - 7);
 
+    console.log('⏰ [高峰时段] 请求参数:', {
+      startDate: startDate.toISOString().split('T')[0],
+      endDate: endDate.toISOString().split('T')[0]
+    });
+
     const res = await getPeakPeriodAnalysis({
       startDate: startDate.toISOString().split('T')[0],
       endDate: endDate.toISOString().split('T')[0]
     });
+
+    console.log('⏰ [高峰时段] 响应数据:', res);
+    console.log('⏰ [高峰时段] 数据长度:', res.data?.length);
+    console.log('⏰ [高峰时段] 数据内容:', res.data);
+
     if (res.code === 200 && res.data) {
       peakPeriods.value = res.data || [];
+      console.log('✅ [高峰时段] 数据已设置:', peakPeriods.value);
+    } else {
+      console.warn('⚠️ [高峰时段] 无数据或数据为空');
     }
   } catch (error) {
-    console.error('获取高峰时段失败:', error);
+    console.error('❌ [高峰时段] 获取失败:', error);
   }
 };
 

@@ -233,22 +233,17 @@ const routes = [
       },
       // 数据分析路由
       {
-        path: 'analytics/member',
-        name: 'MemberAnalysis',
-        component: () => import('@/views/admin/analytics/MemberAnalysis.vue'),
-        meta: { title: '会员活跃度分析', requireAuth: true, requireAdmin: true }
+        path: 'analytics',
+        name: 'DataAnalysis',
+        component: () => import('@/views/admin/analytics/DataAnalysis.vue'),
+        meta: { title: '数据分析', requireAuth: true, requireAdmin: true }
       },
+      // 通知模板管理路由
       {
-        path: 'analytics/course',
-        name: 'CourseAnalysis',
-        component: () => import('@/views/admin/analytics/CourseAnalysis.vue'),
-        meta: { title: '课程热度分析', requireAuth: true, requireAdmin: true }
-      },
-      {
-        path: 'analytics/venue',
-        name: 'VenueAnalysis',
-        component: () => import('@/views/admin/analytics/VenueAnalysis.vue'),
-        meta: { title: '场地使用分析', requireAuth: true, requireAdmin: true }
+        path: 'notification-templates',
+        name: 'AdminNotificationTemplates',
+        component: () => import('@/views/admin/notification/TemplateManage.vue'),
+        meta: { title: '通知模板', requireAuth: true, requireAdmin: true }
       }
     ]
   }
