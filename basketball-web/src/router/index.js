@@ -147,6 +147,13 @@ const routes = [
     component: () => import('@/views/notification/NotificationDetail.vue'),
     meta: { title: '通知详情', requireAuth: true }
   },
+  // 公告相关路由
+  {
+    path: '/announcement/list',
+    name: 'AnnouncementList',
+    component: () => import('@/views/announcement/AnnouncementList.vue'),
+    meta: { title: '系统公告', requireAuth: false }
+  },
   // 管理员路由
   {
     path: '/admin/login',

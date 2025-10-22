@@ -7,13 +7,19 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.basketball.common.exception.BusinessException;
 import com.basketball.common.result.PageResult;
 import com.basketball.dto.request.CourseCreateDTO;
+import com.basketball.dto.request.CoursePriceDTO;
 import com.basketball.dto.request.CourseQueryDTO;
 import com.basketball.dto.request.CourseUpdateDTO;
 import com.basketball.entity.Course;
+import com.basketball.entity.MemberCard;
+import com.basketball.entity.MemberCardType;
 import com.basketball.entity.User;
 import com.basketball.mapper.CourseMapper;
+import com.basketball.mapper.MemberCardMapper;
+import com.basketball.mapper.MemberCardTypeMapper;
 import com.basketball.mapper.UserMapper;
 import com.basketball.service.ICourseService;
+import com.basketball.vo.CoursePriceVO;
 import com.basketball.vo.CourseVO;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -45,6 +51,12 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
 
     @Resource
     private UserMapper userMapper;
+
+    @Resource
+    private MemberCardMapper memberCardMapper;
+
+    @Resource
+    private MemberCardTypeMapper memberCardTypeMapper;
 
     @Resource
     private ObjectMapper objectMapper;
@@ -167,6 +179,58 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
         course.setUpdateTime(LocalDateTime.now());
         courseMapper.updateById(course);
         log.info("更新课程状态成功, 课程ID: {}, 状态: {}", id, status);
+    }
+
+    @Override
+    public CoursePriceVO calculateCoursePrice(Long userId, CoursePriceDTO dto) {
+        // 1. 获取课程基础价格
+        Course course = courseMapper.selectById(dto.getCourseId());
+        if (course == null) {
+            throw new BusinessException("课程不存在");
+        }
+        BigDecimal basePrice = course.getPrice();
+
+        // 2. 查询用户有效会员卡
+        LambdaQueryWrapper<MemberCard> cardQuery = new LambdaQueryWrapper<>();
+        cardQuery.eq(MemberCard::getUserId, userId)
+                .eq(MemberCard::getStatus, 1)
+                .ge(MemberCard::getExpireDate, java.time.LocalDate.now())
+                .orderByDesc(MemberCard::getCreateTime)
+                .last("LIMIT 1");
+        MemberCard card = memberCardMapper.selectOne(cardQuery);
+
+        BigDecimal actualPrice = basePrice;
+        BigDecimal discountAmount = BigDecimal.ZERO;
+        boolean hasCard = false;
+        String cardName = "";
+        BigDecimal discount = BigDecimal.ONE;
+
+        // 3. 应用会员卡折扣
+        if (card != null) {
+            MemberCardType cardType = memberCardTypeMapper.selectById(card.getCardTypeId());
+            if (cardType != null && cardType.getDiscount() != null) {
+                discount = cardType.getDiscount();
+                actualPrice = basePrice.multiply(discount).setScale(2, java.math.RoundingMode.HALF_UP);
+                discountAmount = basePrice.subtract(actualPrice);
+                hasCard = true;
+                cardName = cardType.getCardName();
+            }
+        }
+
+        // 4. 计算最大积分抵扣(50%)
+        BigDecimal maxPointsDeduct = actualPrice.multiply(new BigDecimal("0.5")).setScale(2, java.math.RoundingMode.HALF_UP);
+
+        return CoursePriceVO.builder()
+                .basePrice(basePrice)
+                .memberPrice(actualPrice)
+                .actualPrice(actualPrice)
+                .discountAmount(discountAmount)
+                .hasCard(hasCard)
+                .cardName(cardName)
+                .discount(discount)
+                .canUsePoints(true)
+                .maxPointsDeduct(maxPointsDeduct)
+                .build();
     }
 
     /**

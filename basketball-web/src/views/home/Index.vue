@@ -10,9 +10,11 @@
         <div class="user-info">
           <template v-if="userStore.isLogin">
             <!-- 通知中心 -->
-            <NotificationCenter />
+            <div class="notification-wrapper">
+              <NotificationCenter />
+            </div>
 
-            <el-avatar :size="36" style="margin-right: 10px">
+            <el-avatar :size="36">
               {{ getUserInitial() }}
             </el-avatar>
             <span class="username">{{ userStore.realName || userStore.username || '用户' }}</span>
@@ -89,6 +91,10 @@
               <div class="stat-value">¥{{ accountBalance.toFixed(2) }}</div>
               <div class="stat-label">账户余额</div>
             </div>
+            <div class="stat-item">
+              <div class="stat-value">¥{{ cardBalance.toFixed(2) }}</div>
+              <div class="stat-label">会员卡余额</div>
+            </div>
           </div>
         </div>
       </div>
@@ -124,6 +130,14 @@
             </div>
             <h4>课程报名</h4>
             <p>参加专业的篮球培训课程</p>
+          </div>
+
+          <div class="action-card" @click="goToMyCourses">
+            <div class="action-icon purple">
+              <el-icon :size="40"><Document /></el-icon>
+            </div>
+            <h4>我的课程</h4>
+            <p>查看我的课程报名记录</p>
           </div>
 
           <div class="action-card" @click="goToMember">
@@ -182,7 +196,7 @@ import { ref, reactive, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { useUserStore } from '@/store/modules/user';
-import { getMyPoints, getUserBalance } from '@/api/member';
+import { getMyPoints, getUserBalance, getMyCards } from '@/api/member';
 import NotificationCenter from '@/components/NotificationCenter.vue';
 import AnnouncementSection from '@/components/AnnouncementSection.vue';
 import {
@@ -191,7 +205,8 @@ import {
   Reading,
   User,
   Basketball,
-  Check
+  Check,
+  Document
 } from '@element-plus/icons-vue';
 
 const router = useRouter();
@@ -200,6 +215,7 @@ const userStore = useUserStore();
 // 用户统计数据
 const pointsBalance = ref(0);
 const accountBalance = ref(0.00);
+const cardBalance = ref(0.00);
 
 // 获取用户统计数据
 const loadUserStats = async () => {
@@ -215,6 +231,15 @@ const loadUserStats = async () => {
       const balanceResponse = await getUserBalance();
       if (balanceResponse.code === 200) {
         accountBalance.value = balanceResponse.data || 0;
+      }
+
+      // 获取会员卡余额
+      const cardsResponse = await getMyCards({ page: 1, pageSize: 100 });
+      if (cardsResponse.code === 200 && cardsResponse.data && cardsResponse.data.records) {
+        // 计算所有储值卡的总余额
+        cardBalance.value = cardsResponse.data.records
+          .filter(card => card.cardType === 2 && card.status === 1) // 2-储值卡, 1-已激活
+          .reduce((sum, card) => sum + (card.balance || 0), 0);
       }
     } catch (error) {
       console.error('获取用户统计数据失败:', error);
@@ -240,11 +265,13 @@ const goLogin = () => {
 // 获取会员等级文本
 const getMemberLevelText = () => {
   const levels = {
+    0: '普通用户',
     1: '银卡会员',
     2: '金卡会员',
-    3: '钻石会员'
+    3: '铂金会员',
+    4: 'VIP会员'
   };
-  return levels[userStore.memberLevel] || '普通会员';
+  return levels[userStore.memberLevel] || '普通用户';
 };
 
 const goRegister = () => {
@@ -283,6 +310,15 @@ const goToBooking = () => {
 
 const goToCourse = () => {
   router.push('/course');
+};
+
+const goToMyCourses = () => {
+  if (!userStore.isLogin) {
+    ElMessage.warning('请先登录');
+    router.push('/login');
+    return;
+  }
+  router.push('/my-courses');
 };
 
 const goToMember = () => {
@@ -342,6 +378,12 @@ const goToMember = () => {
         display: flex;
         align-items: center;
         gap: $spacing-3;
+
+        .notification-wrapper {
+          display: flex;
+          align-items: center;
+          margin-right: $spacing-4;
+        }
 
         .username {
           color: $text-primary;
@@ -591,6 +633,11 @@ const goToMember = () => {
             &.orange {
               background: rgba($warning, 0.1);
               color: $warning;
+            }
+
+            &.purple {
+              background: rgba(#9333ea, 0.1);
+              color: #9333ea;
             }
 
             &.red {

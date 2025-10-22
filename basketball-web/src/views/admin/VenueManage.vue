@@ -37,30 +37,30 @@
     <!-- 场地列表 -->
     <el-card class="table-card">
       <el-table :data="venueList" stripe v-loading="loading">
-        <el-table-column prop="id" label="ID" width="80" />
-        <el-table-column prop="name" label="场地名称" width="150" />
-        <el-table-column prop="type" label="类型" width="120">
+        <el-table-column prop="id" label="ID" width="70" />
+        <el-table-column prop="name" label="场地名称" min-width="180" />
+        <el-table-column prop="type" label="类型" width="110">
           <template #default="{ row }">
             <el-tag :type="row.type <= 2 ? 'success' : 'warning'">
               {{ getVenueTypeText(row.type) }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="location" label="位置" />
-        <el-table-column prop="price" label="价格/小时" width="120">
+        <el-table-column prop="location" label="位置" min-width="150" />
+        <el-table-column prop="price" label="价格/小时" width="110">
           <template #default="{ row }">
             ¥{{ row.price }}
           </template>
         </el-table-column>
         <el-table-column prop="capacity" label="容纳人数" width="100" />
-        <el-table-column prop="status" label="状态" width="100">
+        <el-table-column prop="status" label="状态" width="90">
           <template #default="{ row }">
             <el-tag :type="row.status === 1 ? 'success' : 'danger'">
               {{ row.status === 1 ? '启用' : '停用' }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="200" fixed="right">
+        <el-table-column label="操作" width="160" fixed="right">
           <template #default="{ row }">
             <el-button type="primary" link @click="handleEdit(row)">
               <el-icon><Edit /></el-icon>
@@ -114,9 +114,13 @@
         <el-form-item label="标准价格(元/小时)" prop="price">
           <el-input-number v-model="priceForm.price" :min="0" :precision="2" :step="10" />
         </el-form-item>
-        <el-form-item label="会员价格(元/小时)" prop="memberPrice">
-          <el-input-number v-model="priceForm.memberPrice" :min="0" :precision="2" :step="10" />
-        </el-form-item>
+        <el-alert
+          title="会员折扣说明"
+          type="info"
+          :closable="false"
+          style="margin-top: 10px;">
+          会员价格根据会员等级自动计算：1级9.5折，2级9折，3级8.5折，4级8折，5级7.5折
+        </el-alert>
       </el-form>
 
       <template #footer>
@@ -268,8 +272,7 @@ const priceForm = reactive({
   timePeriod: '08:00-12:00',
   startTime: '08:00:00',
   endTime: '12:00:00',
-  price: 100.00,
-  memberPrice: 90.00
+  price: 100.00
 });
 
 // 获取场地列表
@@ -394,8 +397,7 @@ const handlePriceSubmit = async () => {
       timePeriod: priceForm.timePeriod,
       startTime: priceForm.startTime,
       endTime: priceForm.endTime,
-      price: priceForm.price,
-      memberPrice: priceForm.memberPrice
+      price: priceForm.price
     };
 
     await setVenuePrice(data);
@@ -415,8 +417,7 @@ const handlePriceDialogClose = () => {
     timePeriod: '08:00-12:00',
     startTime: '08:00:00',
     endTime: '12:00:00',
-    price: 100.00,
-    memberPrice: 90.00
+    price: 100.00
   });
 };
 

@@ -81,8 +81,11 @@
           <el-descriptions-item label="优惠金额">
             ¥{{ bookingDetail.discountAmount?.toFixed(2) || '0.00' }}
           </el-descriptions-item>
+          <el-descriptions-item label="积分抵扣" v-if="pointsToUse > 0">
+            <span class="points-deduct">{{ pointsToUse }}积分 (¥{{ (pointsToUse / 100).toFixed(2) }})</span>
+          </el-descriptions-item>
           <el-descriptions-item label="实付金额">
-            <span class="price-highlight">¥{{ bookingDetail.actualPrice?.toFixed(2) || bookingDetail.totalPrice?.toFixed(2) }}</span>
+            <span class="price-highlight">¥{{ calculateFinalAmount() }}</span>
           </el-descriptions-item>
           <el-descriptions-item label="支付方式" v-if="bookingDetail.payMethodName">
             {{ bookingDetail.payMethodName }}
@@ -425,6 +428,21 @@ const router = useRouter();
 const loading = ref(false);
 const bookingDetail = ref({});
 
+// 积分抵扣（从路由参数获取）
+const pointsToUse = ref(parseInt(route.query.pointsToUse) || 0);
+
+// 计算最终支付金额（扣除积分抵扣）
+const calculateFinalAmount = () => {
+  const actualPrice = bookingDetail.value.actualPrice || bookingDetail.value.totalPrice || 0;
+  if (pointsToUse.value > 0) {
+    const pointsDeduct = pointsToUse.value / 100;
+    const maxDeduct = actualPrice * 0.5; // 最多抵扣50%
+    const actualDeduct = Math.min(pointsDeduct, maxDeduct);
+    return Math.max(0, actualPrice - actualDeduct).toFixed(2);
+  }
+  return actualPrice.toFixed(2);
+};
+
 // 支付相关
 const payDialogVisible = ref(false);
 const paying = ref(false);
@@ -669,6 +687,11 @@ const generateQRCode = async () => {
       paymentType: payForm.paymentType
     };
 
+    // 如果使用积分抵扣，添加积分参数
+    if (pointsToUse.value > 0) {
+      payData.pointsToUse = pointsToUse.value;
+    }
+
     // 如果是会员卡支付，添加cardId
     if (payForm.paymentMethod === 3) {
       if (!selectedCardId.value) {
@@ -776,6 +799,11 @@ const confirmPay = async () => {
         paymentMethod: payForm.paymentMethod
       };
 
+      // 如果使用积分抵扣，添加积分参数
+      if (pointsToUse.value > 0) {
+        payData.pointsToUse = pointsToUse.value;
+      }
+
       // 如果是会员卡支付，添加cardId
       if (payForm.paymentMethod === 3) {
         payData.cardId = selectedCardId.value;
@@ -878,6 +906,11 @@ onUnmounted(() => {
         font-size: 18px;
         font-weight: 700;
         color: #f56c6c;
+      }
+
+      .points-deduct {
+        color: #67c23a;
+        font-weight: 600;
       }
     }
 

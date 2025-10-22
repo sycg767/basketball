@@ -124,7 +124,6 @@
                   {{ timeTypeMap[row.timeType] || row.timeType }}
                 </template>
               </el-table-column>
-              <el-table-column prop="timePeriod" label="时段名称" width="150" />
               <el-table-column label="时间段" width="200">
                 <template #default="{ row }">
                   {{ row.startTime }} - {{ row.endTime }}
@@ -135,16 +134,9 @@
                   <span class="price">¥{{ row.price }}/小时</span>
                 </template>
               </el-table-column>
-              <el-table-column label="会员价格" width="120">
+              <el-table-column label="会员折扣价" width="150">
                 <template #default="{ row }">
-                  <span class="member-price">¥{{ row.memberPrice }}/小时</span>
-                </template>
-              </el-table-column>
-              <el-table-column prop="status" label="状态" width="100">
-                <template #default="{ row }">
-                  <el-tag :type="row.status === 1 ? 'success' : 'info'" size="small">
-                    {{ row.status === 1 ? '启用' : '禁用' }}
-                  </el-tag>
+                  <span class="member-price">¥{{ calculateMemberPrice(row.price) }}/小时</span>
                 </template>
               </el-table-column>
             </el-table>
@@ -158,11 +150,12 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import { getVenueDetail, getVenuePrices } from '@/api/venue';
 import { useUserStore } from '@/store/modules/user';
+import { getMemberLevel } from '@/utils/constants';
 import BackButton from '@/components/common/BackButton.vue';
 
 const route = useRoute();
@@ -211,6 +204,13 @@ const facilitiesList = computed(() => {
   if (!venueDetail.value || !venueDetail.value.facilities) return [];
   return venueDetail.value.facilities.split(',').filter(item => item.trim());
 });
+
+// 计算会员折扣价
+const calculateMemberPrice = (price) => {
+  const memberLevel = userStore.memberLevel || 0;
+  const discount = getMemberLevel(memberLevel).discount;
+  return (price * discount).toFixed(2);
+};
 
 // 获取场地详情
 const fetchVenueDetail = async () => {

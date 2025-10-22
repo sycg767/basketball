@@ -275,9 +275,14 @@ public class VenueServiceImpl extends ServiceImpl<VenueMapper, Venue> implements
 
         // 4. 根据时段计算价格（简化版本，取第一个价格配置）
         VenuePriceVO priceVO = prices.get(0);
-        BigDecimal hourlyPrice = (memberLevel != null && memberLevel > 0)
-                ? priceVO.getMemberPrice()
-                : priceVO.getPrice();
+        BigDecimal basePrice = priceVO.getPrice();
+
+        // 根据会员等级计算折扣价格
+        BigDecimal hourlyPrice = basePrice;
+        if (memberLevel != null && memberLevel > 0) {
+            BigDecimal discount = getMemberDiscount(memberLevel);
+            hourlyPrice = basePrice.multiply(discount);
+        }
 
         // 5. 计算总价
         return hourlyPrice.multiply(BigDecimal.valueOf(hours));
@@ -336,5 +341,23 @@ public class VenueServiceImpl extends ServiceImpl<VenueMapper, Venue> implements
         VenuePriceVO vo = new VenuePriceVO();
         BeanUtils.copyProperties(price, vo);
         return vo;
+    }
+
+    /**
+     * 根据会员等级获取折扣
+     */
+    private BigDecimal getMemberDiscount(Integer memberLevel) {
+        if (memberLevel == null || memberLevel <= 0) {
+            return BigDecimal.ONE;
+        }
+        // 会员等级折扣：1级9.5折，2级9折，3级8.5折，4级8折，5级7.5折
+        switch (memberLevel) {
+            case 1: return new BigDecimal("0.95");
+            case 2: return new BigDecimal("0.90");
+            case 3: return new BigDecimal("0.85");
+            case 4: return new BigDecimal("0.80");
+            case 5: return new BigDecimal("0.75");
+            default: return BigDecimal.ONE;
+        }
     }
 }

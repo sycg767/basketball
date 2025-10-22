@@ -65,6 +65,8 @@ com\basketball\dto\request\CardPurchaseDTO.class
 com\basketball\vo\CourseEnrollmentVO.class
 com\basketball\dto\request\VenueCreateDTO.class
 com\basketball\service\impl\AlipayServiceImpl.class
+com\basketball\dto\request\CoursePaymentDTO.class
+com\basketball\dto\request\PointsDeductDTO.class
 com\basketball\entity\UserOauth.class
 com\basketball\entity\UserBehaviorLog.class
 com\basketball\config\AlipayConfig.class
@@ -79,6 +81,7 @@ com\basketball\service\INotificationService.class
 com\basketball\controller\admin\AdminCoachController.class
 com\basketball\dto\request\PasswordUpdateDTO.class
 com\basketball\entity\MemberCardType.class
+com\basketball\service\impl\PointsServiceImpl.class
 com\basketball\entity\BaseEntity.class
 com\basketball\service\ICoachService.class
 com\basketball\service\IWechatService.class
@@ -97,6 +100,8 @@ com\basketball\mapper\PointsRecordMapper.class
 com\basketball\service\impl\PaymentServiceImpl.class
 com\basketball\entity\AnnouncementRead.class
 com\basketball\service\IBehaviorLogService.class
+com\basketball\dto\response\PointsDeductResultVO$PointsDeductResultVOBuilder.class
+com\basketball\vo\CoursePriceVO$CoursePriceVOBuilder.class
 com\basketball\dto\request\VenueQueryDTO.class
 com\basketball\interceptor\JwtAuthenticationInterceptor.class
 com\basketball\mapper\VenueMapper.class
@@ -105,7 +110,9 @@ com\basketball\dto\request\CourseScheduleCreateDTO.class
 com\basketball\security\JwtTokenProvider.class
 com\basketball\common\result\PageResult$PageResultBuilder.class
 com\basketball\entity\MemberActivityAnalysis.class
+com\basketball\dto\request\CoursePriceDTO.class
 com\basketball\entity\VenuePrice.class
+com\basketball\service\IPointsService.class
 com\basketball\mapper\CourseScheduleMapper.class
 com\basketball\scheduled\VenueUsageScheduledTask.class
 com\basketball\controller\FinancialRecordController.class
@@ -116,6 +123,7 @@ com\basketball\service\impl\WechatPayServiceImpl.class
 com\basketball\common\exception\GlobalExceptionHandler.class
 com\basketball\dto\request\BalanceRechargeDTO.class
 com\basketball\mapper\UserOauthMapper.class
+com\basketball\dto\response\PointsDeductResultVO.class
 com\basketball\entity\Venue.class
 com\basketball\controller\WechatController.class
 com\basketball\controller\OperationLogController.class
@@ -155,6 +163,7 @@ com\basketball\service\impl\MemberActivityServiceImpl.class
 com\basketball\controller\admin\AdminCourseController.class
 com\basketball\dto\request\UserRegisterDTO.class
 com\basketball\resolver\CurrentUserIdArgumentResolver.class
+com\basketball\vo\CoursePriceVO.class
 com\basketball\entity\SystemConfig.class
 com\basketball\service\impl\OperationLogServiceImpl.class
 com\basketball\service\IBookingService.class
@@ -181,6 +190,7 @@ com\basketball\controller\LoginLogController.class
 com\basketball\vo\VenuePriceVO.class
 com\basketball\entity\SmsVerificationCode.class
 com\basketball\service\impl\LoginLogServiceImpl.class
+com\basketball\controller\PointsController.class
 com\basketball\service\impl\AdminMemberServiceImpl$1.class
 com\basketball\mapper\OperationLogMapper.class
 com\basketball\dto\request\SmsLoginDTO.class

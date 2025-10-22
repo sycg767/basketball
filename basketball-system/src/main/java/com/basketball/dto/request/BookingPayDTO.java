@@ -24,4 +24,7 @@ public class BookingPayDTO {
 
     @Schema(description = "会员卡ID（当paymentMethod=3时必填）")
     private Long cardId;
+
+    @Schema(description = "使用积分数量（可选，0表示不使用积分）")
+    private Integer pointsToUse;
 }

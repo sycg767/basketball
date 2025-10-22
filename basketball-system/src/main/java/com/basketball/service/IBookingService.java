@@ -57,4 +57,9 @@ public interface IBookingService extends IService<Booking> {
      * 检查场地时间段是否可用
      */
     boolean checkVenueAvailable(Long venueId, java.time.LocalDate bookingDate, java.time.LocalTime startTime, java.time.LocalTime endTime);
+
+    /**
+     * 计算预订价格
+     */
+    java.util.Map<String, Object> calculateBookingPrice(Long userId, Long venueId, java.time.LocalDate bookingDate, java.time.LocalTime startTime, java.time.LocalTime endTime);
 }

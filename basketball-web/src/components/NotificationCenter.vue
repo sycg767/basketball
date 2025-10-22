@@ -8,7 +8,7 @@
     <template #reference>
       <div class="notification-trigger">
         <el-badge :value="unreadCount" :hidden="unreadCount === 0">
-          <el-icon :size="24"><Bell /></el-icon>
+          <el-icon :size="22"><Bell /></el-icon>
         </el-badge>
       </div>
     </template>
@@ -120,6 +120,7 @@ const loadUnreadCount = async () => {
     }
   } catch (error) {
     console.error('获取未读数量失败:', error);
+    unreadCount.value = 0;
   }
 };
 
@@ -255,8 +256,8 @@ const stopPolling = () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   cursor: pointer;
   border-radius: 4px;
   transition: background-color 0.3s;
@@ -265,8 +266,16 @@ const stopPolling = () => {
     background-color: rgba(0, 0, 0, 0.05);
   }
 
+  :deep(.el-badge) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+  }
+
   .el-icon {
-    color: #606266;
+    color: #303133;
+    font-size: 22px;
   }
 }
 

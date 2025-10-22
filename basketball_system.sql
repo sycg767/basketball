@@ -11,7 +11,7 @@
  Target Server Version : 80040 (8.0.40)
  File Encoding         : 65001
 
- Date: 21/10/2025 23:03:14
+ Date: 22/10/2025 09:38:37
 */
 
 SET NAMES utf8mb4;
@@ -123,7 +123,7 @@ CREATE TABLE `booking`  (
   INDEX `idx_booking_venue_status`(`venue_id` ASC, `status` ASC) USING BTREE,
   CONSTRAINT `booking_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
   CONSTRAINT `booking_ibfk_2` FOREIGN KEY (`venue_id`) REFERENCES `venue` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 45 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '预订表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 62 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '预订表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of booking
@@ -171,7 +171,24 @@ INSERT INTO `booking` VALUES (40, 'BK1761044193627', 11, 2, '2025-10-31', '12:00
 INSERT INTO `booking` VALUES (41, 'BK1761046959052', 11, 1, '2025-10-29', '09:00:00', '13:00:00', 4, 1, 400.00, 0.00, 400.00, NULL, 0, NULL, NULL, '', '', 1, '', 0, NULL, '2025-10-21 19:42:39', '2025-10-21 19:42:39', NULL, '2025-10-21 20:12:39');
 INSERT INTO `booking` VALUES (42, 'BK1761047099892', 11, 1, '2025-10-21', '07:00:00', '09:00:00', 2, 1, 200.00, 0.00, 200.00, 3, 1, NULL, NULL, '', '', 1, '', 0, NULL, '2025-10-21 19:45:00', '2025-10-21 19:48:25', '2025-10-21 19:48:25', '2025-10-21 20:15:00');
 INSERT INTO `booking` VALUES (43, 'BK1761049145206', 11, 2, '2025-10-25', '13:00:00', '14:00:00', 1, 1, 110.00, 22.00, 88.00, 3, 1, NULL, NULL, '', '', 1, '', 0, NULL, '2025-10-21 20:19:05', '2025-10-21 20:19:20', '2025-10-21 20:19:20', '2025-10-21 20:49:05');
-INSERT INTO `booking` VALUES (44, 'BK1761050594803', 11, 4, '2025-10-28', '09:00:00', '13:00:00', 4, 1, 180.00, 36.00, 144.00, 3, 1, NULL, NULL, '', '', 1, '', 0, NULL, '2025-10-21 20:43:15', '2025-10-21 20:43:39', '2025-10-21 20:43:39', '2025-10-21 21:13:15');
+INSERT INTO `booking` VALUES (44, 'BK1761050594803', 11, 4, '2025-10-28', '09:00:00', '13:00:00', 4, 1, 180.00, 36.00, 144.00, 3, 4, '测', '2025-10-22 00:36:37', '', '', 1, '', 0, NULL, '2025-10-21 20:43:15', '2025-10-22 00:36:37', '2025-10-21 20:43:39', '2025-10-21 21:13:15');
+INSERT INTO `booking` VALUES (45, 'BK1761072180548', 11, 2, '2025-10-31', '07:00:00', '11:00:00', 4, 1, 400.00, 80.00, 320.00, 3, 1, NULL, NULL, '', '', 1, '', 0, NULL, '2025-10-22 02:43:01', '2025-10-22 02:43:14', '2025-10-22 02:43:14', '2025-10-22 03:13:01');
+INSERT INTO `booking` VALUES (46, 'BK1761072908463', 11, 1, '2025-10-28', '12:00:00', '14:00:00', 2, 1, 170.00, 34.00, 136.00, 3, 1, NULL, NULL, '', '', 1, '', 0, NULL, '2025-10-22 02:55:08', '2025-10-22 02:55:27', '2025-10-22 02:55:27', '2025-10-22 03:25:08');
+INSERT INTO `booking` VALUES (47, 'BK1761072989640', 11, 1, '2025-10-31', '13:00:00', '14:00:00', 1, 1, 85.00, 17.00, 68.00, 3, 1, NULL, NULL, '', '', 1, '', 0, NULL, '2025-10-22 02:56:30', '2025-10-22 02:56:52', '2025-10-22 02:56:52', '2025-10-22 03:26:30');
+INSERT INTO `booking` VALUES (48, 'BK1761073116610', 11, 1, '2025-10-25', '07:00:00', '11:00:00', 4, 1, 400.00, 80.00, 320.00, 3, 1, NULL, NULL, '', '', 1, '', 0, NULL, '2025-10-22 02:58:37', '2025-10-22 02:58:57', '2025-10-22 02:58:57', '2025-10-22 03:28:37');
+INSERT INTO `booking` VALUES (49, 'BK1761073507654', 11, 2, '2025-10-24', '08:00:00', '13:00:00', 5, 1, 425.00, 85.00, 340.00, 3, 1, NULL, NULL, '', '', 1, '', 0, NULL, '2025-10-22 03:05:08', '2025-10-22 03:05:17', '2025-10-22 03:05:17', '2025-10-22 03:35:08');
+INSERT INTO `booking` VALUES (50, 'BK1761073823604', 11, 1, '2025-10-22', '12:00:00', '13:00:00', 1, 1, 85.00, 17.00, 68.00, NULL, 0, NULL, NULL, '', '', 1, '', 0, NULL, '2025-10-22 03:10:24', '2025-10-22 03:10:24', NULL, '2025-10-22 03:40:24');
+INSERT INTO `booking` VALUES (51, 'BK1761089248062', 11, 1, '2025-10-22', '07:00:00', '12:00:00', 5, 1, 500.00, 75.00, 425.00, NULL, 0, NULL, NULL, '', '', 1, '', 0, NULL, '2025-10-22 07:27:28', '2025-10-22 07:27:28', NULL, '2025-10-22 07:57:28');
+INSERT INTO `booking` VALUES (52, 'BK1761089304162', 11, 1, '2025-10-31', '21:00:00', '23:00:00', 2, 1, 260.00, 39.00, 221.00, 3, 4, '1\n', '2025-10-22 07:32:46', '', '', 1, '', 0, NULL, '2025-10-22 07:28:24', '2025-10-22 07:32:46', '2025-10-22 07:29:06', '2025-10-22 07:58:24');
+INSERT INTO `booking` VALUES (53, 'BK1761089386280', 11, 6, '2025-10-24', '06:00:00', '08:00:00', 2, 1, 200.00, 30.00, 170.00, NULL, 2, 'q\n', '2025-10-22 07:32:30', '', '', 1, '', 0, NULL, '2025-10-22 07:29:46', '2025-10-22 07:32:30', NULL, '2025-10-22 07:59:46');
+INSERT INTO `booking` VALUES (54, 'BK1761090184248', 11, 1, '2025-10-23', '18:00:00', '21:00:00', 3, 1, 390.00, 58.50, 331.50, NULL, 0, NULL, NULL, '', '', 1, '', 0, NULL, '2025-10-22 07:43:04', '2025-10-22 07:43:04', NULL, '2025-10-22 08:13:04');
+INSERT INTO `booking` VALUES (55, 'BK1761090211995', 11, 1, '2025-10-26', '18:00:00', '21:00:00', 3, 1, 480.00, 72.00, 408.00, 3, 4, 'q', '2025-10-22 07:53:02', '', '', 1, '', 0, NULL, '2025-10-22 07:43:32', '2025-10-22 07:53:02', '2025-10-22 07:47:30', '2025-10-22 08:13:32');
+INSERT INTO `booking` VALUES (56, 'BK1761090245810', 11, 1, '2025-10-31', '12:00:00', '13:00:00', 1, 1, 85.00, 12.75, 72.25, 3, 1, NULL, NULL, '', '', 1, '', 0, NULL, '2025-10-22 07:44:06', '2025-10-22 07:44:13', '2025-10-22 07:44:13', '2025-10-22 08:14:06');
+INSERT INTO `booking` VALUES (57, 'BK1761091403699', 11, 4, '2025-10-23', '08:00:00', '09:00:00', 1, 1, 45.00, 6.75, 38.25, 3, 1, NULL, NULL, '', '', 1, '', 0, NULL, '2025-10-22 08:03:24', '2025-10-22 08:04:08', '2025-10-22 08:04:08', '2025-10-22 08:33:24');
+INSERT INTO `booking` VALUES (58, 'BK1761093151541', 12, 5, '2025-10-29', '11:00:00', '14:00:00', 3, 1, 210.00, 0.00, 210.00, 1, 1, NULL, NULL, '', '', 1, '', 0, NULL, '2025-10-22 08:32:32', '2025-10-22 08:32:45', '2025-10-22 08:32:45', '2025-10-22 09:02:32');
+INSERT INTO `booking` VALUES (59, 'BK1761093214263', 12, 4, '2025-10-31', '13:00:00', '22:00:00', 9, 1, 495.00, 0.00, 495.00, NULL, 0, NULL, NULL, '', '', 1, '', 0, NULL, '2025-10-22 08:33:34', '2025-10-22 08:33:34', NULL, '2025-10-22 09:03:34');
+INSERT INTO `booking` VALUES (60, 'BK1761093304183', 12, 3, '2025-10-27', '11:00:00', '13:00:00', 2, 1, 120.00, 0.00, 120.00, NULL, 0, NULL, NULL, '', '', 1, '', 0, NULL, '2025-10-22 08:35:04', '2025-10-22 08:35:04', NULL, '2025-10-22 09:05:04');
+INSERT INTO `booking` VALUES (61, 'BK1761093818228', 12, 3, '2025-10-26', '09:00:00', '12:00:00', 3, 1, 270.00, 0.00, 270.00, 1, 1, NULL, NULL, '', '', 1, '', 0, NULL, '2025-10-22 08:43:38', '2025-10-22 08:43:49', '2025-10-22 08:43:49', '2025-10-22 09:13:38');
 
 -- ----------------------------
 -- Table structure for booking_detail
@@ -357,10 +374,10 @@ CREATE TABLE `course`  (
 -- ----------------------------
 -- Records of course
 -- ----------------------------
-INSERT INTO `course` VALUES (1, '青少年篮球基础班', 'COU001BASIC01', 1, 5, 21, 10, 1200.00, 1000.00, 90, 12, 1, '10-15岁', '专为青少年设计的篮球基础课程，从零开始学习篮球基本技术。课程包括运球、传球、投篮等基础动作训练，以及基本规则讲解。', '[\"第1-2课：篮球基础知识和规则\",\"第3-4课：运球基本功训练\",\"第5-6课：传接球技术\",\"第7-8课：投篮姿势和技巧\",\"第9-10课：基础防守动作\",\"第11-12课：小型对抗赛\"]', 'https://images.unsplash.com/photo-1546519638-68e109498ffc?w=600&h=400&fit=crop', NULL, 1, 163, 45, 4.80, '2025-10-02 20:49:48', '2025-10-02 21:35:52');
+INSERT INTO `course` VALUES (1, '青少年篮球基础班', 'COU001BASIC01', 1, 5, 21, 10, 1200.00, 1000.00, 90, 12, 1, '10-15岁', '专为青少年设计的篮球基础课程，从零开始学习篮球基本技术。课程包括运球、传球、投篮等基础动作训练，以及基本规则讲解。', '[\"第1-2课：篮球基础知识和规则\",\"第3-4课：运球基本功训练\",\"第5-6课：传接球技术\",\"第7-8课：投篮姿势和技巧\",\"第9-10课：基础防守动作\",\"第11-12课：小型对抗赛\"]', 'https://images.unsplash.com/photo-1546519638-68e109498ffc?w=600&h=400&fit=crop', NULL, 1, 166, 45, 4.80, '2025-10-02 20:49:48', '2025-10-02 21:35:52');
 INSERT INTO `course` VALUES (2, '成人篮球入门班', 'COU002BASIC02', 1, 8, 15, 8, 1500.00, 1200.00, 90, 10, 1, '18-45岁', '专为零基础成人设计的篮球课程。轻松愉快的教学氛围，注重实战和趣味性，帮助成人快速掌握篮球基本技能。', '[\"第1-2课：篮球基础和体能准备\",\"第3-4课：运球和传球基础\",\"第5-6课：投篮技术入门\",\"第7-8课：基础战术配合\",\"第9-10课：实战对抗训练\"]', 'https://images.unsplash.com/photo-1608245449230-4ac19066d2d0?w=600&h=400&fit=crop', NULL, 1, 92, 28, 4.60, '2025-10-02 20:49:48', '2025-10-02 20:49:48');
-INSERT INTO `course` VALUES (3, '少儿篮球启蒙班', 'COU003BASIC03', 1, 7, 15, 8, 800.00, 680.00, 60, 16, 1, '6-9岁', '针对学龄前和小学低年级儿童的篮球启蒙课程。通过游戏化教学，培养孩子对篮球的兴趣，发展基础运动能力。', '[\"第1-4课：球性培养和协调性训练\",\"第5-8课：基础运球游戏\",\"第9-12课：传接球趣味练习\",\"第13-16课：简单投篮和团队游戏\"]', 'https://images.unsplash.com/photo-1519766304817-4f37bda74a26?w=600&h=400&fit=crop', NULL, 1, 206, 56, 4.90, '2025-10-02 20:49:48', '2025-10-02 20:49:48');
-INSERT INTO `course` VALUES (4, '青少年技能提高班', 'COU004IMPROVE01', 2, 5, 18, 10, 1800.00, 1500.00, 90, 12, 2, '12-17岁', '面向有一定基础的青少年学员。深化技术训练，强化战术意识，提升比赛能力。', '[\"第1-3课：高级运球技术\",\"第4-6课：各种投篮技巧\",\"第7-9课：防守技术和战术\",\"第10-12课：进攻战术和实战演练\"]', 'https://images.unsplash.com/photo-1517649763962-0c623066013b?w=600&h=400&fit=crop', NULL, 1, 124, 38, 4.70, '2025-10-02 20:49:48', '2025-10-02 20:49:48');
+INSERT INTO `course` VALUES (3, '少儿篮球启蒙班', 'COU003BASIC03', 1, 7, 15, 8, 800.00, 680.00, 60, 16, 1, '6-9岁', '针对学龄前和小学低年级儿童的篮球启蒙课程。通过游戏化教学，培养孩子对篮球的兴趣，发展基础运动能力。', '[\"第1-4课：球性培养和协调性训练\",\"第5-8课：基础运球游戏\",\"第9-12课：传接球趣味练习\",\"第13-16课：简单投篮和团队游戏\"]', 'https://images.unsplash.com/photo-1519766304817-4f37bda74a26?w=600&h=400&fit=crop', NULL, 1, 207, 56, 4.90, '2025-10-02 20:49:48', '2025-10-02 20:49:48');
+INSERT INTO `course` VALUES (4, '青少年技能提高班', 'COU004IMPROVE01', 2, 5, 18, 10, 1800.00, 1500.00, 90, 12, 2, '12-17岁', '面向有一定基础的青少年学员。深化技术训练，强化战术意识，提升比赛能力。', '[\"第1-3课：高级运球技术\",\"第4-6课：各种投篮技巧\",\"第7-9课：防守技术和战术\",\"第10-12课：进攻战术和实战演练\"]', 'https://images.unsplash.com/photo-1517649763962-0c623066013b?w=600&h=400&fit=crop', NULL, 1, 134, 39, 4.70, '2025-10-02 20:49:48', '2025-10-02 20:49:48');
 INSERT INTO `course` VALUES (5, '成人技能提升班', 'COU005IMPROVE02', 2, 8, 12, 6, 2000.00, 1600.00, 90, 10, 2, '20-50岁', '针对有基础的成人学员，提升个人技术水平和战术理解。课程强度适中，注重技战术结合。', '[\"第1-2课：技术动作优化\",\"第3-4课：战术意识培养\",\"第5-6课：位置技术训练\",\"第7-8课：团队配合演练\",\"第9-10课：对抗实战\"]', 'https://images.unsplash.com/photo-1504450758481-7338eba7524a?w=600&h=400&fit=crop', NULL, 1, 71, 22, 4.50, '2025-10-02 20:49:48', '2025-10-02 20:49:48');
 INSERT INTO `course` VALUES (6, '投篮专项提升班', 'COU006IMPROVE03', 2, 6, 15, 8, 1600.00, 1300.00, 75, 12, 2, '12岁以上', '专注于投篮技术的提升课程。系统训练各种投篮技术，提高命中率。适合想要强化投篮能力的学员。', '[\"第1-2课：投篮基础动作矫正\",\"第3-4课：定点投篮训练\",\"第5-6课：运动中投篮\",\"第7-8课：三分球技术\",\"第9-10课：对抗下的投篮\",\"第11-12课：实战投篮演练\"]', 'https://images.unsplash.com/photo-1515523110800-9415d13b84a8?w=600&h=400&fit=crop', NULL, 1, 145, 42, 4.80, '2025-10-02 20:49:48', '2025-10-02 20:49:48');
 INSERT INTO `course` VALUES (7, '青少年职业预备班', 'COU007PRO01', 3, 6, 12, 8, 3500.00, 3000.00, 120, 20, 4, '14-18岁', '面向有志于走职业道路的优秀青少年球员。高强度专业训练，全面提升技战术水平，培养职业素养。', '[\"第1-5课：职业级基本功强化\",\"第6-10课：高级战术体系\",\"第11-15课：位置专项训练\",\"第16-20课：实战对抗和心理训练\"]', 'https://images.unsplash.com/photo-1529654423582-310c920228e1?w=600&h=400&fit=crop', NULL, 1, 78, 18, 4.90, '2025-10-02 20:49:48', '2025-10-02 20:49:48');
@@ -391,6 +408,7 @@ CREATE TABLE `course_enrollment`  (
   `comment_time` datetime NULL DEFAULT NULL COMMENT '评价时间',
   `status` tinyint NULL DEFAULT 1 COMMENT '状态: 0-已取消, 1-正常',
   `enroll_time` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '报名时间',
+  `create_time` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time` datetime NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `enrollment_no`(`enrollment_no` ASC) USING BTREE,
@@ -402,29 +420,30 @@ CREATE TABLE `course_enrollment`  (
   CONSTRAINT `course_enrollment_ibfk_1` FOREIGN KEY (`schedule_id`) REFERENCES `course_schedule` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
   CONSTRAINT `course_enrollment_ibfk_2` FOREIGN KEY (`course_id`) REFERENCES `course` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
   CONSTRAINT `course_enrollment_ibfk_3` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 19 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '课程报名表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 25 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '课程报名表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of course_enrollment
 -- ----------------------------
-INSERT INTO `course_enrollment` VALUES (1, 'ENR20251002001', 1, 1, 2, 'ORD20251002001', 1000.00, 1, '2025-10-02 10:30:00', 0, NULL, NULL, NULL, NULL, 1, '2025-10-02 10:25:00', '2025-10-02 20:49:48');
-INSERT INTO `course_enrollment` VALUES (2, 'ENR20251002002', 2, 1, 2, 'ORD20251002002', 1000.00, 1, '2025-10-02 10:30:00', 0, NULL, NULL, NULL, NULL, 1, '2025-10-02 10:25:00', '2025-10-02 20:49:48');
-INSERT INTO `course_enrollment` VALUES (3, 'ENR20251002003', 5, 2, 2, 'ORD20251002003', 1200.00, 1, '2025-10-02 11:00:00', 0, NULL, NULL, NULL, NULL, 1, '2025-10-02 10:58:00', '2025-10-02 20:49:48');
-INSERT INTO `course_enrollment` VALUES (4, 'ENR20251002004', 18, 6, 2, 'ORD20251002004', 1300.00, 1, '2025-10-02 14:20:00', 0, NULL, 5, '王教练讲解很详细，进步明显！', '2025-10-06 18:00:00', 1, '2025-10-02 14:15:00', '2025-10-02 20:49:48');
-INSERT INTO `course_enrollment` VALUES (5, 'ENR20251002005', 8, 3, 3, 'ORD20251002005', 680.00, 1, '2025-10-02 15:00:00', 0, NULL, NULL, NULL, NULL, 1, '2025-10-02 14:55:00', '2025-10-02 20:49:48');
-INSERT INTO `course_enrollment` VALUES (6, 'ENR20251002006', 9, 3, 3, 'ORD20251002006', 680.00, 1, '2025-10-02 15:00:00', 0, NULL, NULL, NULL, NULL, 1, '2025-10-02 14:55:00', '2025-10-02 20:49:48');
-INSERT INTO `course_enrollment` VALUES (7, 'ENR20251002007', 12, 4, 3, 'ORD20251002007', 1500.00, 0, NULL, 0, NULL, NULL, NULL, NULL, 1, '2025-10-02 16:20:00', '2025-10-02 20:49:48');
-INSERT INTO `course_enrollment` VALUES (8, 'ENR20251002008', 30, 10, 3, 'ORD20251002008', 350.00, 1, '2025-10-03 09:00:00', 0, NULL, NULL, NULL, NULL, 1, '2025-10-03 08:55:00', '2025-10-02 20:49:48');
-INSERT INTO `course_enrollment` VALUES (9, 'ENR20251002009', 8, 3, 4, 'ORD20251002009', 800.00, 1, '2025-10-02 16:30:00', 0, NULL, NULL, NULL, NULL, 1, '2025-10-02 16:25:00', '2025-10-02 20:49:48');
-INSERT INTO `course_enrollment` VALUES (10, 'ENR20251002010', 15, 5, 4, 'ORD20251002010', 2000.00, 0, NULL, 0, NULL, NULL, NULL, NULL, 1, '2025-10-03 10:00:00', '2025-10-02 20:49:48');
-INSERT INTO `course_enrollment` VALUES (11, 'ENR20251002011', 1, 1, 2, 'ORD20251002011', 1000.00, 1, '2025-10-02 12:00:00', 0, NULL, NULL, NULL, NULL, 1, '2025-10-02 11:55:00', '2025-10-02 20:49:48');
-INSERT INTO `course_enrollment` VALUES (12, 'ENR20251002012', 22, 7, 3, 'ORD20251002012', 3000.00, 1, '2025-10-03 14:00:00', 0, NULL, NULL, NULL, NULL, 1, '2025-10-03 13:50:00', '2025-10-02 20:49:48');
-INSERT INTO `course_enrollment` VALUES (13, 'ENR20251002013', 25, 8, 2, 'ORD20251002013', 2400.00, 1, '2025-10-03 15:30:00', 0, NULL, 4, '战术分析很专业，收获很大', '2025-10-08 12:00:00', 1, '2025-10-03 15:25:00', '2025-10-02 20:49:48');
-INSERT INTO `course_enrollment` VALUES (14, 'ENR20251002014', 27, 9, 3, 'ORD20251002014', 1800.00, 0, NULL, 0, NULL, NULL, NULL, NULL, 1, '2025-10-03 16:00:00', '2025-10-02 20:49:48');
-INSERT INTO `course_enrollment` VALUES (15, 'ENR20251002015', 18, 6, 4, 'ORD20251002015', 1600.00, 1, '2025-10-03 17:00:00', 0, NULL, NULL, NULL, NULL, 1, '2025-10-03 16:55:00', '2025-10-02 20:49:48');
-INSERT INTO `course_enrollment` VALUES (16, 'CE1760929338001', 1, 1, 9, 'ORD1760929338001', 500.00, 1, '2025-10-13 09:05:00', 1, NULL, 5, '课程很好', NULL, 1, '2025-10-13 09:00:00', '2025-10-20 11:02:18');
-INSERT INTO `course_enrollment` VALUES (17, 'CE1760929338002', 2, 2, 9, 'ORD1760929338002', 800.00, 1, '2025-10-15 14:35:00', 1, NULL, 5, '教练专业', NULL, 1, '2025-10-15 14:30:00', '2025-10-20 11:02:18');
-INSERT INTO `course_enrollment` VALUES (18, 'CE1760929338003', 3, 3, 9, 'ORD1760929338003', 1200.00, 1, '2025-10-17 09:35:00', 1, NULL, 4, '内容丰富', NULL, 1, '2025-10-17 09:30:00', '2025-10-20 11:02:18');
+INSERT INTO `course_enrollment` VALUES (1, 'ENR20251002001', 1, 1, 2, 'ORD20251002001', 1000.00, 1, '2025-10-02 10:30:00', 0, NULL, NULL, NULL, NULL, 1, '2025-10-02 10:25:00', '2025-10-22 00:50:54', '2025-10-02 20:49:48');
+INSERT INTO `course_enrollment` VALUES (2, 'ENR20251002002', 2, 1, 2, 'ORD20251002002', 1000.00, 1, '2025-10-02 10:30:00', 0, NULL, NULL, NULL, NULL, 1, '2025-10-02 10:25:00', '2025-10-22 00:50:54', '2025-10-02 20:49:48');
+INSERT INTO `course_enrollment` VALUES (3, 'ENR20251002003', 5, 2, 2, 'ORD20251002003', 1200.00, 1, '2025-10-02 11:00:00', 0, NULL, NULL, NULL, NULL, 1, '2025-10-02 10:58:00', '2025-10-22 00:50:54', '2025-10-02 20:49:48');
+INSERT INTO `course_enrollment` VALUES (4, 'ENR20251002004', 18, 6, 2, 'ORD20251002004', 1300.00, 1, '2025-10-02 14:20:00', 0, NULL, 5, '王教练讲解很详细，进步明显！', '2025-10-06 18:00:00', 1, '2025-10-02 14:15:00', '2025-10-22 00:50:54', '2025-10-02 20:49:48');
+INSERT INTO `course_enrollment` VALUES (5, 'ENR20251002005', 8, 3, 3, 'ORD20251002005', 680.00, 1, '2025-10-02 15:00:00', 0, NULL, NULL, NULL, NULL, 1, '2025-10-02 14:55:00', '2025-10-22 00:50:54', '2025-10-02 20:49:48');
+INSERT INTO `course_enrollment` VALUES (6, 'ENR20251002006', 9, 3, 3, 'ORD20251002006', 680.00, 1, '2025-10-02 15:00:00', 0, NULL, NULL, NULL, NULL, 1, '2025-10-02 14:55:00', '2025-10-22 00:50:54', '2025-10-02 20:49:48');
+INSERT INTO `course_enrollment` VALUES (7, 'ENR20251002007', 12, 4, 3, 'ORD20251002007', 1500.00, 0, NULL, 0, NULL, NULL, NULL, NULL, 1, '2025-10-02 16:20:00', '2025-10-22 00:50:54', '2025-10-02 20:49:48');
+INSERT INTO `course_enrollment` VALUES (8, 'ENR20251002008', 30, 10, 3, 'ORD20251002008', 350.00, 1, '2025-10-03 09:00:00', 0, NULL, NULL, NULL, NULL, 1, '2025-10-03 08:55:00', '2025-10-22 00:50:54', '2025-10-02 20:49:48');
+INSERT INTO `course_enrollment` VALUES (9, 'ENR20251002009', 8, 3, 4, 'ORD20251002009', 800.00, 1, '2025-10-02 16:30:00', 0, NULL, NULL, NULL, NULL, 1, '2025-10-02 16:25:00', '2025-10-22 00:50:54', '2025-10-02 20:49:48');
+INSERT INTO `course_enrollment` VALUES (10, 'ENR20251002010', 15, 5, 4, 'ORD20251002010', 2000.00, 0, NULL, 0, NULL, NULL, NULL, NULL, 1, '2025-10-03 10:00:00', '2025-10-22 00:50:54', '2025-10-02 20:49:48');
+INSERT INTO `course_enrollment` VALUES (11, 'ENR20251002011', 1, 1, 2, 'ORD20251002011', 1000.00, 1, '2025-10-02 12:00:00', 0, NULL, NULL, NULL, NULL, 1, '2025-10-02 11:55:00', '2025-10-22 00:50:54', '2025-10-02 20:49:48');
+INSERT INTO `course_enrollment` VALUES (12, 'ENR20251002012', 22, 7, 3, 'ORD20251002012', 3000.00, 1, '2025-10-03 14:00:00', 0, NULL, NULL, NULL, NULL, 1, '2025-10-03 13:50:00', '2025-10-22 00:50:54', '2025-10-02 20:49:48');
+INSERT INTO `course_enrollment` VALUES (13, 'ENR20251002013', 25, 8, 2, 'ORD20251002013', 2400.00, 1, '2025-10-03 15:30:00', 0, NULL, 4, '战术分析很专业，收获很大', '2025-10-08 12:00:00', 1, '2025-10-03 15:25:00', '2025-10-22 00:50:54', '2025-10-02 20:49:48');
+INSERT INTO `course_enrollment` VALUES (14, 'ENR20251002014', 27, 9, 3, 'ORD20251002014', 1800.00, 0, NULL, 0, NULL, NULL, NULL, NULL, 1, '2025-10-03 16:00:00', '2025-10-22 00:50:54', '2025-10-02 20:49:48');
+INSERT INTO `course_enrollment` VALUES (15, 'ENR20251002015', 18, 6, 4, 'ORD20251002015', 1600.00, 1, '2025-10-03 17:00:00', 0, NULL, NULL, NULL, NULL, 1, '2025-10-03 16:55:00', '2025-10-22 00:50:54', '2025-10-02 20:49:48');
+INSERT INTO `course_enrollment` VALUES (16, 'CE1760929338001', 1, 1, 9, 'ORD1760929338001', 500.00, 1, '2025-10-13 09:05:00', 1, NULL, 5, '课程很好', NULL, 1, '2025-10-13 09:00:00', '2025-10-22 00:50:54', '2025-10-20 11:02:18');
+INSERT INTO `course_enrollment` VALUES (17, 'CE1760929338002', 2, 2, 9, 'ORD1760929338002', 800.00, 1, '2025-10-15 14:35:00', 1, NULL, 5, '教练专业', NULL, 1, '2025-10-15 14:30:00', '2025-10-22 00:50:54', '2025-10-20 11:02:18');
+INSERT INTO `course_enrollment` VALUES (18, 'CE1760929338003', 3, 3, 9, 'ORD1760929338003', 1200.00, 1, '2025-10-17 09:35:00', 1, NULL, 4, '内容丰富', NULL, 1, '2025-10-17 09:30:00', '2025-10-22 00:50:54', '2025-10-20 11:02:18');
+INSERT INTO `course_enrollment` VALUES (24, 'ENR2025102209362912', 12, 4, 12, NULL, 1800.00, 0, NULL, 0, NULL, NULL, NULL, NULL, 1, '2025-10-22 09:36:29', '2025-10-22 09:36:29', '2025-10-22 09:36:29');
 
 -- ----------------------------
 -- Table structure for course_popularity_analysis
@@ -506,7 +525,7 @@ INSERT INTO `course_schedule` VALUES (8, 3, 4, 'SCH20251006003', '2025-10-06', '
 INSERT INTO `course_schedule` VALUES (9, 3, 4, 'SCH20251008003', '2025-10-08', '16:00:00', '17:00:00', 15, 12, 0, 1, NULL, '第2课：协调性训练', '2025-10-02 20:49:48', '2025-10-02 20:49:48');
 INSERT INTO `course_schedule` VALUES (10, 3, 4, 'SCH20251010003', '2025-10-10', '16:00:00', '17:00:00', 15, 12, 0, 1, NULL, '第3课：运球游戏', '2025-10-02 20:49:48', '2025-10-02 20:49:48');
 INSERT INTO `course_schedule` VALUES (11, 3, 4, 'SCH20251012003', '2025-10-12', '16:00:00', '17:00:00', 15, 12, 0, 1, NULL, '第4课：传接球游戏', '2025-10-02 20:49:48', '2025-10-02 20:49:48');
-INSERT INTO `course_schedule` VALUES (12, 4, 3, 'SCH20251006004', '2025-10-06', '14:00:00', '15:30:00', 18, 10, 0, 1, NULL, '第1课：高级运球', '2025-10-02 20:49:48', '2025-10-02 20:49:48');
+INSERT INTO `course_schedule` VALUES (12, 4, 3, 'SCH20251006004', '2025-10-06', '14:00:00', '15:30:00', 18, 11, 0, 1, NULL, '第1课：高级运球', '2025-10-02 20:49:48', '2025-10-22 09:36:29');
 INSERT INTO `course_schedule` VALUES (13, 4, 3, 'SCH20251009004', '2025-10-09', '14:00:00', '15:30:00', 18, 10, 0, 1, NULL, '第2课：变向技术', '2025-10-02 20:49:48', '2025-10-02 20:49:48');
 INSERT INTO `course_schedule` VALUES (14, 4, 3, 'SCH20251011004', '2025-10-11', '14:00:00', '15:30:00', 18, 10, 0, 1, NULL, '第3课：背后运球', '2025-10-02 20:49:48', '2025-10-02 20:49:48');
 INSERT INTO `course_schedule` VALUES (15, 5, 5, 'SCH20251007005', '2025-10-07', '19:30:00', '21:00:00', 12, 6, 0, 1, NULL, '第1课：技术优化', '2025-10-02 20:49:48', '2025-10-02 20:49:48');
@@ -697,7 +716,7 @@ CREATE TABLE `financial_record`  (
   INDEX `idx_type`(`record_type` ASC, `business_type` ASC) USING BTREE,
   INDEX `idx_user_id`(`user_id` ASC) USING BTREE,
   INDEX `idx_create_time`(`create_time` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 11 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '财务流水表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 14 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '财务流水表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of financial_record
@@ -712,6 +731,9 @@ INSERT INTO `financial_record` VALUES (7, 'REC202510200007', 2, 4, 'ORD202510200
 INSERT INTO `financial_record` VALUES (8, 'REC202510200008', 2, 4, 'ORD202510200008', 1, -200.00, 300.00, 100.00, 3, '购买运动器材用品', 1, '2025-10-20 18:17:03');
 INSERT INTO `financial_record` VALUES (9, 'REC202510200009', 2, 4, 'ORD202510200009', 1, -300.00, 100.00, -200.00, 3, '推广营销活动费用', 1, '2025-10-20 18:17:03');
 INSERT INTO `financial_record` VALUES (10, 'REC202510200010', 2, 3, 'ORD202510200010', 1, -50.00, -200.00, -250.00, 3, '会员卡制作费用', 1, '2025-10-20 18:17:03');
+INSERT INTO `financial_record` VALUES (11, 'REC20251022000712240162', 1, 5, 'PAY20251022000710245702', 11, 100.00, 800.00, 900.00, 1, '账户余额充值', NULL, '2025-10-22 00:07:12');
+INSERT INTO `financial_record` VALUES (12, 'REC20251022001822753490', 1, 5, 'PAY20251022001606351899', 11, 500.00, 900.00, 1400.00, 2, '账户余额充值', NULL, '2025-10-22 00:18:22');
+INSERT INTO `financial_record` VALUES (13, 'REC20251022001937606158', 1, 5, 'PAY20251022001934519553', 11, 100.00, 1400.00, 1500.00, 2, '账户余额充值', NULL, '2025-10-22 00:19:37');
 
 -- ----------------------------
 -- Table structure for login_log
@@ -803,14 +825,18 @@ CREATE TABLE `member_card`  (
   INDEX `idx_expire_date`(`expire_date` ASC) USING BTREE,
   CONSTRAINT `member_card_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
   CONSTRAINT `member_card_ibfk_2` FOREIGN KEY (`card_type_id`) REFERENCES `member_card_type` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '会员卡表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 8 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '会员卡表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of member_card
 -- ----------------------------
-INSERT INTO `member_card` VALUES (1, 2, 1, 'CARD1759414552251617', 0.00, NULL, '2025-10-02', '2025-11-01', 0, NULL, NULL, NULL, '2025-10-02 22:15:52', '2025-10-02 22:15:52');
-INSERT INTO `member_card` VALUES (2, 10, 1, 'CARD1761003011032294', 0.00, NULL, '2025-10-21', '2025-11-20', 0, NULL, NULL, NULL, '2025-10-21 07:30:11', '2025-10-21 07:30:11');
-INSERT INTO `member_card` VALUES (3, 11, 3, 'CARD1761044087910293', 0.00, NULL, '2025-10-21', '2026-10-21', 1, '2025-10-21 19:33:19', NULL, NULL, '2025-10-21 18:54:48', '2025-10-21 18:54:48');
+INSERT INTO `member_card` VALUES (1, 2, 1, 'CARD1759414552251617', 299.00, NULL, '2025-10-02', '2025-11-01', 0, NULL, NULL, NULL, '2025-10-02 22:15:52', '2025-10-22 02:41:27');
+INSERT INTO `member_card` VALUES (2, 10, 1, 'CARD1761003011032294', 299.00, NULL, '2025-10-21', '2025-11-20', 0, NULL, NULL, NULL, '2025-10-21 07:30:11', '2025-10-22 02:41:27');
+INSERT INTO `member_card` VALUES (3, 11, 3, 'CARD1761044087910293', 2327.50, NULL, '2025-10-21', '2026-10-21', 1, '2025-10-21 19:33:19', NULL, NULL, '2025-10-21 18:54:48', '2025-10-22 02:41:27');
+INSERT INTO `member_card` VALUES (4, 11, 1, 'CARD1761070446668711', 299.00, NULL, '2025-10-22', '2025-11-21', 0, NULL, NULL, NULL, '2025-10-22 02:14:07', '2025-10-22 02:41:27');
+INSERT INTO `member_card` VALUES (5, 11, 1, 'CARD176107082700553', 299.00, NULL, '2025-10-22', '2025-11-21', 0, NULL, NULL, NULL, '2025-10-22 02:20:27', '2025-10-22 02:41:27');
+INSERT INTO `member_card` VALUES (6, 11, 6, 'CARD1761070873611568', 1000.00, NULL, NULL, NULL, 0, NULL, NULL, NULL, '2025-10-22 02:21:14', '2025-10-22 02:21:14');
+INSERT INTO `member_card` VALUES (7, 11, 5, 'CARD1761072141967970', 0.00, 30, NULL, NULL, 0, NULL, NULL, NULL, '2025-10-22 02:42:22', '2025-10-22 02:42:22');
 
 -- ----------------------------
 -- Table structure for member_card_record
@@ -835,17 +861,24 @@ CREATE TABLE `member_card_record`  (
   INDEX `idx_user_id`(`user_id` ASC) USING BTREE,
   CONSTRAINT `member_card_record_ibfk_1` FOREIGN KEY (`card_id`) REFERENCES `member_card` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
   CONSTRAINT `member_card_record_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 7 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '会员卡使用记录表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 21 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '会员卡使用记录表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of member_card_record
 -- ----------------------------
-INSERT INTO `member_card_record` VALUES (1, 1, 2, 1, 299.00, 0, NULL, NULL, NULL, NULL, NULL, '购买会员卡', '2025-10-02 22:15:52');
-INSERT INTO `member_card_record` VALUES (2, 2, 10, 1, 299.00, 0, NULL, NULL, NULL, NULL, NULL, '购买会员卡', '2025-10-21 07:30:11');
-INSERT INTO `member_card_record` VALUES (3, 3, 11, 1, 2999.00, 0, NULL, NULL, NULL, NULL, NULL, '购买会员卡', '2025-10-21 18:54:48');
-INSERT INTO `member_card_record` VALUES (4, 3, 11, 2, 0.00, 0, NULL, NULL, NULL, NULL, 'BK1761047099892', '时间卡预订场地', '2025-10-21 19:48:25');
-INSERT INTO `member_card_record` VALUES (5, 3, 11, 2, -88.00, 0, NULL, NULL, NULL, NULL, 'BK1761049145206', '时间卡预订场地（原价¥110.00，折扣8折，实付¥88.0000）', '2025-10-21 20:19:20');
-INSERT INTO `member_card_record` VALUES (6, 3, 11, 2, -144.00, 0, NULL, NULL, NULL, NULL, 'BK1761050594803', '时间卡预订场地（原价¥180.00，折扣8折，实付¥144.0000）', '2025-10-21 20:43:39');
+INSERT INTO `member_card_record` VALUES (1, 1, 2, 1, 299.00, 0, 0.00, 299.00, NULL, NULL, NULL, '购买会员卡', '2025-10-02 22:15:52');
+INSERT INTO `member_card_record` VALUES (2, 2, 10, 1, 299.00, 0, 0.00, 299.00, NULL, NULL, NULL, '购买会员卡', '2025-10-21 07:30:11');
+INSERT INTO `member_card_record` VALUES (3, 3, 11, 1, 2999.00, 0, 0.00, 2999.00, NULL, NULL, NULL, '购买会员卡', '2025-10-21 18:54:48');
+INSERT INTO `member_card_record` VALUES (7, 4, 11, 1, 299.00, 0, 0.00, 299.00, NULL, NULL, NULL, '购买会员卡', '2025-10-22 02:14:07');
+INSERT INTO `member_card_record` VALUES (8, 5, 11, 1, 299.00, 0, 0.00, 299.00, NULL, NULL, NULL, '购买会员卡', '2025-10-22 02:20:27');
+INSERT INTO `member_card_record` VALUES (9, 6, 11, 1, 1000.00, 0, 0.00, 1000.00, NULL, NULL, NULL, '购买会员卡', '2025-10-22 02:21:14');
+INSERT INTO `member_card_record` VALUES (10, 7, 11, 1, 1299.00, 30, NULL, NULL, 0, 30, NULL, '购买会员卡', '2025-10-22 02:42:22');
+INSERT INTO `member_card_record` VALUES (15, 3, 11, 2, -340.00, 0, 2999.00, 2659.00, NULL, NULL, 'BK1761073507654', '时间卡预订场地（原价¥425.00，折扣8折，实付¥340.0000）', '2025-10-22 03:05:17');
+INSERT INTO `member_card_record` VALUES (16, 3, 11, 2, -221.00, 0, 2659.00, 2438.00, NULL, NULL, 'BK1761089304162', '时间卡预订场地（原价¥260.00，折扣8折，实付¥221.0000）', '2025-10-22 07:29:06');
+INSERT INTO `member_card_record` VALUES (17, 3, 11, 2, -72.25, 0, 2438.00, 2365.75, NULL, NULL, 'BK1761090245810', '时间卡预订场地（原价¥85.00，折扣12.75元，实付¥72.25）', '2025-10-22 07:44:13');
+INSERT INTO `member_card_record` VALUES (18, 3, 11, 2, -408.00, 0, 2365.75, 1957.75, NULL, NULL, 'BK1761090211995', '时间卡预订场地（原价¥480.00，折扣72.00元，实付¥408.00）', '2025-10-22 07:47:30');
+INSERT INTO `member_card_record` VALUES (19, 3, 11, 3, 408.00, 0, 1957.75, 2365.75, NULL, NULL, 'BK1761090211995', '预订取消退款（年卡会员）', '2025-10-22 07:53:02');
+INSERT INTO `member_card_record` VALUES (20, 3, 11, 2, -38.25, 0, 2365.75, 2327.50, NULL, NULL, 'BK1761091403699', '时间卡预订场地（原价¥45.00，折扣6.75元，实付¥38.25）', '2025-10-22 08:04:08');
 
 -- ----------------------------
 -- Table structure for member_card_type
@@ -872,17 +905,18 @@ CREATE TABLE `member_card_type`  (
   UNIQUE INDEX `card_code`(`card_code` ASC) USING BTREE,
   INDEX `idx_card_type`(`card_type` ASC) USING BTREE,
   INDEX `idx_status`(`status` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 7 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '会员卡类型表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 8 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '会员卡类型表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of member_card_type
 -- ----------------------------
-INSERT INTO `member_card_type` VALUES (1, '月卡会员', 'MONTH_CARD', 1, 30, NULL, 299.00, 399.00, 0.90, 1, '[\"场地预订9折优惠\",\"课程报名9.5折优惠\",\"每月赠送200积分\",\"优先预订权\"]', '有效期30天，享受会员专属优惠', 1, 1, '2025-10-02 20:49:48', '2025-10-02 20:49:48');
-INSERT INTO `member_card_type` VALUES (2, '季卡会员', 'SEASON_CARD', 1, 90, NULL, 799.00, 1197.00, 0.85, 2, '[\"场地预订8.5折优惠\",\"课程报名9折优惠\",\"每月赠送500积分\",\"优先预订权\",\"生日专属福利\"]', '有效期90天，性价比之选', 2, 1, '2025-10-02 20:49:48', '2025-10-02 20:49:48');
-INSERT INTO `member_card_type` VALUES (3, '年卡会员', 'YEAR_CARD', 1, 365, NULL, 2999.00, 4788.00, 0.80, 3, '[\"场地预订8折优惠\",\"课程报名8.5折优惠\",\"每月赠送1000积分\",\"最高优先预订权\",\"生日专属福利\",\"会员专属活动\"]', '有效期365天，尊享全年优惠', 3, 1, '2025-10-02 20:49:48', '2025-10-02 20:49:48');
+INSERT INTO `member_card_type` VALUES (1, '月卡会员', 'MONTH_CARD', 1, 30, NULL, 299.00, 399.00, 0.95, 1, '[\"场地预订95折优惠\",\"课程报名95折优惠\",\"每月赠送200积分\",\"优先预订权\"]', '有效期30天，银卡会员专属优惠', 1, 1, '2025-10-02 20:49:48', '2025-10-22 07:12:12');
+INSERT INTO `member_card_type` VALUES (2, '季卡会员', 'SEASON_CARD', 1, 90, NULL, 799.00, 1197.00, 0.90, 2, '[\"场地预订9折优惠\",\"课程报名9折优惠\",\"每月赠送500积分\",\"优先预订权\",\"生日专属福利\"]', '有效期90天，金卡会员性价比之选', 2, 1, '2025-10-02 20:49:48', '2025-10-22 07:12:12');
+INSERT INTO `member_card_type` VALUES (3, '年卡会员', 'YEAR_CARD', 1, 365, NULL, 2999.00, 4788.00, 0.85, 3, '[\"场地预订85折优惠\",\"课程报名85折优惠\",\"每月赠送1000积分\",\"最高优先预订权\",\"生日专属福利\",\"会员专属活动\"]', '有效期365天，铂金会员尊享全年优惠', 3, 1, '2025-10-02 20:49:48', '2025-10-22 07:12:12');
 INSERT INTO `member_card_type` VALUES (4, '10次卡', 'TIMES_10', 2, 180, 10, 499.00, 600.00, 0.90, 1, '[\"10次场地使用机会\",\"半年有效期\",\"场地预订9折优惠\"]', '180天内可使用10次，灵活便捷', 4, 1, '2025-10-02 20:49:48', '2025-10-02 20:49:48');
 INSERT INTO `member_card_type` VALUES (5, '30次卡', 'TIMES_30', 2, 365, 30, 1299.00, 1800.00, 0.85, 2, '[\"30次场地使用机会\",\"一年有效期\",\"场地预订8.5折优惠\",\"赠送3次课程体验\"]', '一年内可使用30次，更多优惠', 5, 1, '2025-10-02 20:49:48', '2025-10-02 20:49:48');
 INSERT INTO `member_card_type` VALUES (6, '储值卡', 'STORED_VALUE', 3, 365, NULL, 1000.00, 1000.00, 0.90, 1, '[\"充值1000送100\",\"场地预订9折优惠\",\"余额可用于场地和课程\"]', '储值消费，多充多送', 6, 1, '2025-10-02 20:49:48', '2025-10-02 20:49:48');
+INSERT INTO `member_card_type` VALUES (7, 'VIP至尊年卡', 'VIP_YEAR_CARD', 1, 365, NULL, 4999.00, 7188.00, 0.80, 4, '[\"场地预订8折优惠\",\"课程报名8折优惠\",\"每月赠送2000积分\",\"最高优先预订权\",\"生日专属福利\",\"会员专属活动\",\"免费私教课程2次\",\"专属客服\"]', '有效期365天，VIP尊享服务', 0, 1, '2025-10-22 07:12:12', '2025-10-22 07:12:12');
 
 -- ----------------------------
 -- Table structure for notification_record
@@ -917,7 +951,7 @@ CREATE TABLE `notification_record`  (
   INDEX `idx_template`(`template_id` ASC) USING BTREE,
   INDEX `idx_notification_user_type_status`(`user_id` ASC, `notification_type` ASC, `send_status` ASC) USING BTREE,
   CONSTRAINT `notification_record_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 51 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '通知记录表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 72 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '通知记录表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of notification_record
@@ -965,13 +999,34 @@ INSERT INTO `notification_record` VALUES (40, 10, 7, 'PAYMENT_SUCCESS', 'system'
 INSERT INTO `notification_record` VALUES (41, 10, 5, 'BOOKING_SUCCESS', 'system', '预订成功', '预订成功!场地:B1训练半场,时间:2025-10-27 10:00-13:00,订单号:BK1761040699496', '10', 'booking', '39', 2, '2025-10-21 17:58:32', '站内信创建成功', NULL, 0, 0, NULL, NULL, '2025-10-21 17:58:32', '2025-10-21 17:58:32');
 INSERT INTO `notification_record` VALUES (42, 10, 6, 'BOOKING_CANCEL', 'system', '预订已取消', '您的预订已取消,订单号:{{orderNo}},退款将在3-5个工作日内到账。', '10', 'booking', '38', 2, '2025-10-21 17:58:59', '站内信创建成功', NULL, 0, 0, NULL, NULL, '2025-10-21 17:58:59', '2025-10-21 17:58:59');
 INSERT INTO `notification_record` VALUES (43, 10, 6, 'BOOKING_CANCEL', 'system', '预订已取消', '您的预订已取消,订单号:{{orderNo}},退款将在3-5个工作日内到账。', '10', 'booking', '39', 2, '2025-10-21 17:59:16', '站内信创建成功', NULL, 0, 0, NULL, NULL, '2025-10-21 17:59:16', '2025-10-21 17:59:16');
-INSERT INTO `notification_record` VALUES (44, 11, 5, 'BOOKING_SUCCESS', 'system', '预订成功', '预订成功!场地:A2标准篮球场,时间:2025-10-31 12:00-19:00,订单号:BK1761044193627', '11', 'booking', '40', 2, '2025-10-21 18:56:45', '站内信创建成功', NULL, 0, 0, NULL, NULL, '2025-10-21 18:56:45', '2025-10-21 18:56:45');
-INSERT INTO `notification_record` VALUES (45, 11, 7, 'PAYMENT_SUCCESS', 'system', '支付成功', '支付成功!金额:¥490.00,订单号:BK1761044193627', '11', 'booking', 'BK1761044193627', 2, '2025-10-21 18:56:48', '站内信创建成功', NULL, 0, 0, NULL, NULL, '2025-10-21 18:56:48', '2025-10-21 18:56:48');
-INSERT INTO `notification_record` VALUES (46, 11, 5, 'BOOKING_SUCCESS', 'system', '预订成功', '预订成功!场地:A1专业篮球场,时间:2025-10-21 07:00-09:00,订单号:BK1761047099892', '11', 'booking', '42', 2, '2025-10-21 19:48:25', '站内信创建成功', NULL, 0, 0, NULL, NULL, '2025-10-21 19:48:25', '2025-10-21 19:48:25');
-INSERT INTO `notification_record` VALUES (47, 11, 5, 'BOOKING_SUCCESS', 'system', '预订成功', '预订成功!场地:A2标准篮球场,时间:2025-10-25 13:00-14:00,订单号:BK1761049145206', '11', 'booking', '43', 2, '2025-10-21 20:19:20', '站内信创建成功', NULL, 0, 0, NULL, NULL, '2025-10-21 20:19:20', '2025-10-21 20:19:20');
-INSERT INTO `notification_record` VALUES (48, 11, 5, 'BOOKING_SUCCESS', 'system', '预订成功', '预订成功!场地:B2青少年训练场,时间:2025-10-28 09:00-13:00,订单号:BK1761050594803', '11', 'booking', '44', 2, '2025-10-21 20:43:39', '站内信创建成功', NULL, 0, 0, NULL, NULL, '2025-10-21 20:43:39', '2025-10-21 20:43:39');
-INSERT INTO `notification_record` VALUES (49, 11, 7, 'PAYMENT_SUCCESS', 'system', '支付成功', '支付成功!金额:¥500.00,订单号:RECHARGE1761057771406', '11', 'balance_recharge', 'RECHARGE1761057771406', 2, '2025-10-21 22:42:53', '站内信创建成功', NULL, 0, 0, NULL, NULL, '2025-10-21 22:42:53', '2025-10-21 22:42:53');
-INSERT INTO `notification_record` VALUES (50, 11, 7, 'PAYMENT_SUCCESS', 'system', '支付成功', '支付成功!金额:¥100.00,订单号:RECHARGE1761057860162', '11', 'balance_recharge', 'RECHARGE1761057860162', 2, '2025-10-21 22:44:22', '站内信创建成功', NULL, 0, 0, NULL, NULL, '2025-10-21 22:44:22', '2025-10-21 22:44:22');
+INSERT INTO `notification_record` VALUES (44, 11, 5, 'BOOKING_SUCCESS', 'system', '预订成功', '预订成功!场地:A2标准篮球场,时间:2025-10-31 12:00-19:00,订单号:BK1761044193627', '11', 'booking', '40', 2, '2025-10-21 18:56:45', '站内信创建成功', NULL, 0, 1, '2025-10-21 23:03:58', NULL, '2025-10-21 18:56:45', '2025-10-21 18:56:45');
+INSERT INTO `notification_record` VALUES (45, 11, 7, 'PAYMENT_SUCCESS', 'system', '支付成功', '支付成功!金额:¥490.00,订单号:BK1761044193627', '11', 'booking', 'BK1761044193627', 2, '2025-10-21 18:56:48', '站内信创建成功', NULL, 0, 1, '2025-10-21 23:03:58', NULL, '2025-10-21 18:56:48', '2025-10-21 18:56:48');
+INSERT INTO `notification_record` VALUES (46, 11, 5, 'BOOKING_SUCCESS', 'system', '预订成功', '预订成功!场地:A1专业篮球场,时间:2025-10-21 07:00-09:00,订单号:BK1761047099892', '11', 'booking', '42', 2, '2025-10-21 19:48:25', '站内信创建成功', NULL, 0, 1, '2025-10-21 23:03:58', NULL, '2025-10-21 19:48:25', '2025-10-21 19:48:25');
+INSERT INTO `notification_record` VALUES (47, 11, 5, 'BOOKING_SUCCESS', 'system', '预订成功', '预订成功!场地:A2标准篮球场,时间:2025-10-25 13:00-14:00,订单号:BK1761049145206', '11', 'booking', '43', 2, '2025-10-21 20:19:20', '站内信创建成功', NULL, 0, 1, '2025-10-21 23:03:58', NULL, '2025-10-21 20:19:20', '2025-10-21 20:19:20');
+INSERT INTO `notification_record` VALUES (48, 11, 5, 'BOOKING_SUCCESS', 'system', '预订成功', '预订成功!场地:B2青少年训练场,时间:2025-10-28 09:00-13:00,订单号:BK1761050594803', '11', 'booking', '44', 2, '2025-10-21 20:43:39', '站内信创建成功', NULL, 0, 1, '2025-10-21 23:03:58', NULL, '2025-10-21 20:43:39', '2025-10-21 20:43:39');
+INSERT INTO `notification_record` VALUES (49, 11, 7, 'PAYMENT_SUCCESS', 'system', '支付成功', '支付成功!金额:¥500.00,订单号:RECHARGE1761057771406', '11', 'balance_recharge', 'RECHARGE1761057771406', 2, '2025-10-21 22:42:53', '站内信创建成功', NULL, 0, 1, '2025-10-21 23:03:58', NULL, '2025-10-21 22:42:53', '2025-10-21 22:42:53');
+INSERT INTO `notification_record` VALUES (50, 11, 7, 'PAYMENT_SUCCESS', 'system', '支付成功', '支付成功!金额:¥100.00,订单号:RECHARGE1761057860162', '11', 'balance_recharge', 'RECHARGE1761057860162', 2, '2025-10-21 22:44:22', '站内信创建成功', NULL, 0, 1, '2025-10-21 23:03:58', NULL, '2025-10-21 22:44:22', '2025-10-21 22:44:22');
+INSERT INTO `notification_record` VALUES (51, 11, 7, 'PAYMENT_SUCCESS', 'system', '支付成功', '支付成功!金额:¥200.00,订单号:RECHARGE1761059015904', '11', 'balance_recharge', 'RECHARGE1761059015904', 2, '2025-10-21 23:03:37', '站内信创建成功', NULL, 0, 1, '2025-10-21 23:03:58', NULL, '2025-10-21 23:03:37', '2025-10-21 23:03:37');
+INSERT INTO `notification_record` VALUES (52, 11, 7, 'PAYMENT_SUCCESS', 'system', '支付成功', '支付成功!金额:¥100.00,订单号:RECHARGE1761062830046', '11', 'balance_recharge', 'RECHARGE1761062830046', 2, '2025-10-22 00:07:12', '站内信创建成功', NULL, 0, 1, '2025-10-22 00:40:57', NULL, '2025-10-22 00:07:12', '2025-10-22 00:07:12');
+INSERT INTO `notification_record` VALUES (53, 11, 7, 'PAYMENT_SUCCESS', 'system', '支付成功', '支付成功!金额:¥500.00,订单号:RECHARGE1761063246460', '11', 'balance_recharge', 'RECHARGE1761063246460', 2, '2025-10-22 00:18:22', '站内信创建成功', NULL, 0, 1, '2025-10-22 00:40:57', NULL, '2025-10-22 00:18:22', '2025-10-22 00:18:22');
+INSERT INTO `notification_record` VALUES (54, 11, 7, 'PAYMENT_SUCCESS', 'system', '支付成功', '支付成功!金额:¥100.00,订单号:RECHARGE1761063574544', '11', 'balance_recharge', 'RECHARGE1761063574544', 2, '2025-10-22 00:19:37', '站内信创建成功', NULL, 0, 1, '2025-10-22 00:40:57', NULL, '2025-10-22 00:19:37', '2025-10-22 00:19:37');
+INSERT INTO `notification_record` VALUES (55, 11, 6, 'BOOKING_CANCEL', 'system', '预订已取消', '您的预订已取消,订单号:{{orderNo}},退款将在3-5个工作日内到账。', '11', 'booking', '44', 2, '2025-10-22 00:36:37', '站内信创建成功', NULL, 0, 1, '2025-10-22 00:40:57', NULL, '2025-10-22 00:36:37', '2025-10-22 00:36:37');
+INSERT INTO `notification_record` VALUES (56, 11, 5, 'BOOKING_SUCCESS', 'system', '预订成功', '预订成功!场地:A2标准篮球场,时间:2025-10-31 07:00-11:00,订单号:BK1761072180548', '11', 'booking', '45', 2, '2025-10-22 02:43:14', '站内信创建成功', NULL, 0, 0, NULL, NULL, '2025-10-22 02:43:14', '2025-10-22 02:43:14');
+INSERT INTO `notification_record` VALUES (57, 11, 5, 'BOOKING_SUCCESS', 'system', '预订成功', '预订成功!场地:A1专业篮球场,时间:2025-10-28 12:00-14:00,订单号:BK1761072908463', '11', 'booking', '46', 2, '2025-10-22 02:55:27', '站内信创建成功', NULL, 0, 0, NULL, NULL, '2025-10-22 02:55:27', '2025-10-22 02:55:27');
+INSERT INTO `notification_record` VALUES (58, 11, 5, 'BOOKING_SUCCESS', 'system', '预订成功', '预订成功!场地:A1专业篮球场,时间:2025-10-31 13:00-14:00,订单号:BK1761072989640', '11', 'booking', '47', 2, '2025-10-22 02:56:52', '站内信创建成功', NULL, 0, 0, NULL, NULL, '2025-10-22 02:56:52', '2025-10-22 02:56:52');
+INSERT INTO `notification_record` VALUES (59, 11, 5, 'BOOKING_SUCCESS', 'system', '预订成功', '预订成功!场地:A1专业篮球场,时间:2025-10-25 07:00-11:00,订单号:BK1761073116610', '11', 'booking', '48', 2, '2025-10-22 02:58:57', '站内信创建成功', NULL, 0, 0, NULL, NULL, '2025-10-22 02:58:57', '2025-10-22 02:58:57');
+INSERT INTO `notification_record` VALUES (60, 11, 5, 'BOOKING_SUCCESS', 'system', '预订成功', '预订成功!场地:A2标准篮球场,时间:2025-10-24 08:00-13:00,订单号:BK1761073507654', '11', 'booking', '49', 2, '2025-10-22 03:05:17', '站内信创建成功', NULL, 0, 0, NULL, NULL, '2025-10-22 03:05:17', '2025-10-22 03:05:17');
+INSERT INTO `notification_record` VALUES (61, 11, 5, 'BOOKING_SUCCESS', 'system', '预订成功', '预订成功!场地:A1专业篮球场,时间:2025-10-31 21:00-23:00,订单号:BK1761089304162', '11', 'booking', '52', 2, '2025-10-22 07:29:06', '站内信创建成功', NULL, 0, 0, NULL, NULL, '2025-10-22 07:29:06', '2025-10-22 07:29:06');
+INSERT INTO `notification_record` VALUES (62, 11, 6, 'BOOKING_CANCEL', 'system', '预订已取消', '您的预订已取消,订单号:{{orderNo}},退款将在3-5个工作日内到账。', '11', 'booking', '53', 2, '2025-10-22 07:32:30', '站内信创建成功', NULL, 0, 0, NULL, NULL, '2025-10-22 07:32:30', '2025-10-22 07:32:30');
+INSERT INTO `notification_record` VALUES (63, 11, 6, 'BOOKING_CANCEL', 'system', '预订已取消', '您的预订已取消,订单号:{{orderNo}},退款将在3-5个工作日内到账。', '11', 'booking', '52', 2, '2025-10-22 07:32:46', '站内信创建成功', NULL, 0, 0, NULL, NULL, '2025-10-22 07:32:46', '2025-10-22 07:32:46');
+INSERT INTO `notification_record` VALUES (64, 11, 5, 'BOOKING_SUCCESS', 'system', '预订成功', '预订成功!场地:A1专业篮球场,时间:2025-10-31 12:00-13:00,订单号:BK1761090245810', '11', 'booking', '56', 2, '2025-10-22 07:44:13', '站内信创建成功', NULL, 0, 0, NULL, NULL, '2025-10-22 07:44:13', '2025-10-22 07:44:13');
+INSERT INTO `notification_record` VALUES (65, 11, 5, 'BOOKING_SUCCESS', 'system', '预订成功', '预订成功!场地:A1专业篮球场,时间:2025-10-26 18:00-21:00,订单号:BK1761090211995', '11', 'booking', '55', 2, '2025-10-22 07:47:30', '站内信创建成功', NULL, 0, 0, NULL, NULL, '2025-10-22 07:47:30', '2025-10-22 07:47:30');
+INSERT INTO `notification_record` VALUES (66, 11, 6, 'BOOKING_CANCEL', 'system', '预订已取消', '您的预订已取消,订单号:{{orderNo}},退款将在3-5个工作日内到账。', '11', 'booking', '55', 2, '2025-10-22 07:53:02', '站内信创建成功', NULL, 0, 0, NULL, NULL, '2025-10-22 07:53:02', '2025-10-22 07:53:02');
+INSERT INTO `notification_record` VALUES (67, 11, 5, 'BOOKING_SUCCESS', 'system', '预订成功', '预订成功!场地:B2青少年训练场,时间:2025-10-23 08:00-09:00,订单号:BK1761091403699', '11', 'booking', '57', 2, '2025-10-22 08:04:09', '站内信创建成功', NULL, 0, 0, NULL, NULL, '2025-10-22 08:04:09', '2025-10-22 08:04:09');
+INSERT INTO `notification_record` VALUES (68, 12, 5, 'BOOKING_SUCCESS', 'system', '预订成功', '预订成功!场地:C1室外标准场,时间:2025-10-29 11:00-14:00,订单号:BK1761093151541', '12', 'booking', '58', 2, '2025-10-22 08:32:43', '站内信创建成功', NULL, 0, 0, NULL, NULL, '2025-10-22 08:32:43', '2025-10-22 08:32:43');
+INSERT INTO `notification_record` VALUES (69, 12, 7, 'PAYMENT_SUCCESS', 'system', '支付成功', '支付成功!金额:¥210.00,订单号:BK1761093151541', '12', 'booking', 'BK1761093151541', 2, '2025-10-22 08:32:45', '站内信创建成功', NULL, 0, 0, NULL, NULL, '2025-10-22 08:32:45', '2025-10-22 08:32:45');
+INSERT INTO `notification_record` VALUES (70, 12, 5, 'BOOKING_SUCCESS', 'system', '预订成功', '预订成功!场地:B1训练半场,时间:2025-10-26 09:00-12:00,订单号:BK1761093818228', '12', 'booking', '61', 2, '2025-10-22 08:43:46', '站内信创建成功', NULL, 0, 0, NULL, NULL, '2025-10-22 08:43:46', '2025-10-22 08:43:46');
+INSERT INTO `notification_record` VALUES (71, 12, 7, 'PAYMENT_SUCCESS', 'system', '支付成功', '支付成功!金额:¥268.00,订单号:BK1761093818228', '12', 'booking', 'BK1761093818228', 2, '2025-10-22 08:43:49', '站内信创建成功', NULL, 0, 0, NULL, NULL, '2025-10-22 08:43:49', '2025-10-22 08:43:49');
 
 -- ----------------------------
 -- Table structure for notification_subscribe
@@ -1157,7 +1212,7 @@ CREATE TABLE `payment_notify_log`  (
   INDEX `idx_order_no`(`order_no` ASC) USING BTREE,
   INDEX `idx_create_time`(`create_time` ASC) USING BTREE,
   INDEX `idx_process_status`(`process_status` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 20 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '支付异步通知日志表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 26 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '支付异步通知日志表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of payment_notify_log
@@ -1181,6 +1236,12 @@ INSERT INTO `payment_notify_log` VALUES (16, 'PAY20251021133958443006', NULL, 'c
 INSERT INTO `payment_notify_log` VALUES (17, 'PAY20251021185645970344', NULL, 'callback', '{transaction_id=MOCK_1761044208020, out_trade_no=PAY20251021185645970344, trade_state=SUCCESS, total_fee=100}', NULL, 1, '处理成功', NULL, 0, NULL, '2025-10-21 18:56:48', '2025-10-21 18:56:48');
 INSERT INTO `payment_notify_log` VALUES (18, 'PAY20251021224251878548', NULL, 'callback', '{transaction_id=MOCK_1761057773398, out_trade_no=PAY20251021224251878548, trade_state=SUCCESS, total_fee=100}', NULL, 1, '处理成功', NULL, 0, NULL, '2025-10-21 22:42:53', '2025-10-21 22:42:53');
 INSERT INTO `payment_notify_log` VALUES (19, 'PAY20251021224420793572', NULL, 'callback', '{transaction_id=MOCK_1761057862179, out_trade_no=PAY20251021224420793572, trade_state=SUCCESS, total_fee=100}', NULL, 1, '处理成功', NULL, 0, NULL, '2025-10-21 22:44:22', '2025-10-21 22:44:22');
+INSERT INTO `payment_notify_log` VALUES (20, 'PAY20251021230335695308', NULL, 'callback', '{transaction_id=MOCK_1761059017202, out_trade_no=PAY20251021230335695308, trade_state=SUCCESS, total_fee=100}', NULL, 1, '处理成功', NULL, 0, NULL, '2025-10-21 23:03:37', '2025-10-21 23:03:37');
+INSERT INTO `payment_notify_log` VALUES (21, 'PAY20251022000710245702', NULL, 'callback', '{transaction_id=MOCK_1761062832059, out_trade_no=PAY20251022000710245702, trade_state=SUCCESS, total_fee=100}', NULL, 1, '处理成功', NULL, 0, NULL, '2025-10-22 00:07:12', '2025-10-22 00:07:12');
+INSERT INTO `payment_notify_log` VALUES (22, 'PAY20251022001606351899', NULL, 'callback', '{transaction_id=MOCK_1761063502028, out_trade_no=PAY20251022001606351899, trade_state=SUCCESS, total_fee=100}', NULL, 1, '处理成功', NULL, 0, NULL, '2025-10-22 00:18:22', '2025-10-22 00:18:22');
+INSERT INTO `payment_notify_log` VALUES (23, 'PAY20251022001934519553', NULL, 'callback', '{transaction_id=MOCK_1761063577266, out_trade_no=PAY20251022001934519553, trade_state=SUCCESS, total_fee=100}', NULL, 1, '处理成功', NULL, 0, NULL, '2025-10-22 00:19:37', '2025-10-22 00:19:37');
+INSERT INTO `payment_notify_log` VALUES (24, 'PAY20251022083242977147', NULL, 'callback', '{transaction_id=MOCK_1761093165460, out_trade_no=PAY20251022083242977147, trade_state=SUCCESS, total_fee=100}', NULL, 1, '处理成功', NULL, 0, NULL, '2025-10-22 08:32:45', '2025-10-22 08:32:45');
+INSERT INTO `payment_notify_log` VALUES (25, 'PAY20251022084346454016', NULL, 'callback', '{transaction_id=MOCK_1761093828810, out_trade_no=PAY20251022084346454016, trade_state=SUCCESS, total_fee=100}', NULL, 1, '处理成功', NULL, 0, NULL, '2025-10-22 08:43:49', '2025-10-22 08:43:48');
 
 -- ----------------------------
 -- Table structure for payment_order
@@ -1219,7 +1280,7 @@ CREATE TABLE `payment_order`  (
   INDEX `idx_status`(`status` ASC) USING BTREE,
   INDEX `idx_create_time`(`create_time` ASC) USING BTREE,
   CONSTRAINT `payment_order_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 36 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '支付订单表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 64 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '支付订单表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of payment_order
@@ -1259,6 +1320,33 @@ INSERT INTO `payment_order` VALUES (32, 'PAY20251021224339790291', 'RECHARGE1761
 INSERT INTO `payment_order` VALUES (33, 'PAY20251021224420793572', 'RECHARGE1761057860162', 'balance_recharge', 11, 'wechat_native', 100.00, 0.00, 100.00, 2, 'MOCK_WX_1761057860165', NULL, 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=mock_wechat_PAY20251021224420793572', NULL, '127.0.0.1', '2025-10-21 22:44:22', '2025-10-21 23:14:20', 0.00, NULL, NULL, NULL, NULL, '2025-10-21 22:44:20', '2025-10-21 22:44:22');
 INSERT INTO `payment_order` VALUES (34, 'PAY20251021230158834354', 'RECHARGE1761058918503', 'balance_recharge', 11, 'wechat_native', 200.00, 0.00, 200.00, 0, 'MOCK_WX_1761058918509', NULL, 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=mock_wechat_PAY20251021230158834354', NULL, '127.0.0.1', NULL, '2025-10-21 23:31:59', 0.00, NULL, NULL, NULL, NULL, '2025-10-21 23:01:59', '2025-10-21 23:01:59');
 INSERT INTO `payment_order` VALUES (35, 'PAY20251021230204329392', 'RECHARGE1761058924872', 'balance_recharge', 11, 'alipay_page', 200.00, 0.00, 200.00, 0, 'MOCK_ALIPAY_1761058924874', NULL, 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=mock_alipay_PAY20251021230204329392', NULL, '127.0.0.1', NULL, '2025-10-21 23:32:05', 0.00, NULL, NULL, NULL, NULL, '2025-10-21 23:02:05', '2025-10-21 23:02:05');
+INSERT INTO `payment_order` VALUES (36, 'PAY20251021230335695308', 'RECHARGE1761059015904', 'balance_recharge', 11, 'wechat_native', 200.00, 0.00, 200.00, 2, 'MOCK_WX_1761059015906', NULL, 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=mock_wechat_PAY20251021230335695308', NULL, '127.0.0.1', '2025-10-21 23:03:37', '2025-10-21 23:33:36', 0.00, NULL, NULL, NULL, NULL, '2025-10-21 23:03:36', '2025-10-21 23:03:37');
+INSERT INTO `payment_order` VALUES (37, 'PAY20251021235744730411', 'RECHARGE1761062264169', 'balance_recharge', 11, 'alipay_page', 200.00, 0.00, 200.00, 0, 'MOCK_ALIPAY_1761062264215', NULL, 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=mock_alipay_PAY20251021235744730411', NULL, '127.0.0.1', NULL, '2025-10-22 00:27:44', 0.00, NULL, NULL, NULL, NULL, '2025-10-21 23:57:44', '2025-10-21 23:57:44');
+INSERT INTO `payment_order` VALUES (38, 'PAY20251021235834613618', 'RECHARGE1761062314542', 'balance_recharge', 11, 'alipay_page', 200.00, 0.00, 200.00, 0, 'MOCK_ALIPAY_1761062314547', NULL, 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=mock_alipay_PAY20251021235834613618', NULL, '127.0.0.1', NULL, '2025-10-22 00:28:35', 0.00, NULL, NULL, NULL, NULL, '2025-10-21 23:58:35', '2025-10-21 23:58:35');
+INSERT INTO `payment_order` VALUES (39, 'PAY20251022000106393882', 'RECHARGE1761062466170', 'balance_recharge', 11, 'alipay_page', 200.00, 0.00, 200.00, 0, 'MOCK_ALIPAY_1761062466172', NULL, 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=mock_alipay_PAY20251022000106393882', NULL, '127.0.0.1', NULL, '2025-10-22 00:31:06', 0.00, NULL, NULL, NULL, NULL, '2025-10-22 00:01:06', '2025-10-22 00:01:06');
+INSERT INTO `payment_order` VALUES (41, 'PAY20251022000241201602', 'RECHARGE1761062561073', 'balance_recharge', 11, 'alipay_page', 200.00, 0.00, 200.00, 0, 'MOCK_ALIPAY_1761062561076', NULL, 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=mock_alipay_PAY20251022000241201602', NULL, '127.0.0.1', NULL, '2025-10-22 00:32:41', 0.00, NULL, NULL, NULL, NULL, '2025-10-22 00:02:41', '2025-10-22 00:02:41');
+INSERT INTO `payment_order` VALUES (42, 'PAY20251022000619519928', 'RECHARGE1761062779517', 'balance_recharge', 11, 'wechat_native', 100.00, 0.00, 100.00, 0, 'MOCK_WX_1761062779522', NULL, 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=mock_wechat_PAY20251022000619519928', NULL, '127.0.0.1', NULL, '2025-10-22 00:36:20', 0.00, NULL, NULL, NULL, NULL, '2025-10-22 00:06:20', '2025-10-22 00:06:20');
+INSERT INTO `payment_order` VALUES (43, 'PAY20251022000624049310', 'RECHARGE1761062784929', 'balance_recharge', 11, 'alipay_page', 200.00, 0.00, 200.00, 0, 'MOCK_ALIPAY_1761062784935', NULL, 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=mock_alipay_PAY20251022000624049310', NULL, '127.0.0.1', NULL, '2025-10-22 00:36:25', 0.00, NULL, NULL, NULL, NULL, '2025-10-22 00:06:25', '2025-10-22 00:06:25');
+INSERT INTO `payment_order` VALUES (44, 'PAY20251022000710245702', 'RECHARGE1761062830046', 'balance_recharge', 11, 'wechat_native', 100.00, 0.00, 100.00, 2, 'MOCK_WX_1761062830052', NULL, 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=mock_wechat_PAY20251022000710245702', NULL, '127.0.0.1', '2025-10-22 00:07:12', '2025-10-22 00:37:10', 0.00, NULL, NULL, NULL, NULL, '2025-10-22 00:07:10', '2025-10-22 00:07:12');
+INSERT INTO `payment_order` VALUES (45, 'PAY20251022000719274606', 'RECHARGE1761062839469', 'balance_recharge', 11, 'alipay_page', 200.00, 0.00, 200.00, 4, 'MOCK_ALIPAY_1761062839473', NULL, 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=mock_alipay_PAY20251022000719274606', NULL, '127.0.0.1', NULL, '2025-10-22 00:37:19', 0.00, NULL, NULL, '创建新订单，旧订单自动取消', NULL, '2025-10-22 00:07:19', '2025-10-22 00:13:32');
+INSERT INTO `payment_order` VALUES (46, 'PAY20251022001331031331', 'RECHARGE1761062839469', 'balance_recharge', 11, 'alipay_page', 200.00, 0.00, 200.00, 0, 'MOCK_ALIPAY_1761063211649', NULL, 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=mock_alipay_PAY20251022001331031331', NULL, '0:0:0:0:0:0:0:1', NULL, '2025-10-22 00:43:32', 0.00, NULL, NULL, NULL, NULL, '2025-10-22 00:13:32', '2025-10-22 00:13:32');
+INSERT INTO `payment_order` VALUES (47, 'PAY20251022001338838586', 'RECHARGE1761063218145', 'balance_recharge', 11, 'wechat_native', 200.00, 0.00, 200.00, 4, 'MOCK_WX_1761063218152', NULL, 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=mock_wechat_PAY20251022001338838586', NULL, '127.0.0.1', NULL, '2025-10-22 00:43:38', 0.00, NULL, NULL, '创建新订单，旧订单自动取消', NULL, '2025-10-22 00:13:38', '2025-10-22 00:13:38');
+INSERT INTO `payment_order` VALUES (48, 'PAY20251022001338847346', 'RECHARGE1761063218145', 'balance_recharge', 11, 'wechat_native', 200.00, 0.00, 200.00, 0, 'MOCK_WX_1761063218250', NULL, 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=mock_wechat_PAY20251022001338847346', NULL, '0:0:0:0:0:0:0:1', NULL, '2025-10-22 00:43:38', 0.00, NULL, NULL, NULL, NULL, '2025-10-22 00:13:38', '2025-10-22 00:13:38');
+INSERT INTO `payment_order` VALUES (49, 'PAY20251022001343543055', 'RECHARGE1761063223401', 'balance_recharge', 11, 'alipay_page', 200.00, 0.00, 200.00, 4, 'MOCK_ALIPAY_1761063223407', NULL, 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=mock_alipay_PAY20251022001343543055', NULL, '127.0.0.1', NULL, '2025-10-22 00:43:43', 0.00, NULL, NULL, '创建新订单，旧订单自动取消', NULL, '2025-10-22 00:13:43', '2025-10-22 00:13:43');
+INSERT INTO `payment_order` VALUES (50, 'PAY20251022001343685900', 'RECHARGE1761063223401', 'balance_recharge', 11, 'alipay_page', 200.00, 0.00, 200.00, 0, 'MOCK_ALIPAY_1761063223497', NULL, 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=mock_alipay_PAY20251022001343685900', NULL, '0:0:0:0:0:0:0:1', NULL, '2025-10-22 00:43:43', 0.00, NULL, NULL, NULL, NULL, '2025-10-22 00:13:43', '2025-10-22 00:13:43');
+INSERT INTO `payment_order` VALUES (51, 'PAY20251022001406902908', 'RECHARGE1761063246460', 'balance_recharge', 11, 'alipay_page', 500.00, 0.00, 500.00, 4, 'MOCK_ALIPAY_1761063246464', NULL, 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=mock_alipay_PAY20251022001406902908', NULL, '127.0.0.1', NULL, '2025-10-22 00:44:06', 0.00, NULL, NULL, '创建新订单，旧订单自动取消', NULL, '2025-10-22 00:14:06', '2025-10-22 00:14:07');
+INSERT INTO `payment_order` VALUES (52, 'PAY20251022001406544059', 'RECHARGE1761063246460', 'balance_recharge', 11, 'alipay_page', 500.00, 0.00, 500.00, 4, 'MOCK_ALIPAY_1761063246555', NULL, 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=mock_alipay_PAY20251022001406544059', NULL, '0:0:0:0:0:0:0:1', NULL, '2025-10-22 00:44:07', 0.00, NULL, NULL, '创建新订单，旧订单自动取消', NULL, '2025-10-22 00:14:07', '2025-10-22 00:16:06');
+INSERT INTO `payment_order` VALUES (53, 'PAY20251022001606351899', 'RECHARGE1761063246460', 'balance_recharge', 11, 'alipay_page', 500.00, 0.00, 500.00, 2, 'MOCK_ALIPAY_1761063366013', NULL, 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=mock_alipay_PAY20251022001606351899', NULL, '0:0:0:0:0:0:0:1', '2025-10-22 00:18:22', '2025-10-22 00:46:06', 0.00, NULL, NULL, NULL, NULL, '2025-10-22 00:16:06', '2025-10-22 00:18:22');
+INSERT INTO `payment_order` VALUES (54, 'PAY20251022001934847142', 'RECHARGE1761063574544', 'balance_recharge', 11, 'alipay_page', 100.00, 0.00, 100.00, 4, 'MOCK_ALIPAY_1761063574548', NULL, 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=mock_alipay_PAY20251022001934847142', NULL, '127.0.0.1', NULL, '2025-10-22 00:49:35', 0.00, NULL, NULL, '创建新订单，旧订单自动取消', NULL, '2025-10-22 00:19:35', '2025-10-22 00:19:35');
+INSERT INTO `payment_order` VALUES (55, 'PAY20251022001934519553', 'RECHARGE1761063574544', 'balance_recharge', 11, 'alipay_page', 100.00, 0.00, 100.00, 2, 'MOCK_ALIPAY_1761063574623', NULL, 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=mock_alipay_PAY20251022001934519553', NULL, '0:0:0:0:0:0:0:1', '2025-10-22 00:19:37', '2025-10-22 00:49:35', 0.00, NULL, NULL, NULL, NULL, '2025-10-22 00:19:35', '2025-10-22 00:19:37');
+INSERT INTO `payment_order` VALUES (56, 'PAY20251022002546029332', 'RECHARGE1761063946905', 'balance_recharge', 11, 'wechat_native', 200.00, 0.00, 200.00, 4, 'MOCK_WX_1761063946908', NULL, 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=mock_wechat_PAY20251022002546029332', NULL, '127.0.0.1', NULL, '2025-10-22 00:55:47', 0.00, NULL, NULL, '创建新订单，旧订单自动取消', NULL, '2025-10-22 00:25:47', '2025-10-22 00:25:47');
+INSERT INTO `payment_order` VALUES (57, 'PAY20251022002546117486', 'RECHARGE1761063946905', 'balance_recharge', 11, 'wechat_native', 200.00, 0.00, 200.00, 0, 'MOCK_WX_1761063946969', NULL, 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=mock_wechat_PAY20251022002546117486', NULL, '0:0:0:0:0:0:0:1', NULL, '2025-10-22 00:55:47', 0.00, NULL, NULL, NULL, NULL, '2025-10-22 00:25:47', '2025-10-22 00:25:47');
+INSERT INTO `payment_order` VALUES (58, 'PAY20251022002553481946', 'RECHARGE1761063953140', 'balance_recharge', 11, 'alipay_page', 200.00, 0.00, 200.00, 4, 'MOCK_ALIPAY_1761063953144', NULL, 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=mock_alipay_PAY20251022002553481946', NULL, '127.0.0.1', NULL, '2025-10-22 00:55:53', 0.00, NULL, NULL, '创建新订单，旧订单自动取消', NULL, '2025-10-22 00:25:53', '2025-10-22 00:25:53');
+INSERT INTO `payment_order` VALUES (59, 'PAY20251022002553668502', 'RECHARGE1761063953140', 'balance_recharge', 11, 'alipay_page', 200.00, 0.00, 200.00, 0, 'MOCK_ALIPAY_1761063953213', NULL, 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=mock_alipay_PAY20251022002553668502', NULL, '0:0:0:0:0:0:0:1', NULL, '2025-10-22 00:55:53', 0.00, NULL, NULL, NULL, NULL, '2025-10-22 00:25:53', '2025-10-22 00:25:53');
+INSERT INTO `payment_order` VALUES (60, 'PAY20251022002601809226', 'RECHARGE1761063961307', 'balance_recharge', 11, 'wechat_native', 100.00, 0.00, 100.00, 4, 'MOCK_WX_1761063961309', NULL, 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=mock_wechat_PAY20251022002601809226', NULL, '127.0.0.1', NULL, '2025-10-22 00:56:01', 0.00, NULL, NULL, '创建新订单，旧订单自动取消', NULL, '2025-10-22 00:26:01', '2025-10-22 00:26:01');
+INSERT INTO `payment_order` VALUES (61, 'PAY20251022002601747386', 'RECHARGE1761063961307', 'balance_recharge', 11, 'wechat_native', 100.00, 0.00, 100.00, 0, 'MOCK_WX_1761063961377', NULL, 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=mock_wechat_PAY20251022002601747386', NULL, '0:0:0:0:0:0:0:1', NULL, '2025-10-22 00:56:01', 0.00, NULL, NULL, NULL, NULL, '2025-10-22 00:26:01', '2025-10-22 00:26:01');
+INSERT INTO `payment_order` VALUES (62, 'PAY20251022083242977147', 'BK1761093151541', 'booking', 12, 'wechat_native', 210.00, 0.00, 210.00, 2, 'MOCK_WX_1761093162652', NULL, 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=mock_wechat_PAY20251022083242977147', NULL, NULL, '2025-10-22 08:32:45', '2025-10-22 09:02:43', 0.00, NULL, NULL, NULL, NULL, '2025-10-22 08:32:43', '2025-10-22 08:32:45');
+INSERT INTO `payment_order` VALUES (63, 'PAY20251022084346454016', 'BK1761093818228', 'booking', 12, 'wechat_native', 268.00, 0.00, 268.00, 2, 'MOCK_WX_1761093826092', NULL, 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=mock_wechat_PAY20251022084346454016', NULL, NULL, '2025-10-22 08:43:49', '2025-10-22 09:13:46', 0.00, NULL, NULL, NULL, NULL, '2025-10-22 08:43:46', '2025-10-22 08:43:49');
 
 -- ----------------------------
 -- Table structure for permission
@@ -1360,7 +1448,7 @@ CREATE TABLE `points_record`  (
   INDEX `idx_type`(`type` ASC) USING BTREE,
   INDEX `idx_create_time`(`create_time` ASC) USING BTREE,
   CONSTRAINT `points_record_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 6 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '积分记录表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 19 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '积分记录表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of points_record
@@ -1370,6 +1458,19 @@ INSERT INTO `points_record` VALUES (2, 11, 490, 1, 'BK1761044193627', 0, 490, '2
 INSERT INTO `points_record` VALUES (3, 11, 200, 1, 'BK1761047099892', 490, 690, '2026-10-21', '消费赠送积分：订单BK1761047099892，消费200.00元', '2025-10-21 19:48:25');
 INSERT INTO `points_record` VALUES (4, 11, 110, 1, 'BK1761049145206', 690, 800, '2026-10-21', '消费赠送积分：订单BK1761049145206，消费110.00元', '2025-10-21 20:19:20');
 INSERT INTO `points_record` VALUES (5, 11, 180, 1, 'BK1761050594803', 800, 980, '2026-10-21', '消费赠送积分：订单BK1761050594803，消费180.00元', '2025-10-21 20:43:39');
+INSERT INTO `points_record` VALUES (6, 11, 400, 1, 'BK1761072180548', 980, 1380, '2026-10-22', '消费赠送积分：订单BK1761072180548，消费400.00元', '2025-10-22 02:43:14');
+INSERT INTO `points_record` VALUES (7, 11, 170, 1, 'BK1761072908463', 1380, 1550, '2026-10-22', '消费赠送积分：订单BK1761072908463，消费170.00元', '2025-10-22 02:55:27');
+INSERT INTO `points_record` VALUES (8, 11, 85, 1, 'BK1761072989640', 1550, 1635, '2026-10-22', '消费赠送积分：订单BK1761072989640，消费85.00元', '2025-10-22 02:56:52');
+INSERT INTO `points_record` VALUES (9, 11, 400, 1, 'BK1761073116610', 1635, 2035, '2026-10-22', '消费赠送积分：订单BK1761073116610，消费400.00元', '2025-10-22 02:58:57');
+INSERT INTO `points_record` VALUES (10, 11, 425, 1, 'BK1761073507654', 2035, 2460, '2026-10-22', '消费赠送积分：订单BK1761073507654，消费425.00元', '2025-10-22 03:05:17');
+INSERT INTO `points_record` VALUES (11, 11, 260, 1, 'BK1761089304162', 2460, 2720, '2026-10-22', '消费赠送积分：订单BK1761089304162，消费260.00元', '2025-10-22 07:29:06');
+INSERT INTO `points_record` VALUES (12, 11, 85, 1, 'BK1761090245810', 2720, 2805, '2026-10-22', '消费赠送积分：订单BK1761090245810，消费85.00元', '2025-10-22 07:44:13');
+INSERT INTO `points_record` VALUES (13, 11, 480, 1, 'BK1761090211995', 2805, 3285, '2026-10-22', '消费赠送积分：订单BK1761090211995，消费480.00元', '2025-10-22 07:47:30');
+INSERT INTO `points_record` VALUES (14, 11, -480, 2, 'BK1761090211995', 3285, 2805, NULL, '订单退款扣除积分：订单BK1761090211995，退款408.00元', '2025-10-22 07:53:02');
+INSERT INTO `points_record` VALUES (15, 11, 45, 1, 'BK1761091403699', 2805, 2850, '2026-10-22', '消费赠送积分：订单BK1761091403699，消费45.00元', '2025-10-22 08:04:08');
+INSERT INTO `points_record` VALUES (16, 12, 210, 1, 'BK1761093151541', 0, 210, '2026-10-22', '消费赠送积分：订单BK1761093151541，消费210.00元', '2025-10-22 08:32:45');
+INSERT INTO `points_record` VALUES (17, 12, -200, 2, 'BK1761093818228', 210, 10, NULL, '积分抵扣支付：订单BK1761093818228，使用200积分抵扣2.00元', '2025-10-22 08:43:46');
+INSERT INTO `points_record` VALUES (18, 12, 270, 1, 'BK1761093818228', 10, 280, '2026-10-22', '消费赠送积分：订单BK1761093818228，消费270.00元', '2025-10-22 08:43:49');
 
 -- ----------------------------
 -- Table structure for refund
@@ -1476,7 +1577,7 @@ CREATE TABLE `scheduled_reminder`  (
   INDEX `idx_user`(`target_user_id` ASC) USING BTREE,
   INDEX `idx_status`(`status` ASC) USING BTREE,
   CONSTRAINT `scheduled_reminder_ibfk_1` FOREIGN KEY (`target_user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 11 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '定时提醒任务表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 25 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '定时提醒任务表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of scheduled_reminder
@@ -1491,6 +1592,20 @@ INSERT INTO `scheduled_reminder` VALUES (7, 'booking_start', 3, 'booking', '5', 
 INSERT INTO `scheduled_reminder` VALUES (8, 'booking_start', 9, 'booking', '22', '2025-10-21 06:00:00', '预订开始提醒', '您的场地预订将在1小时后开始，请准时到场', 0, NULL, NULL, 0, '2025-10-21 06:00:00', '2025-10-21 06:00:00');
 INSERT INTO `scheduled_reminder` VALUES (9, 'booking_start', 9, 'booking', '18', '2025-10-21 08:00:00', '预订开始提醒', '您的场地预订将在1小时后开始，请准时到场', 0, NULL, NULL, 0, '2025-10-21 08:00:00', '2025-10-21 08:00:00');
 INSERT INTO `scheduled_reminder` VALUES (10, 'booking_start', 9, 'booking', '21', '2025-10-21 08:00:00', '预订开始提醒', '您的场地预订将在1小时后开始，请准时到场', 0, NULL, NULL, 0, '2025-10-21 08:00:00', '2025-10-21 08:00:00');
+INSERT INTO `scheduled_reminder` VALUES (11, 'booking_start', 10, 'booking', '35', '2025-10-22 06:00:00', '预订开始提醒', '您的场地预订将在1小时后开始，请准时到场', 0, NULL, NULL, 0, '2025-10-22 06:00:00', '2025-10-22 06:00:00');
+INSERT INTO `scheduled_reminder` VALUES (12, 'booking_start', 11, 'booking', '42', '2025-10-22 06:00:00', '预订开始提醒', '您的场地预订将在1小时后开始，请准时到场', 0, NULL, NULL, 0, '2025-10-22 06:00:00', '2025-10-22 06:00:00');
+INSERT INTO `scheduled_reminder` VALUES (13, 'booking_start', 11, 'booking', '45', '2025-10-22 06:00:00', '预订开始提醒', '您的场地预订将在1小时后开始，请准时到场', 0, NULL, NULL, 0, '2025-10-22 06:00:00', '2025-10-22 06:00:00');
+INSERT INTO `scheduled_reminder` VALUES (14, 'booking_start', 11, 'booking', '48', '2025-10-22 06:00:00', '预订开始提醒', '您的场地预订将在1小时后开始，请准时到场', 0, NULL, NULL, 0, '2025-10-22 06:00:00', '2025-10-22 06:00:00');
+INSERT INTO `scheduled_reminder` VALUES (15, 'booking_start', 10, 'booking', '38', '2025-10-22 07:00:00', '预订开始提醒', '您的场地预订将在1小时后开始，请准时到场', 0, NULL, NULL, 0, '2025-10-22 07:00:00', '2025-10-22 07:00:00');
+INSERT INTO `scheduled_reminder` VALUES (16, 'booking_start', 11, 'booking', '49', '2025-10-22 07:00:00', '预订开始提醒', '您的场地预订将在1小时后开始，请准时到场', 0, NULL, NULL, 0, '2025-10-22 07:00:00', '2025-10-22 07:00:00');
+INSERT INTO `scheduled_reminder` VALUES (17, 'course_start', 3, 'course', '22', '2025-10-22 08:00:00', '课程开始提醒', '您报名的课程将在1小时后开始，请准时参加', 0, NULL, NULL, 0, '2025-10-22 08:00:00', '2025-10-22 08:00:00');
+INSERT INTO `scheduled_reminder` VALUES (18, 'course_start', 3, 'course', '23', '2025-10-22 08:00:00', '课程开始提醒', '您报名的课程将在1小时后开始，请准时参加', 0, NULL, NULL, 0, '2025-10-22 08:00:00', '2025-10-22 08:00:00');
+INSERT INTO `scheduled_reminder` VALUES (19, 'course_start', 3, 'course', '24', '2025-10-22 08:00:00', '课程开始提醒', '您报名的课程将在1小时后开始，请准时参加', 0, NULL, NULL, 0, '2025-10-22 08:00:00', '2025-10-22 08:00:00');
+INSERT INTO `scheduled_reminder` VALUES (20, 'booking_start', 10, 'booking', '39', '2025-10-22 09:00:00', '预订开始提醒', '您的场地预订将在1小时后开始，请准时到场', 0, NULL, NULL, 0, '2025-10-22 09:00:00', '2025-10-22 09:00:00');
+INSERT INTO `scheduled_reminder` VALUES (21, 'booking_start', 12, 'booking', '61', '2025-10-22 09:00:00', '预订开始提醒', '您的场地预订将在1小时后开始，请准时到场', 0, NULL, NULL, 0, '2025-10-22 09:00:00', '2025-10-22 09:00:00');
+INSERT INTO `scheduled_reminder` VALUES (22, 'course_start', 2, 'course', '25', '2025-10-22 09:00:00', '课程开始提醒', '您报名的课程将在1小时后开始，请准时参加', 0, NULL, NULL, 0, '2025-10-22 09:00:00', '2025-10-22 09:00:00');
+INSERT INTO `scheduled_reminder` VALUES (23, 'course_start', 2, 'course', '26', '2025-10-22 09:00:00', '课程开始提醒', '您报名的课程将在1小时后开始，请准时参加', 0, NULL, NULL, 0, '2025-10-22 09:00:00', '2025-10-22 09:00:00');
+INSERT INTO `scheduled_reminder` VALUES (24, 'course_start', 3, 'course', '30', '2025-10-22 09:00:00', '课程开始提醒', '您报名的课程将在1小时后开始，请准时参加', 0, NULL, NULL, 0, '2025-10-22 09:00:00', '2025-10-22 09:00:00');
 
 -- ----------------------------
 -- Table structure for sms_code
@@ -1584,7 +1699,7 @@ CREATE TABLE `system_config`  (
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `config_key`(`config_key` ASC) USING BTREE,
   INDEX `idx_group`(`group_name` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 150 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '系统配置表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 148 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '系统配置表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of system_config
@@ -1690,7 +1805,7 @@ CREATE TABLE `user`  (
   INDEX `idx_phone`(`phone` ASC) USING BTREE,
   INDEX `idx_username`(`username` ASC) USING BTREE,
   INDEX `idx_status`(`status` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 12 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '用户表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 13 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '用户表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of user
@@ -1705,7 +1820,8 @@ INSERT INTO `user` VALUES (7, 'coach_zhao', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt
 INSERT INTO `user` VALUES (8, 'coach_sun', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVKIUi', '13900139004', 'sun@basketball.com', '孙教练', 1, NULL, 1, 3, 0, 0.00, 0, '2025-10-02 20:42:29', '2025-10-02 20:42:29', NULL);
 INSERT INTO `user` VALUES (9, 'aqq', '$2a$10$YWeI4lnYXpwLxCYLHFS2SuCZy5G202M6BhqRGJIAPAtjVbBLc/W9q', '17512345678', NULL, NULL, 0, NULL, 1, 0, 0, 0.00, 0, '2025-10-18 02:24:36', '2025-10-18 02:24:36', '2025-10-18 02:55:50');
 INSERT INTO `user` VALUES (10, 'qqq', '$2a$10$z18LiSHAMQ6eOu2dIjGmzOa/Stl2FSIsLbTwD6uV1K6WwjzzTZIyG', '15555555556', NULL, NULL, 0, NULL, 1, 1, 280, 0.00, 0, '2025-10-20 23:55:45', '2025-10-21 13:40:01', '2025-10-21 10:06:50');
-INSERT INTO `user` VALUES (11, 'aaa', '$2a$10$u/77O02kj5CYh7Q23n.bEu033J7VAHfCKbUgKhJRcL40sEoDrcIee', '16666666666', NULL, NULL, 0, NULL, 1, 3, 980, 600.00, 0, '2025-10-21 18:34:25', '2025-10-21 22:44:22', '2025-10-21 21:05:24');
+INSERT INTO `user` VALUES (11, 'aaa', '$2a$10$u/77O02kj5CYh7Q23n.bEu033J7VAHfCKbUgKhJRcL40sEoDrcIee', '16666666666', NULL, NULL, 0, NULL, 1, 3, 2850, 902.00, 0, '2025-10-21 18:34:25', '2025-10-22 08:04:08', '2025-10-21 21:05:24');
+INSERT INTO `user` VALUES (12, 'zzz', '$2a$10$b7aRsMctYHehBBBY6L5uteVdyc2JlVoG1AS0j/Pf/URfrU4zy39nG', '19888888888', NULL, NULL, 0, NULL, 1, 0, 280, 0.00, 0, '2025-10-22 08:18:02', '2025-10-22 08:43:49', '2025-10-22 08:42:52');
 
 -- ----------------------------
 -- Table structure for user_behavior_log
@@ -1730,7 +1846,7 @@ CREATE TABLE `user_behavior_log`  (
   INDEX `idx_create_time`(`create_time` ASC) USING BTREE,
   INDEX `idx_module_business`(`module` ASC, `business_id` ASC) USING BTREE,
   INDEX `idx_behavior_user_type_time`(`user_id` ASC, `behavior_type` ASC, `behavior_time` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 284 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '用户行为日志表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 276 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '用户行为日志表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of user_behavior_log
@@ -2016,7 +2132,7 @@ CREATE TABLE `user_role`  (
   INDEX `role_id`(`role_id` ASC) USING BTREE,
   CONSTRAINT `user_role_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
   CONSTRAINT `user_role_ibfk_2` FOREIGN KEY (`role_id`) REFERENCES `role` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 23 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '用户角色关联表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 24 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '用户角色关联表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of user_role
@@ -2033,6 +2149,7 @@ INSERT INTO `user_role` VALUES (14, 8, 3, '2025-10-02 20:42:29');
 INSERT INTO `user_role` VALUES (20, 9, 3, '2025-10-18 02:24:36');
 INSERT INTO `user_role` VALUES (21, 10, 3, '2025-10-20 23:55:45');
 INSERT INTO `user_role` VALUES (22, 11, 3, '2025-10-21 18:34:25');
+INSERT INTO `user_role` VALUES (23, 12, 3, '2025-10-22 08:18:02');
 
 -- ----------------------------
 -- Table structure for user_session
@@ -2252,7 +2369,7 @@ CREATE TABLE `venue_usage_analysis`  (
   INDEX `idx_usage_rate`(`usage_rate` DESC) USING BTREE,
   INDEX `idx_usage_score`(`usage_score` DESC) USING BTREE,
   CONSTRAINT `venue_usage_analysis_ibfk_1` FOREIGN KEY (`venue_id`) REFERENCES `venue` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 65 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '场地使用分析表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 73 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '场地使用分析表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of venue_usage_analysis
@@ -2273,14 +2390,14 @@ INSERT INTO `venue_usage_analysis` VALUES (13, 5, '2025-10-19', 0, 0, 0, 0, 0.00
 INSERT INTO `venue_usage_analysis` VALUES (14, 6, '2025-10-19', 0, 0, 0, 0, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠', '2025-10-20 10:36:34', '2025-10-20 23:55:00');
 INSERT INTO `venue_usage_analysis` VALUES (15, 7, '2025-10-19', 0, 0, 0, 0, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠', '2025-10-20 10:36:34', '2025-10-20 23:55:00');
 INSERT INTO `venue_usage_analysis` VALUES (16, 8, '2025-10-19', 0, 0, 0, 0, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠', '2025-10-20 10:36:34', '2025-10-20 23:55:00');
-INSERT INTO `venue_usage_analysis` VALUES (17, 1, '2025-10-20', 7, 1, 0, 1, 14.29, 10, 1, 10.00, 400.00, 400.00, 'morning', 1, 0.00, 0, 18, 'up', 18, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠; 上午时段最受欢迎,可考虑推出早鸟优惠', '2025-10-20 10:36:34', '2025-10-21 23:00:00');
-INSERT INTO `venue_usage_analysis` VALUES (18, 2, '2025-10-20', 2, 0, 0, 1, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠', '2025-10-20 10:36:34', '2025-10-21 23:00:00');
-INSERT INTO `venue_usage_analysis` VALUES (19, 3, '2025-10-20', 4, 2, 0, 1, 50.00, 10, 2, 20.00, 300.00, 150.00, 'morning', 2, 0.00, 0, 29, 'up', 29, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠; 上午时段最受欢迎,可考虑推出早鸟优惠', '2025-10-20 10:36:34', '2025-10-21 23:00:00');
-INSERT INTO `venue_usage_analysis` VALUES (20, 4, '2025-10-20', 1, 1, 0, 1, 100.00, 10, 1, 10.00, 165.00, 165.00, 'morning', 1, 0.00, 0, 34, 'stable', 2, '使用率较低,建议增加营销推广或调整价格策略; 上午时段最受欢迎,可考虑推出早鸟优惠', '2025-10-20 10:36:34', '2025-10-21 23:00:00');
-INSERT INTO `venue_usage_analysis` VALUES (21, 5, '2025-10-20', 0, 0, 0, 0, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠', '2025-10-20 10:36:34', '2025-10-21 23:00:00');
-INSERT INTO `venue_usage_analysis` VALUES (22, 6, '2025-10-20', 1, 1, 0, 1, 100.00, 10, 1, 10.00, 130.00, 130.00, 'morning', 1, 0.00, 0, 33, 'up', 33, '使用率较低,建议增加营销推广或调整价格策略; 上午时段最受欢迎,可考虑推出早鸟优惠', '2025-10-20 10:36:34', '2025-10-21 23:00:00');
-INSERT INTO `venue_usage_analysis` VALUES (23, 7, '2025-10-20', 0, 0, 0, 0, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠', '2025-10-20 10:36:34', '2025-10-21 23:00:00');
-INSERT INTO `venue_usage_analysis` VALUES (24, 8, '2025-10-20', 0, 0, 0, 0, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠', '2025-10-20 10:36:34', '2025-10-21 23:00:00');
+INSERT INTO `venue_usage_analysis` VALUES (17, 1, '2025-10-20', 7, 1, 0, 1, 14.29, 10, 1, 10.00, 400.00, 400.00, 'morning', 1, 0.00, 0, 18, 'up', 18, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠; 上午时段最受欢迎,可考虑推出早鸟优惠', '2025-10-20 10:36:34', '2025-10-21 23:55:01');
+INSERT INTO `venue_usage_analysis` VALUES (18, 2, '2025-10-20', 2, 0, 0, 1, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠', '2025-10-20 10:36:34', '2025-10-21 23:55:01');
+INSERT INTO `venue_usage_analysis` VALUES (19, 3, '2025-10-20', 4, 2, 0, 1, 50.00, 10, 2, 20.00, 300.00, 150.00, 'morning', 2, 0.00, 0, 29, 'up', 29, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠; 上午时段最受欢迎,可考虑推出早鸟优惠', '2025-10-20 10:36:34', '2025-10-21 23:55:01');
+INSERT INTO `venue_usage_analysis` VALUES (20, 4, '2025-10-20', 1, 1, 0, 1, 100.00, 10, 1, 10.00, 165.00, 165.00, 'morning', 1, 0.00, 0, 34, 'stable', 2, '使用率较低,建议增加营销推广或调整价格策略; 上午时段最受欢迎,可考虑推出早鸟优惠', '2025-10-20 10:36:34', '2025-10-21 23:55:01');
+INSERT INTO `venue_usage_analysis` VALUES (21, 5, '2025-10-20', 0, 0, 0, 0, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠', '2025-10-20 10:36:34', '2025-10-21 23:55:01');
+INSERT INTO `venue_usage_analysis` VALUES (22, 6, '2025-10-20', 1, 1, 0, 1, 100.00, 10, 1, 10.00, 130.00, 130.00, 'morning', 1, 0.00, 0, 33, 'up', 33, '使用率较低,建议增加营销推广或调整价格策略; 上午时段最受欢迎,可考虑推出早鸟优惠', '2025-10-20 10:36:34', '2025-10-21 23:55:01');
+INSERT INTO `venue_usage_analysis` VALUES (23, 7, '2025-10-20', 0, 0, 0, 0, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠', '2025-10-20 10:36:34', '2025-10-21 23:55:01');
+INSERT INTO `venue_usage_analysis` VALUES (24, 8, '2025-10-20', 0, 0, 0, 0, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠', '2025-10-20 10:36:34', '2025-10-21 23:55:01');
 INSERT INTO `venue_usage_analysis` VALUES (25, 1, '2025-10-13', 0, 0, 0, 0, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠', '2025-10-20 10:37:57', '2025-10-20 10:37:57');
 INSERT INTO `venue_usage_analysis` VALUES (26, 2, '2025-10-13', 0, 0, 0, 0, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠', '2025-10-20 10:37:57', '2025-10-20 10:37:57');
 INSERT INTO `venue_usage_analysis` VALUES (27, 3, '2025-10-13', 0, 0, 0, 0, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠', '2025-10-20 10:37:57', '2025-10-20 10:37:57');
@@ -2321,6 +2438,14 @@ INSERT INTO `venue_usage_analysis` VALUES (61, 5, '2025-10-18', 0, 0, 0, 0, 0.00
 INSERT INTO `venue_usage_analysis` VALUES (62, 6, '2025-10-18', 0, 0, 0, 0, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠', '2025-10-20 10:37:59', '2025-10-20 10:37:59');
 INSERT INTO `venue_usage_analysis` VALUES (63, 7, '2025-10-18', 0, 0, 0, 0, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠', '2025-10-20 10:37:59', '2025-10-20 10:37:59');
 INSERT INTO `venue_usage_analysis` VALUES (64, 8, '2025-10-18', 0, 0, 0, 0, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠', '2025-10-20 10:37:59', '2025-10-20 10:37:59');
+INSERT INTO `venue_usage_analysis` VALUES (65, 1, '2025-10-21', 3, 1, 2, 2, 33.33, 10, 1, 10.00, 0.00, 0.00, 'morning', 1, 0.00, 0, 13, 'stable', -5, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠; 取消率较高,建议分析取消原因并改进服务; 上午时段最受欢迎,可考虑推出早鸟优惠', '2025-10-22 00:00:00', '2025-10-22 09:35:00');
+INSERT INTO `venue_usage_analysis` VALUES (66, 2, '2025-10-21', 3, 3, 0, 2, 100.00, 10, 3, 30.00, 770.00, 256.67, 'afternoon', 3, 0.00, 0, 59, 'up', 59, '场地运营良好,继续保持', '2025-10-22 00:00:00', '2025-10-22 09:35:00');
+INSERT INTO `venue_usage_analysis` VALUES (67, 3, '2025-10-21', 3, 1, 0, 1, 33.33, 10, 1, 10.00, 500.00, 500.00, 'morning', 1, 0.00, 0, 25, 'stable', -4, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠; 上午时段最受欢迎,可考虑推出早鸟优惠', '2025-10-22 00:00:00', '2025-10-22 09:35:00');
+INSERT INTO `venue_usage_analysis` VALUES (68, 4, '2025-10-21', 1, 0, 0, 1, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'down', -34, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠', '2025-10-22 00:00:00', '2025-10-22 09:35:00');
+INSERT INTO `venue_usage_analysis` VALUES (69, 5, '2025-10-21', 1, 1, 0, 1, 100.00, 10, 1, 10.00, 180.00, 180.00, 'morning', 1, 0.00, 0, 34, 'up', 34, '使用率较低,建议增加营销推广或调整价格策略; 上午时段最受欢迎,可考虑推出早鸟优惠', '2025-10-22 00:00:00', '2025-10-22 09:35:00');
+INSERT INTO `venue_usage_analysis` VALUES (70, 6, '2025-10-21', 1, 1, 0, 1, 100.00, 10, 1, 10.00, 165.00, 165.00, 'morning', 1, 0.00, 0, 34, 'stable', 1, '使用率较低,建议增加营销推广或调整价格策略; 上午时段最受欢迎,可考虑推出早鸟优惠', '2025-10-22 00:00:00', '2025-10-22 09:35:00');
+INSERT INTO `venue_usage_analysis` VALUES (71, 7, '2025-10-21', 0, 0, 0, 0, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠', '2025-10-22 00:00:00', '2025-10-22 09:35:00');
+INSERT INTO `venue_usage_analysis` VALUES (72, 8, '2025-10-21', 0, 0, 0, 0, 0.00, 10, 0, 0.00, 0.00, 0.00, 'afternoon', 0, 0.00, 0, 0, 'stable', 0, '使用率较低,建议增加营销推广或调整价格策略; 预订转化率偏低,建议优化预订流程或提供优惠', '2025-10-22 00:00:00', '2025-10-22 09:35:00');
 
 -- ----------------------------
 -- View structure for v_course_popularity_rank

@@ -210,9 +210,9 @@
         </el-form-item>
         <el-form-item label="会员等级" prop="memberLevel">
           <el-select v-model="cardTypeForm.memberLevel" placeholder="请选择" style="width: 100%">
-            <el-option label="普通会员" :value="1" />
-            <el-option label="银卡会员" :value="2" />
-            <el-option label="金卡会员" :value="3" />
+            <el-option label="银卡会员" :value="1" />
+            <el-option label="金卡会员" :value="2" />
+            <el-option label="铂金会员" :value="3" />
             <el-option label="VIP会员" :value="4" />
           </el-select>
         </el-form-item>
@@ -506,7 +506,7 @@ const getCardTypeColor = (type) => {
 }
 
 const getMemberLevelText = (level) => {
-  const map = { 1: '普通会员', 2: '银卡会员', 3: '金卡会员', 4: 'VIP会员' }
+  const map = { 0: '普通用户', 1: '银卡会员', 2: '金卡会员', 3: '铂金会员', 4: 'VIP会员' }
   return map[level] || '未知'
 }
 

@@ -8,6 +8,7 @@
           <h1>用户中心</h1>
         </div>
         <div class="user-info">
+          <NotificationCenter />
           <el-avatar :size="32" style="margin-right: 12px">
             {{ getUserInitial() }}
           </el-avatar>
@@ -95,6 +96,17 @@
             <div class="action-content">
               <h4>课程报名</h4>
               <p>查看和报名篮球课程</p>
+            </div>
+            <el-icon class="arrow-icon"><ArrowRight /></el-icon>
+          </div>
+
+          <div class="action-card" @click="goToMyCourses">
+            <div class="action-icon teal">
+              <el-icon :size="32"><Document /></el-icon>
+            </div>
+            <div class="action-content">
+              <h4>我的课程</h4>
+              <p>查看我的课程报名记录</p>
             </div>
             <el-icon class="arrow-icon"><ArrowRight /></el-icon>
           </div>
@@ -205,6 +217,7 @@ import { ElMessage, ElMessageBox } from 'element-plus';
 import { useUserStore } from '@/store/modules/user';
 import { getMyPoints, getUserBalance, getMyCards } from '@/api/member';
 import AnnouncementSection from '@/components/AnnouncementSection.vue';
+import NotificationCenter from '@/components/NotificationCenter.vue';
 import {
   Basketball,
   House,
@@ -216,7 +229,8 @@ import {
   Bell,
   ArrowRight,
   Refresh,
-  Wallet
+  Wallet,
+  Document
 } from '@element-plus/icons-vue';
 
 const router = useRouter();
@@ -344,11 +358,13 @@ const getUserInitial = () => {
 // 获取会员等级文本
 const getMemberLevelText = () => {
   const levels = {
+    0: '普通用户',
     1: '银卡会员',
     2: '金卡会员',
-    3: '钻石会员'
+    3: '铂金会员',
+    4: 'VIP会员'
   };
-  return levels[userStore.memberLevel] || '普通会员';
+  return levels[userStore.memberLevel] || '普通用户';
 };
 
 // 快捷功能导航
@@ -362,6 +378,10 @@ const goToBooking = () => {
 
 const goToCourse = () => {
   router.push('/course');
+};
+
+const goToMyCourses = () => {
+  router.push('/my-courses');
 };
 
 const goToMember = () => {
@@ -762,6 +782,11 @@ const goProfile = () => {
 
             &.gold {
               background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+              color: #ffffff;
+            }
+
+            &.teal {
+              background: linear-gradient(135deg, #5eead4 0%, #06b6d4 100%);
               color: #ffffff;
             }
           }

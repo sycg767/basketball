@@ -20,6 +20,7 @@ import com.basketball.entity.PointsRecord;
 import com.basketball.service.IPaymentService;
 import com.basketball.service.INotificationService;
 import com.basketball.dto.request.NotificationSendDTO;
+import com.basketball.utils.NotificationEventPublisher;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -68,7 +69,13 @@ public class PaymentServiceImpl implements IPaymentService {
     private PointsRecordMapper pointsRecordMapper;
 
     @Resource
+    private NotificationEventPublisher notificationEventPublisher;
+
+    @Resource
     private com.basketball.mapper.FinancialRecordMapper financialRecordMapper;
+
+    @Resource
+    private com.basketball.mapper.CourseEnrollmentMapper courseEnrollmentMapper;
 
     /**
      * 创建支付订单
@@ -271,6 +278,26 @@ public class PaymentServiceImpl implements IPaymentService {
                     } else {
                         log.warn("未找到对应的预订订单: businessNo={}", order.getBusinessNo());
                     }
+                } else if ("course".equals(order.getBusinessType())) {
+                    // 课程报名支付
+                    com.basketball.entity.CourseEnrollment enrollment = courseEnrollmentMapper.selectById(Long.parseLong(order.getBusinessNo()));
+
+                    if (enrollment != null) {
+                        enrollment.setPayStatus(1); // 已支付
+                        enrollment.setPayTime(LocalDateTime.now());
+                        enrollment.setUpdateTime(LocalDateTime.now());
+                        courseEnrollmentMapper.updateById(enrollment);
+
+                        log.info("课程报名支付状态更新成功: enrollmentId={}, payStatus=1", enrollment.getId());
+
+                        try {
+                            addPointsForPayment(enrollment.getUserId(), enrollment.getPrice(), enrollment.getEnrollmentNo());
+                        } catch (Exception e) {
+                            log.error("增加积分失败: userId={}, enrollmentNo={}", enrollment.getUserId(), enrollment.getEnrollmentNo(), e);
+                        }
+                    } else {
+                        log.warn("未找到对应的课程报名记录: businessNo={}", order.getBusinessNo());
+                    }
                 } else if ("balance_recharge".equals(order.getBusinessType())) {
                     // 余额充值
                     handleBalanceRecharge(order);
@@ -278,7 +305,9 @@ public class PaymentServiceImpl implements IPaymentService {
 
                 log.info("支付成功: paymentNo={}, tradeNo={}", paymentNo, tradeNo);
 
-                // 发送支付成功通知
+                // TODO: 发送支付成功通知 - 暂时注释避免数据库锁等待超时
+                // 需要改为异步发送或在事务提交后发送
+                /*
                 try {
                     NotificationSendDTO notificationDTO = new NotificationSendDTO();
                     notificationDTO.setUserId(order.getUserId());
@@ -292,10 +321,11 @@ public class PaymentServiceImpl implements IPaymentService {
                     params.put("orderNo", order.getBusinessNo());
                     notificationDTO.setParams(params);
 
-                    notificationService.sendNotification(notificationDTO);
+                    notificationEventPublisher.publishNotification(notificationDTO);
                 } catch (Exception e) {
                     log.error("发送支付成功通知失败: paymentNo={}", paymentNo, e);
                 }
+                */
 
                 notifyLog.setProcessStatus(1);
                 notifyLog.setProcessResult("处理成功");
@@ -374,6 +404,7 @@ public class PaymentServiceImpl implements IPaymentService {
 
         // TODO: 调用第三方支付接口申请退款
 
+        // 1. 更新支付订单状态
         order.setStatus(5); // 已退款
         order.setRefundAmount(order.getActualAmount());
         order.setRefundTime(LocalDateTime.now());
@@ -381,9 +412,23 @@ public class PaymentServiceImpl implements IPaymentService {
         order.setUpdateTime(LocalDateTime.now());
         paymentOrderMapper.updateById(order);
 
+        // 2. 如果使用余额支付，恢复用户余额
+        if ("balance".equals(order.getPaymentType())) { // 余额支付
+            handleRefundBalance(order);
+        }
+
+        // 3. 扣除支付时赠送的积分
+        handleRefundPoints(order);
+
+        // 4. 创建退款交易记录
+        createRefundFinancialRecord(order);
+
+        // 5. 更新业务订单状态
+        updateBusinessOrderStatus(order);
+
         log.info("退款成功: paymentNo={}, amount={}", paymentNo, order.getRefundAmount());
 
-        // 发送退款成功通知
+        // 6. 发送退款成功通知
         try {
             NotificationSendDTO notificationDTO = new NotificationSendDTO();
             notificationDTO.setUserId(order.getUserId());
@@ -399,10 +444,146 @@ public class PaymentServiceImpl implements IPaymentService {
             params.put("refundReason", refundReason != null ? refundReason : "用户申请退款");
             notificationDTO.setParams(params);
 
-            notificationService.sendNotification(notificationDTO);
+            notificationEventPublisher.publishNotification(notificationDTO);
         } catch (Exception e) {
             log.error("发送退款成功通知失败: paymentNo={}", paymentNo, e);
         }
+    }
+
+    /**
+     * 处理退款余额恢复
+     */
+    private void handleRefundBalance(PaymentOrder order) {
+        User user = userMapper.selectById(order.getUserId());
+        if (user == null) {
+            log.error("用户不存在，余额退款失败: userId={}", order.getUserId());
+            return;
+        }
+
+        BigDecimal balanceBefore = user.getBalance() != null ? user.getBalance() : BigDecimal.ZERO;
+        BigDecimal balanceAfter = balanceBefore.add(order.getRefundAmount());
+
+        // 更新用户余额
+        user.setBalance(balanceAfter);
+        user.setUpdateTime(LocalDateTime.now());
+        userMapper.updateById(user);
+
+        log.info("退款恢复余额成功: userId={}, amount={}, balanceAfter={}",
+                order.getUserId(), order.getRefundAmount(), balanceAfter);
+    }
+
+    /**
+     * 处理退款积分扣除
+     */
+    private void handleRefundPoints(PaymentOrder order) {
+        // 查询支付时赠送的积分记录
+        LambdaQueryWrapper<PointsRecord> pointsQuery = new LambdaQueryWrapper<>();
+        pointsQuery.eq(PointsRecord::getRelatedOrder, order.getPaymentNo())
+                .eq(PointsRecord::getType, 1); // 1-消费赠送
+        PointsRecord pointsRecord = pointsRecordMapper.selectOne(pointsQuery);
+
+        if (pointsRecord != null && pointsRecord.getPoints() > 0) {
+            User user = userMapper.selectById(order.getUserId());
+            if (user == null) {
+                log.error("用户不存在，积分扣除失败: userId={}", order.getUserId());
+                return;
+            }
+
+            Integer pointsBefore = user.getPoints() != null ? user.getPoints() : 0;
+            Integer pointsToDeduct = pointsRecord.getPoints();
+            Integer pointsAfter = Math.max(0, pointsBefore - pointsToDeduct); // 确保不为负数
+
+            // 更新用户积分
+            user.setPoints(pointsAfter);
+            user.setUpdateTime(LocalDateTime.now());
+            userMapper.updateById(user);
+
+            // 创建积分扣除记录
+            PointsRecord refundPointsRecord = new PointsRecord();
+            refundPointsRecord.setUserId(order.getUserId());
+            refundPointsRecord.setPoints(-pointsToDeduct); // 负数表示扣除
+            refundPointsRecord.setType(5); // 5-过期扣除（这里用作退款扣除）
+            refundPointsRecord.setRelatedOrder(order.getPaymentNo());
+            refundPointsRecord.setRemark("订单退款扣除积分");
+            refundPointsRecord.setPointsBefore(pointsBefore);
+            refundPointsRecord.setPointsAfter(pointsAfter);
+            refundPointsRecord.setCreateTime(LocalDateTime.now());
+            pointsRecordMapper.insert(refundPointsRecord);
+
+            log.info("退款扣除积分成功: userId={}, points={}, pointsAfter={}",
+                    order.getUserId(), pointsToDeduct, pointsAfter);
+        }
+    }
+
+    /**
+     * 更新业务订单状态
+     */
+    private void updateBusinessOrderStatus(PaymentOrder order) {
+        try {
+            if ("booking".equals(order.getBusinessType())) {
+                // 预订订单退款
+                LambdaQueryWrapper<Booking> bookingQuery = new LambdaQueryWrapper<>();
+                bookingQuery.eq(Booking::getBookingNo, order.getBusinessNo());
+                Booking booking = bookingMapper.selectOne(bookingQuery);
+
+                if (booking != null) {
+                    booking.setStatus(3); // 3-已退款
+                    booking.setUpdateTime(LocalDateTime.now());
+                    bookingMapper.updateById(booking);
+                    log.info("预订订单状态更新为已退款: bookingNo={}", order.getBusinessNo());
+                }
+            } else if ("course_enrollment".equals(order.getBusinessType())) {
+                // 课程报名退款
+                LambdaQueryWrapper<com.basketball.entity.CourseEnrollment> enrollmentQuery = new LambdaQueryWrapper<>();
+                enrollmentQuery.eq(com.basketball.entity.CourseEnrollment::getOrderNo, order.getBusinessNo());
+                com.basketball.entity.CourseEnrollment enrollment = courseEnrollmentMapper.selectOne(enrollmentQuery);
+
+                if (enrollment != null) {
+                    enrollment.setPayStatus(2); // 2-已退款
+                    enrollment.setUpdateTime(LocalDateTime.now());
+                    courseEnrollmentMapper.updateById(enrollment);
+                    log.info("课程报名状态更新为已退款: orderNo={}", order.getBusinessNo());
+                }
+            }
+        } catch (Exception e) {
+            log.error("更新业务订单状态失败: businessNo={}, businessType={}",
+                    order.getBusinessNo(), order.getBusinessType(), e);
+        }
+    }
+
+    /**
+     * 创建退款交易记录
+     */
+    private void createRefundFinancialRecord(PaymentOrder order) {
+        User user = userMapper.selectById(order.getUserId());
+        if (user == null) {
+            log.error("用户不存在，创建退款记录失败: userId={}", order.getUserId());
+            return;
+        }
+
+        BigDecimal balanceBefore = user.getBalance() != null ? user.getBalance() : BigDecimal.ZERO;
+        BigDecimal balanceAfter = balanceBefore; // 如果不是余额支付，余额不变
+
+        // 如果是余额支付，余额会增加
+        if ("balance".equals(order.getPaymentType())) {
+            balanceAfter = balanceBefore.add(order.getRefundAmount());
+        }
+
+        com.basketball.entity.FinancialRecord record = new com.basketball.entity.FinancialRecord();
+        record.setRecordNo(generateRecordNo());
+        record.setRecordType(2); // 2-支出（退款是支出的反向操作，但记录为退款类型）
+        record.setBusinessType(6); // 6-退款
+        record.setOrderNo(order.getPaymentNo());
+        record.setUserId(order.getUserId());
+        record.setAmount(order.getRefundAmount());
+        record.setBalanceBefore(balanceBefore);
+        record.setBalanceAfter(balanceAfter);
+        record.setPaymentMethod(getPaymentMethodCode(order.getPaymentType()));
+        record.setDescription("订单退款: " + (order.getRefundReason() != null ? order.getRefundReason() : "用户申请退款"));
+        record.setCreateTime(LocalDateTime.now());
+        financialRecordMapper.insert(record);
+
+        log.info("创建退款交易记录成功: recordNo={}, amount={}", record.getRecordNo(), record.getAmount());
     }
 
     /**

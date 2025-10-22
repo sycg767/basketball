@@ -236,12 +236,13 @@ const getCardTypeText = (type) => {
 
 const getMemberLevelText = (level) => {
   const levelMap = {
-    1: '普通会员',
-    2: '银卡会员',
-    3: '金卡会员',
+    0: '普通用户',
+    1: '银卡会员',
+    2: '金卡会员',
+    3: '铂金会员',
     4: 'VIP会员'
   }
-  return levelMap[level] || '普通会员'
+  return levelMap[level] || '普通用户'
 }
 
 // 生命周期

@@ -48,15 +48,19 @@
             <h3 class="card-name">{{ card.cardName }}</h3>
             <div class="card-no">{{ card.cardNo }}</div>
 
-            <!-- 时间卡显示有效期 -->
+            <!-- 时间卡显示有效期和余额 -->
             <div v-if="card.cardType === 1" class="card-value">
               <div class="value-item">
                 <span class="value-label">有效期至</span>
                 <span class="value-text">{{ formatDate(card.expireDate) }}</span>
               </div>
+              <div class="value-item" style="margin-top: 12px">
+                <span class="value-label">卡内余额</span>
+                <span class="value-text highlight">¥{{ (card.balance || 0).toFixed(2) }}</span>
+              </div>
             </div>
 
-            <!-- 次卡显示剩余次数 -->
+            <!-- 次卡只显示剩余次数 -->
             <div v-if="card.cardType === 2" class="card-value">
               <div class="value-item">
                 <span class="value-label">剩余次数</span>
@@ -68,7 +72,7 @@
             <div v-if="card.cardType === 3" class="card-value">
               <div class="value-item">
                 <span class="value-label">卡内余额</span>
-                <span class="value-text highlight">¥{{ card.balance }}</span>
+                <span class="value-text highlight">¥{{ (card.balance || 0).toFixed(2) }}</span>
               </div>
             </div>
           </div>
@@ -160,34 +164,41 @@
     <el-dialog
       v-model="recordDialogVisible"
       title="会员卡使用记录"
-      width="800px"
+      width="1000px"
     >
-      <el-table :data="recordList" style="width: 100%">
-        <el-table-column prop="cardName" label="会员卡" width="120" />
-        <el-table-column prop="cardNo" label="卡号" width="180" />
-        <el-table-column label="记录类型" width="100">
+      <el-table :data="recordList" style="width: 100%" stripe>
+        <el-table-column prop="cardName" label="会员卡" width="140" />
+        <el-table-column prop="cardNo" label="卡号" width="160" />
+        <el-table-column label="记录类型" width="100" align="center">
           <template #default="{ row }">
-            <el-tag :type="getRecordTypeTag(row.recordType)">
+            <el-tag :type="getRecordTypeTag(row.recordType)" size="small">
               {{ getRecordTypeText(row.recordType) }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="变动金额" width="120">
+        <el-table-column label="变动金额" width="110" align="right">
           <template #default="{ row }">
             <span v-if="row.changeAmount" :class="row.changeAmount > 0 ? 'text-success' : 'text-danger'">
-              {{ row.changeAmount > 0 ? '+' : '' }}¥{{ Math.abs(row.changeAmount) }}
+              {{ row.changeAmount > 0 ? '+' : '-' }}¥{{ Math.abs(row.changeAmount).toFixed(2) }}
             </span>
+            <span v-else class="text-muted">-</span>
           </template>
         </el-table-column>
-        <el-table-column label="变动次数" width="100">
+        <el-table-column label="变动次数" width="100" align="center">
           <template #default="{ row }">
             <span v-if="row.changeTimes" :class="row.changeTimes > 0 ? 'text-success' : 'text-danger'">
               {{ row.changeTimes > 0 ? '+' : '' }}{{ row.changeTimes }}
             </span>
+            <span v-else class="text-muted">-</span>
           </template>
         </el-table-column>
-        <el-table-column prop="description" label="说明" />
-        <el-table-column prop="createTime" label="时间" width="180" />
+        <el-table-column label="余额" width="110" align="right">
+          <template #default="{ row }">
+            <span class="balance-text">¥{{ (row.balanceAfter || 0).toFixed(2) }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="description" label="说明" min-width="150" />
+        <el-table-column prop="createTime" label="时间" width="160" />
       </el-table>
       <el-pagination
         v-if="recordTotal > 0"
@@ -700,10 +711,22 @@ onMounted(() => {
   // 文本颜色
   .text-success {
     color: #67c23a;
+    font-weight: 600;
   }
 
   .text-danger {
     color: #f56c6c;
+    font-weight: 600;
+  }
+
+  .text-muted {
+    color: #909399;
+  }
+
+  .balance-text {
+    color: #409eff;
+    font-weight: 600;
+    font-family: 'SF Mono', 'Monaco', 'Courier New', monospace;
   }
 
   // 响应式

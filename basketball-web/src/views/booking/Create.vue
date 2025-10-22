@@ -17,9 +17,9 @@
               <el-icon><Location /></el-icon>
               {{ venueInfo.location }}
             </p>
-            <p class="price">
+            <p v-if="standardPrice > 0" class="price">
               <span class="price-label">价格:</span>
-              <span class="price-value">¥{{ venueInfo.basePrice }}/小时</span>
+              <span class="price-value">¥{{ standardPrice.toFixed(2) }}/小时</span>
             </p>
           </div>
         </div>
@@ -125,6 +125,48 @@
           </el-form-item>
 
 
+          <el-form-item label="使用积分">
+            <div class="points-section">
+              <el-checkbox
+                v-model="usePoints"
+                @change="handlePointsChange"
+                :disabled="!canUsePointsNow"
+              >
+                使用积分抵扣（可用积分：{{ userPoints }}）
+              </el-checkbox>
+
+              <!-- 积分不足提示 -->
+              <el-alert
+                v-if="!canUsePointsNow"
+                type="warning"
+                :closable="false"
+                show-icon
+                style="margin-top: 8px;"
+              >
+                <template #title>
+                  <span style="font-size: 13px;">
+                    积分不足，最少需要 100 积分才能使用抵扣功能
+                  </span>
+                </template>
+              </el-alert>
+
+              <div v-if="usePoints && canUsePointsNow && maxPointsCanUse >= 100" class="points-input">
+                <el-slider
+                  v-model="pointsToUse"
+                  :min="100"
+                  :max="Math.max(100, maxPointsCanUse)"
+                  :step="100"
+                  :disabled="!totalPrice || totalPrice === 0"
+                  @change="calculatePointsDeduct"
+                />
+                <div class="points-info">
+                  <span>使用 {{ pointsToUse }} 积分</span>
+                  <span class="deduct-amount">抵扣 ¥{{ pointsDeductAmount.toFixed(2) }}</span>
+                </div>
+              </div>
+            </div>
+          </el-form-item>
+
           <el-form-item label="预计费用">
             <div class="price-summary">
               <div class="price-item">
@@ -133,11 +175,23 @@
               </div>
               <div class="price-item">
                 <span>单价:</span>
-                <span>¥{{ venueInfo?.basePrice || 0 }}/小时</span>
+                <span>¥{{ memberPrice.toFixed(2) }}/小时</span>
+              </div>
+              <div class="price-item" v-if="priceInfo.hasCard">
+                <span>会员卡:</span>
+                <span class="member-price">{{ priceInfo.cardName }} ({{ (memberDiscount * 10).toFixed(1) }}折)</span>
+              </div>
+              <div class="price-item" v-if="priceInfo.discountAmount > 0">
+                <span>优惠金额:</span>
+                <span class="discount-price">-¥{{ priceInfo.discountAmount.toFixed(2) }}</span>
+              </div>
+              <div class="price-item" v-if="usePoints && pointsDeductAmount > 0">
+                <span>积分抵扣:</span>
+                <span class="points-deduct">-¥{{ pointsDeductAmount.toFixed(2) }}</span>
               </div>
               <div class="price-item total">
                 <span>总计:</span>
-                <span class="total-price">¥{{ totalPrice.toFixed(2) }}</span>
+                <span class="total-price">¥{{ finalPayAmount.toFixed(2) }}</span>
               </div>
             </div>
           </el-form-item>
@@ -161,16 +215,19 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue';
+import { ref, reactive, computed, onMounted, onUnmounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import { Location } from '@element-plus/icons-vue';
 import { getVenueDetail } from '@/api/venue';
-import { createBooking, checkVenueAvailable } from '@/api/booking';
+import { createBooking, checkVenueAvailable, calculateBookingPrice } from '@/api/booking';
+import { useUserStore } from '@/store/modules/user';
+import { getMemberLevel } from '@/utils/constants';
 import BackButton from '@/components/common/BackButton.vue';
 
 const route = useRoute();
 const router = useRouter();
+const userStore = useUserStore();
 const formRef = ref(null);
 const submitting = ref(false);
 const venueInfo = ref(null);
@@ -179,6 +236,24 @@ const venueInfo = ref(null);
 const availabilityChecked = ref(false);
 const isAvailable = ref(false);
 const checkingAvailability = ref(false);
+
+// 价格信息
+const priceInfo = ref({
+  duration: 0,
+  pricePerHour: 0,
+  totalPrice: 0,
+  actualPrice: 0,
+  discountAmount: 0,
+  hasCard: false,
+  cardName: '',
+  discount: 1
+});
+
+// 积分相关
+const usePoints = ref(false);
+const userPoints = ref(0);
+const pointsToUse = ref(100);
+const pointsDeductAmount = ref(0);
 
 const bookingForm = reactive({
   venueId: route.params.venueId,
@@ -209,19 +284,57 @@ const formRules = {
 
 // 计算时长
 const duration = computed(() => {
-  if (!bookingForm.startTime || !bookingForm.endTime) return 0;
-
-  const start = new Date(`2000-01-01 ${bookingForm.startTime}`);
-  const end = new Date(`2000-01-01 ${bookingForm.endTime}`);
-  const hours = (end - start) / (1000 * 60 * 60);
-
-  return hours > 0 ? hours : 0;
+  return priceInfo.value.duration || 0;
 });
 
-// 计算总价
+// 计算标准价格（未折扣的原价单价）
+const standardPrice = computed(() => {
+  const price = priceInfo.value.standardPricePerHour || 0;
+  console.log('[前端计算] 标准价格 standardPrice:', price);
+  return price;
+});
+
+// 计算会员折扣
+const memberDiscount = computed(() => {
+  const discount = priceInfo.value.discount || 1;
+  console.log('[前端计算] 会员折扣 memberDiscount:', discount);
+  return discount;
+});
+
+// 计算会员折扣价（会员等级折扣后的单价）
+const memberPrice = computed(() => {
+  const price = priceInfo.value.pricePerHour || 0;
+  console.log('[前端计算] 会员单价 memberPrice:', price);
+  return price;
+});
+
+// 计算总价（使用实际价格）
 const totalPrice = computed(() => {
-  if (!venueInfo.value?.basePrice) return 0;
-  return duration.value * venueInfo.value.basePrice;
+  return priceInfo.value.actualPrice || 0;
+});
+
+// 是否可以使用积分（至少需要100积分）
+const canUsePointsNow = computed(() => {
+  return userPoints.value >= 100;
+});
+
+// 计算最多可用积分
+const maxPointsCanUse = computed(() => {
+  if (!totalPrice.value || totalPrice.value === 0) return 0;
+
+  // 最多抵扣50%
+  const maxDeduct = totalPrice.value * 0.5;
+  const maxPoints = Math.floor(maxDeduct * 100);
+
+  return Math.min(maxPoints, userPoints.value);
+});
+
+// 计算最终支付金额
+const finalPayAmount = computed(() => {
+  if (usePoints.value && pointsDeductAmount.value > 0) {
+    return Math.max(0, totalPrice.value - pointsDeductAmount.value);
+  }
+  return totalPrice.value;
 });
 
 // 禁用过去的日期
@@ -229,29 +342,120 @@ const disabledDate = (date) => {
   return date < new Date(new Date().setHours(0, 0, 0, 0));
 };
 
-// 检查时段可用性
+// 检查时段可用性并计算价格
 const checkAvailability = async () => {
   if (!bookingForm.bookingDate || !bookingForm.startTime || !bookingForm.endTime) {
     availabilityChecked.value = false;
+    priceInfo.value = {
+      duration: 0,
+      standardPricePerHour: 0,
+      pricePerHour: 0,
+      totalPrice: 0,
+      actualPrice: 0,
+      discountAmount: 0,
+      hasCard: false,
+      cardName: '',
+      discount: 1
+    };
     return;
   }
 
   checkingAvailability.value = true;
   try {
-    const res = await checkVenueAvailable({
-      venueId: bookingForm.venueId,
-      bookingDate: bookingForm.bookingDate,
-      startTime: bookingForm.startTime,
-      endTime: bookingForm.endTime
-    });
-    isAvailable.value = res.data;
+    // 并行调用可用性检查和价格计算
+    const [availableRes, priceRes] = await Promise.all([
+      checkVenueAvailable({
+        venueId: bookingForm.venueId,
+        bookingDate: bookingForm.bookingDate,
+        startTime: bookingForm.startTime,
+        endTime: bookingForm.endTime
+      }),
+      calculateBookingPrice({
+        venueId: bookingForm.venueId,
+        bookingDate: bookingForm.bookingDate,
+        startTime: bookingForm.startTime,
+        endTime: bookingForm.endTime
+      })
+    ]);
+
+    isAvailable.value = availableRes.data;
     availabilityChecked.value = true;
+
+    // 更新价格信息
+    if (priceRes.data) {
+      console.log('=== 价格计算结果 ===');
+      console.log('后端返回完整数据:', priceRes.data);
+      console.log('标准单价 (standardPricePerHour):', priceRes.data.standardPricePerHour);
+      console.log('会员单价 (pricePerHour):', priceRes.data.pricePerHour);
+      console.log('时长 (duration):', priceRes.data.duration);
+      console.log('总价 (totalPrice):', priceRes.data.totalPrice);
+      console.log('实付价格 (actualPrice):', priceRes.data.actualPrice);
+      console.log('会员等级 (memberLevel):', priceRes.data.memberLevel);
+      console.log('是否有会员卡 (hasCard):', priceRes.data.hasCard);
+      if (priceRes.data.hasCard) {
+        console.log('会员卡名称 (cardName):', priceRes.data.cardName);
+        console.log('会员卡折扣 (discount):', priceRes.data.discount);
+        console.log('折扣金额 (discountAmount):', priceRes.data.discountAmount);
+      }
+      console.log('==================');
+
+      priceInfo.value = priceRes.data;
+    }
   } catch (error) {
     ElMessage.error(error.message || '检查可用性失败');
     isAvailable.value = false;
     availabilityChecked.value = false;
   } finally {
     checkingAvailability.value = false;
+  }
+};
+
+// 处理积分选择变化
+const handlePointsChange = (checked) => {
+  if (!checked) {
+    pointsDeductAmount.value = 0;
+    pointsToUse.value = 100;
+  } else {
+    // 检查是否满足最低使用门槛
+    if (!canUsePointsNow.value) {
+      usePoints.value = false;
+      ElMessage.warning('积分不足，最少需要 100 积分才能使用抵扣功能');
+      return;
+    }
+    calculatePointsDeduct();
+  }
+};
+
+// 计算积分抵扣金额
+const calculatePointsDeduct = () => {
+  if (!usePoints.value || pointsToUse.value < 100) {
+    pointsDeductAmount.value = 0;
+    return;
+  }
+
+  // 100积分 = 1元
+  let deductAmount = pointsToUse.value / 100;
+
+  // 最多抵扣50%
+  const maxDeduct = totalPrice.value * 0.5;
+  if (deductAmount > maxDeduct) {
+    deductAmount = maxDeduct;
+  }
+
+  pointsDeductAmount.value = deductAmount;
+};
+
+// 获取用户积分
+const fetchUserPoints = async () => {
+  try {
+    // 每次都重新获取最新的用户信息，确保积分是最新的
+    await userStore.getUserInfo();
+    userPoints.value = userStore.points || 0;
+
+    console.log('用户积分:', userPoints.value);
+  } catch (error) {
+    console.error('获取用户积分失败:', error);
+    userPoints.value = 0;
   }
 };
 
@@ -297,8 +501,15 @@ const handleSubmit = async () => {
 
     ElMessage.success('预订成功');
 
-    // 跳转到预订详情页
-    router.push(`/booking/detail/${res.data}`);
+    // 跳转到预订详情页，携带积分信息
+    const query = {};
+    if (usePoints.value && pointsToUse.value > 0) {
+      query.pointsToUse = pointsToUse.value;
+    }
+    router.push({
+      path: `/booking/detail/${res.data}`,
+      query
+    });
   } catch (error) {
     ElMessage.error(error.message || '预订失败');
   } finally {
@@ -308,6 +519,22 @@ const handleSubmit = async () => {
 
 onMounted(() => {
   fetchVenueDetail();
+  fetchUserPoints();
+});
+
+// 监听页面可见性，当页面重新可见时刷新积分
+onMounted(() => {
+  const handleVisibilityChange = () => {
+    if (document.visibilityState === 'visible') {
+      fetchUserPoints();
+    }
+  };
+  document.addEventListener('visibilitychange', handleVisibilityChange);
+
+  // 组件卸载时移除监听
+  onUnmounted(() => {
+    document.removeEventListener('visibilitychange', handleVisibilityChange);
+  });
 });
 </script>
 
@@ -388,6 +615,27 @@ onMounted(() => {
         margin-top: 8px;
       }
 
+      .points-section {
+        .points-input {
+          margin-top: 16px;
+          padding: 16px;
+          background: #f5f7fa;
+          border-radius: 8px;
+
+          .points-info {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 12px;
+            font-size: 14px;
+
+            .deduct-amount {
+              color: #67c23a;
+              font-weight: 600;
+            }
+          }
+        }
+      }
+
       .price-summary {
         background: #f5f7fa;
         padding: 16px;
@@ -398,6 +646,21 @@ onMounted(() => {
           justify-content: space-between;
           margin-bottom: 8px;
           font-size: 14px;
+
+          .member-price {
+            color: #67c23a;
+            font-weight: 600;
+          }
+
+          .discount-price {
+            color: #f56c6c;
+            font-weight: 600;
+          }
+
+          .points-deduct {
+            color: #67c23a;
+            font-weight: 600;
+          }
 
           &.total {
             margin-top: 8px;

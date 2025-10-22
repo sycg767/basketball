@@ -6,81 +6,95 @@
 
     <!-- 搜索筛选区 -->
     <el-card class="search-card" shadow="never">
-      <el-form :model="queryForm" :inline="true">
-        <el-form-item label="关键词">
-          <el-input
-            v-model="queryForm.keyword"
-            placeholder="场地名称/编码"
-            clearable
-            @clear="handleSearch"
-          />
-        </el-form-item>
+      <el-form :model="queryForm" label-width="70px">
+        <el-row :gutter="12">
+          <el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="5">
+            <el-form-item label="关键词">
+              <el-input
+                v-model="queryForm.keyword"
+                placeholder="场地名称/编码"
+                clearable
+                @clear="handleSearch"
+              />
+            </el-form-item>
+          </el-col>
 
-        <el-form-item label="场地类型">
-          <el-select
-            v-model="queryForm.venueType"
-            placeholder="请选择"
-            clearable
-            @change="handleSearch"
-          >
-            <el-option label="室内全场" :value="1" />
-            <el-option label="室内半场" :value="2" />
-            <el-option label="室外全场" :value="3" />
-            <el-option label="室外半场" :value="4" />
-          </el-select>
-        </el-form-item>
+          <el-col :xs="24" :sm="12" :md="8" :lg="5" :xl="4">
+            <el-form-item label="场地类型">
+              <el-select
+                v-model="queryForm.venueType"
+                placeholder="请选择"
+                clearable
+                @change="handleSearch"
+              >
+                <el-option label="室内全场" :value="1" />
+                <el-option label="室内半场" :value="2" />
+                <el-option label="室外全场" :value="3" />
+                <el-option label="室外半场" :value="4" />
+              </el-select>
+            </el-form-item>
+          </el-col>
 
-        <el-form-item label="状态">
-          <el-select
-            v-model="queryForm.status"
-            placeholder="请选择"
-            clearable
-            @change="handleSearch"
-          >
-            <el-option label="可用" :value="1" />
-            <el-option label="维护中" :value="0" />
-          </el-select>
-        </el-form-item>
+          <el-col :xs="24" :sm="12" :md="8" :lg="4" :xl="4">
+            <el-form-item label="状态">
+              <el-select
+                v-model="queryForm.status"
+                placeholder="请选择"
+                clearable
+                @change="handleSearch"
+              >
+                <el-option label="可用" :value="1" />
+                <el-option label="维护中" :value="0" />
+              </el-select>
+            </el-form-item>
+          </el-col>
 
-        <el-form-item label="价格范围">
-          <el-select
-            v-model="queryForm.priceRange"
-            placeholder="请选择"
-            clearable
-            @change="handleSearch"
-          >
-            <el-option label="0-50元" :value="1" />
-            <el-option label="50-100元" :value="2" />
-            <el-option label="100-200元" :value="3" />
-            <el-option label="200元以上" :value="4" />
-          </el-select>
-        </el-form-item>
+          <el-col :xs="24" :sm="12" :md="8" :lg="5" :xl="4">
+            <el-form-item label="价格范围">
+              <el-select
+                v-model="queryForm.priceRange"
+                placeholder="请选择"
+                clearable
+                @change="handleSearch"
+              >
+                <el-option label="0-50元" :value="1" />
+                <el-option label="50-100元" :value="2" />
+                <el-option label="100-200元" :value="3" />
+                <el-option label="200元以上" :value="4" />
+              </el-select>
+            </el-form-item>
+          </el-col>
 
-        <el-form-item label="设施">
-          <el-select
-            v-model="queryForm.facilities"
-            placeholder="请选择"
-            clearable
-            multiple
-            collapse-tags
-            @change="handleSearch"
-          >
-            <el-option label="空调" :value="1" />
-            <el-option label="更衣室" :value="2" />
-            <el-option label="淋浴" :value="3" />
-            <el-option label="停车场" :value="4" />
-            <el-option label="餐饮" :value="5" />
-          </el-select>
-        </el-form-item>
+          <el-col :xs="24" :sm="12" :md="8" :lg="5" :xl="4">
+            <el-form-item label="设施">
+              <el-select
+                v-model="queryForm.facilities"
+                placeholder="请选择"
+                clearable
+                multiple
+                collapse-tags
+                @change="handleSearch"
+              >
+                <el-option label="空调" :value="1" />
+                <el-option label="更衣室" :value="2" />
+                <el-option label="淋浴" :value="3" />
+                <el-option label="停车场" :value="4" />
+                <el-option label="餐饮" :value="5" />
+              </el-select>
+            </el-form-item>
+          </el-col>
 
-        <el-form-item>
-          <el-button type="primary" :icon="Search" @click="handleSearch">
-            搜索
-          </el-button>
-          <el-button :icon="Refresh" @click="handleReset">
-            重置
-          </el-button>
-        </el-form-item>
+          <el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="4">
+            <el-form-item label=" " class="button-group">
+              <el-button type="primary" :icon="Search" @click="handleSearch">
+                搜索
+              </el-button>
+              <el-button :icon="Refresh" @click="handleReset">
+                重置
+              </el-button>
+            </el-form-item>
+          </el-col>
+        </el-row>
       </el-form>
     </el-card>
 
@@ -113,15 +127,12 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, computed } from 'vue';
-import { useRouter } from 'vue-router';
+import { ref, reactive, onMounted } from 'vue';
 import { ElMessage } from 'element-plus';
 import { Search, Refresh } from '@element-plus/icons-vue';
 import { getVenueList } from '@/api/venue';
 import VenueCard from '@/components/venue/VenueCard.vue';
 import BackButton from '@/components/common/BackButton.vue';
-
-const router = useRouter();
 
 // 查询表单
 const queryForm = reactive({
@@ -234,30 +245,59 @@ onMounted(() => {
 
     .el-form {
       .el-form-item {
-        margin-bottom: 0;
-        margin-right: $spacing-4;
+        margin-bottom: $spacing-3;
 
         :deep(.el-form-item__label) {
-          font-size: $font-size-sm;
-          font-weight: $font-weight-medium;
+          font-size: 13px;
+          font-weight: 500;
           color: $text-secondary;
+          padding-right: 8px;
         }
 
         :deep(.el-input__wrapper) {
           @include input-base;
           box-shadow: none;
+          width: 100%;
+          height: 36px;
+          border-radius: 8px;
+          font-size: 14px;
+          padding: 0 12px;
         }
 
         :deep(.el-select) {
+          width: 100%;
+
           .el-input__wrapper {
             @include input-base;
             box-shadow: none;
+            height: 36px;
+            border-radius: 8px;
+            font-size: 14px;
+            padding: 0 12px;
           }
+        }
+
+        :deep(.el-input__inner) {
+          height: 36px;
+          line-height: 36px;
+          font-size: 14px;
+        }
+      }
+
+      .button-group {
+        :deep(.el-form-item__content) {
+          display: flex;
+          gap: $spacing-2;
         }
       }
 
       .el-button {
         @include button-base;
+        height: 36px;
+        padding: 0 16px;
+        font-size: 14px;
+        border-radius: 8px;
+        font-weight: 500;
 
         &.el-button--primary {
           @include button-primary;

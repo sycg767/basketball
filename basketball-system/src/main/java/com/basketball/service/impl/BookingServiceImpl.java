@@ -32,6 +32,7 @@ import com.basketball.service.IPaymentService;
 import com.basketball.dto.request.NotificationSendDTO;
 import com.basketball.dto.request.PaymentCreateDTO;
 import com.basketball.dto.response.PaymentResultVO;
+import com.basketball.utils.NotificationEventPublisher;
 import com.basketball.vo.BookingVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -76,6 +77,9 @@ public class BookingServiceImpl extends ServiceImpl<BookingMapper, Booking> impl
 
     @Resource
     private INotificationService notificationService;
+
+    @Resource
+    private NotificationEventPublisher notificationEventPublisher;
 
     @Resource
     private IPaymentService paymentService;
@@ -304,7 +308,8 @@ public class BookingServiceImpl extends ServiceImpl<BookingMapper, Booking> impl
 
         // 已支付的订单需要退款
         if (booking.getStatus() == 1) {
-            // TODO: 实现退款逻辑
+            // 处理退款和积分扣除
+            processRefund(booking);
             booking.setStatus(4); // 已退款
         } else {
             booking.setStatus(2); // 已取消
@@ -329,7 +334,7 @@ public class BookingServiceImpl extends ServiceImpl<BookingMapper, Booking> impl
             params.put("cancelReason", cancelDTO.getCancelReason() != null ? cancelDTO.getCancelReason() : "用户取消");
             notificationDTO.setParams(params);
 
-            notificationService.sendNotification(notificationDTO);
+            notificationEventPublisher.publishNotification(notificationDTO);
         } catch (Exception e) {
             log.error("发送预订取消通知失败: bookingId={}", booking.getId(), e);
         }
@@ -359,6 +364,60 @@ public class BookingServiceImpl extends ServiceImpl<BookingMapper, Booking> impl
             throw new BusinessException("订单已过期");
         }
 
+        // 处理积分抵扣（如果使用积分）
+        BigDecimal finalAmount = booking.getActualPrice();
+        Integer pointsUsed = 0;
+        BigDecimal pointsDeductAmount = BigDecimal.ZERO;
+
+        if (payDTO.getPointsToUse() != null && payDTO.getPointsToUse() > 0) {
+            // 使用积分抵扣
+            User user = userMapper.selectById(booking.getUserId());
+            Integer userPoints = user.getPoints() != null ? user.getPoints() : 0;
+
+            if (userPoints < payDTO.getPointsToUse()) {
+                throw new BusinessException("积分不足");
+            }
+
+            // 计算积分抵扣金额：100积分=1元
+            pointsDeductAmount = new BigDecimal(payDTO.getPointsToUse())
+                    .divide(new BigDecimal(100), 2, java.math.RoundingMode.DOWN);
+
+            // 最多抵扣50%
+            BigDecimal maxDeduct = booking.getActualPrice().multiply(new BigDecimal("0.5"));
+            if (pointsDeductAmount.compareTo(maxDeduct) > 0) {
+                pointsDeductAmount = maxDeduct;
+                pointsUsed = pointsDeductAmount.multiply(new BigDecimal(100)).intValue();
+            } else {
+                pointsUsed = payDTO.getPointsToUse();
+            }
+
+            // 计算最终支付金额
+            finalAmount = booking.getActualPrice().subtract(pointsDeductAmount);
+
+            // 扣除用户积分
+            Integer pointsBefore = userPoints;
+            Integer pointsAfter = pointsBefore - pointsUsed;
+            user.setPoints(pointsAfter);
+            user.setUpdateTime(LocalDateTime.now());
+            userMapper.updateById(user);
+
+            // 创建积分使用记录
+            PointsRecord pointsRecord = new PointsRecord();
+            pointsRecord.setUserId(booking.getUserId());
+            pointsRecord.setPoints(-pointsUsed);
+            pointsRecord.setType(2); // 2-兑换商品（抵扣支付）
+            pointsRecord.setRelatedOrder(booking.getBookingNo());
+            pointsRecord.setPointsBefore(pointsBefore);
+            pointsRecord.setPointsAfter(pointsAfter);
+            pointsRecord.setRemark("积分抵扣支付：订单" + booking.getBookingNo() +
+                    "，使用" + pointsUsed + "积分抵扣" + pointsDeductAmount + "元");
+            pointsRecord.setCreateTime(LocalDateTime.now());
+            pointsRecordMapper.insert(pointsRecord);
+
+            log.info("积分抵扣成功: userId={}, points={}, deductAmount={}, finalAmount={}",
+                    booking.getUserId(), pointsUsed, pointsDeductAmount, finalAmount);
+        }
+
         // 根据支付方式处理
         User user = userMapper.selectById(booking.getUserId());
         PaymentResultVO paymentResult = null;
@@ -376,12 +435,13 @@ public class BookingServiceImpl extends ServiceImpl<BookingMapper, Booking> impl
                 throw new BusinessException("请选择支付方式（微信或支付宝）");
             }
             
-            // 构建支付请求
+            // 构建支付请求（使用积分抵扣后的金额）
             PaymentCreateDTO paymentCreateDTO = new PaymentCreateDTO();
             paymentCreateDTO.setBusinessNo(booking.getBookingNo());
             paymentCreateDTO.setBusinessType("booking");
-            paymentCreateDTO.setAmount(booking.getActualPrice());
-            paymentCreateDTO.setDescription("场地预订支付 - " + booking.getBookingNo());
+            paymentCreateDTO.setAmount(finalAmount); // 使用积分抵扣后的金额
+            paymentCreateDTO.setDescription("场地预订支付 - " + booking.getBookingNo() +
+                    (pointsUsed > 0 ? "（已使用" + pointsUsed + "积分抵扣" + pointsDeductAmount + "元）" : ""));
             paymentCreateDTO.setPaymentType(paymentType);
             
             // 调用统一支付服务创建支付订单
@@ -495,33 +555,45 @@ public class BookingServiceImpl extends ServiceImpl<BookingMapper, Booking> impl
                 }
 
             } else if (cardType.getCardType() == 1) {
-                // 时间卡：应用折扣扣除金额，按原价获得积分
+                // 时间卡：使用已折扣价格，按原价获得积分
                 if (card.getExpireDate() != null && LocalDate.now().isAfter(card.getExpireDate())) {
                     throw new BusinessException("会员卡已过期");
                 }
 
-                // 应用会员卡折扣
-                BigDecimal discount = cardType.getDiscount() != null ? cardType.getDiscount() : BigDecimal.ONE;
-                BigDecimal discountedAmount = booking.getTotalPrice().multiply(discount);
+                // 使用预订时已计算好的实付金额（已包含折扣）
+                BigDecimal actualAmount = booking.getActualPrice();
 
-                // 记录消费（包含折扣信息）
+                // 检查余额是否足够
+                BigDecimal currentBalance = card.getBalance() != null ? card.getBalance() : BigDecimal.ZERO;
+                if (currentBalance.compareTo(actualAmount) < 0) {
+                    throw new BusinessException("会员卡余额不足");
+                }
+
+                // 扣除余额
+                BigDecimal newBalance = currentBalance.subtract(actualAmount);
+                card.setBalance(newBalance);
+                memberCardMapper.updateById(card);
+
+                // 记录消费（包含折扣信息和余额变化）
                 MemberCardRecord record = new MemberCardRecord();
                 record.setCardId(card.getId());
                 record.setUserId(booking.getUserId());
                 record.setRecordType(2);
-                record.setChangeAmount(discountedAmount.negate());
+                record.setChangeAmount(actualAmount.negate());
+                record.setBalanceBefore(currentBalance);
+                record.setBalanceAfter(newBalance);
                 record.setRelatedOrderNo(booking.getBookingNo());
                 record.setDescription("时间卡预订场地（原价¥" + booking.getTotalPrice() +
-                                    "，折扣" + discount.multiply(new BigDecimal("10")).intValue() +
-                                    "折，实付¥" + discountedAmount + "）");
+                                    "，折扣" + booking.getDiscountAmount() +
+                                    "元，实付¥" + actualAmount + "）");
                 memberCardRecordMapper.insert(record);
 
                 booking.setPaymentMethod(payDTO.getPaymentMethod());
                 booking.setStatus(1);
                 booking.setPayTime(LocalDateTime.now());
-                log.info("时间卡支付成功: cardId={}, 原价={}, 折扣={}折, 实付={}",
+                log.info("时间卡支付成功: cardId={}, 原价={}, 折扣={}元, 实付={}",
                         card.getId(), booking.getTotalPrice(),
-                        discount.multiply(new BigDecimal("10")).intValue(), discountedAmount);
+                        booking.getDiscountAmount(), actualAmount);
 
                 // 时间卡按原价获得积分
                 try {
@@ -565,7 +637,7 @@ public class BookingServiceImpl extends ServiceImpl<BookingMapper, Booking> impl
             params.put("bookingTime", bookingTime);
             notificationDTO.setParams(params);
 
-            notificationService.sendNotification(notificationDTO);
+            notificationEventPublisher.publishNotification(notificationDTO);
         } catch (Exception e) {
             // 通知发送失败不影响主流程
             log.error("发送预订成功通知失败: bookingId={}", booking.getId(), e);
@@ -697,6 +769,168 @@ public class BookingServiceImpl extends ServiceImpl<BookingMapper, Booking> impl
     }
 
     /**
+     * 处理退款
+     * 包括：退还支付金额、扣除赠送的积分、恢复会员卡余额/次数
+     */
+    private void processRefund(Booking booking) {
+        log.info("开始处理退款: bookingId={}, bookingNo={}, paymentMethod={}",
+                booking.getId(), booking.getBookingNo(), booking.getPaymentMethod());
+
+        // 1. 根据支付方式处理退款
+        if (booking.getPaymentMethod() == 3) {
+            // 会员卡支付 - 需要恢复会员卡余额或次数
+            refundMemberCard(booking);
+        } else if (booking.getPaymentMethod() == 1 || booking.getPaymentMethod() == 2) {
+            // 在线支付（支付宝/微信）- 实际项目中需要调用支付平台退款API
+            log.info("在线支付退款: bookingNo={}, amount={}", booking.getBookingNo(), booking.getActualPrice());
+            // TODO: 调用支付平台退款API
+        } else if (booking.getPaymentMethod() == 4) {
+            // 现场支付 - 记录退款即可
+            log.info("现场支付退款: bookingNo={}, amount={}", booking.getBookingNo(), booking.getActualPrice());
+        }
+
+        // 2. 扣除之前赠送的积分
+        deductPointsForRefund(booking.getUserId(), booking.getActualPrice(), booking.getBookingNo());
+
+        log.info("退款处理完成: bookingId={}, bookingNo={}", booking.getId(), booking.getBookingNo());
+    }
+
+    /**
+     * 会员卡退款 - 恢复余额或次数
+     */
+    private void refundMemberCard(Booking booking) {
+        // 查询该订单的会员卡消费记录
+        LambdaQueryWrapper<MemberCardRecord> recordQuery = new LambdaQueryWrapper<>();
+        recordQuery.eq(MemberCardRecord::getRelatedOrderNo, booking.getBookingNo())
+                .eq(MemberCardRecord::getRecordType, 2) // 2-消费
+                .orderByDesc(MemberCardRecord::getCreateTime)
+                .last("LIMIT 1");
+        MemberCardRecord consumeRecord = memberCardRecordMapper.selectOne(recordQuery);
+
+        if (consumeRecord == null) {
+            log.warn("未找到会员卡消费记录: bookingNo={}", booking.getBookingNo());
+            return;
+        }
+
+        MemberCard card = memberCardMapper.selectById(consumeRecord.getCardId());
+        if (card == null) {
+            log.warn("会员卡不存在: cardId={}", consumeRecord.getCardId());
+            return;
+        }
+
+        MemberCardType cardType = memberCardTypeMapper.selectById(card.getCardTypeId());
+        if (cardType == null) {
+            log.warn("会员卡类型不存在: cardTypeId={}", card.getCardTypeId());
+            return;
+        }
+
+        // 根据卡类型恢复
+        if (cardType.getCardType() == 2) {
+            // 次卡：恢复次数
+            Integer timesToRefund = consumeRecord.getChangeTimes() != null ?
+                    Math.abs(consumeRecord.getChangeTimes()) : 1;
+            Integer currentTimes = card.getRemainingTimes() != null ? card.getRemainingTimes() : 0;
+            card.setRemainingTimes(currentTimes + timesToRefund);
+            memberCardMapper.updateById(card);
+
+            // 记录退款
+            MemberCardRecord refundRecord = new MemberCardRecord();
+            refundRecord.setCardId(card.getId());
+            refundRecord.setUserId(booking.getUserId());
+            refundRecord.setRecordType(3); // 3-退款
+            refundRecord.setChangeTimes(timesToRefund);
+            refundRecord.setTimesBefore(currentTimes);
+            refundRecord.setTimesAfter(card.getRemainingTimes());
+            refundRecord.setRelatedOrderNo(booking.getBookingNo());
+            refundRecord.setDescription("预订取消退款（次卡）");
+            memberCardRecordMapper.insert(refundRecord);
+
+            log.info("次卡退款成功: cardId={}, 恢复次数={}, 当前次数={}",
+                    card.getId(), timesToRefund, card.getRemainingTimes());
+
+        } else if (cardType.getCardType() == 3 || cardType.getCardType() == 1) {
+            // 储值卡或时间卡：恢复余额
+            BigDecimal amountToRefund = consumeRecord.getChangeAmount() != null ?
+                    consumeRecord.getChangeAmount().abs() : booking.getActualPrice();
+            BigDecimal currentBalance = card.getBalance() != null ? card.getBalance() : BigDecimal.ZERO;
+            BigDecimal newBalance = currentBalance.add(amountToRefund);
+            card.setBalance(newBalance);
+            memberCardMapper.updateById(card);
+
+            // 记录退款
+            MemberCardRecord refundRecord = new MemberCardRecord();
+            refundRecord.setCardId(card.getId());
+            refundRecord.setUserId(booking.getUserId());
+            refundRecord.setRecordType(3); // 3-退款
+            refundRecord.setChangeAmount(amountToRefund);
+            refundRecord.setBalanceBefore(currentBalance);
+            refundRecord.setBalanceAfter(newBalance);
+            refundRecord.setRelatedOrderNo(booking.getBookingNo());
+            refundRecord.setDescription("预订取消退款（" + cardType.getCardName() + "）");
+            memberCardRecordMapper.insert(refundRecord);
+
+            log.info("会员卡退款成功: cardId={}, 恢复金额={}, 当前余额={}",
+                    card.getId(), amountToRefund, newBalance);
+        }
+    }
+
+    /**
+     * 扣除退款订单的积分
+     */
+    private void deductPointsForRefund(Long userId, BigDecimal amount, String orderNo) {
+        // 查询用户
+        User user = userMapper.selectById(userId);
+        if (user == null) {
+            log.warn("用户不存在，无法扣除积分: userId={}", userId);
+            return;
+        }
+
+        // 查询该订单赠送的积分记录
+        LambdaQueryWrapper<PointsRecord> recordQuery = new LambdaQueryWrapper<>();
+        recordQuery.eq(PointsRecord::getUserId, userId)
+                .eq(PointsRecord::getRelatedOrder, orderNo)
+                .eq(PointsRecord::getType, 1) // 1-消费赠送
+                .orderByDesc(PointsRecord::getCreateTime)
+                .last("LIMIT 1");
+        PointsRecord earnRecord = pointsRecordMapper.selectOne(recordQuery);
+
+        if (earnRecord == null) {
+            log.warn("未找到该订单的积分赠送记录: orderNo={}", orderNo);
+            return;
+        }
+
+        int pointsToDeduct = earnRecord.getPoints();
+        if (pointsToDeduct <= 0) {
+            log.info("无需扣除积分: points={}", pointsToDeduct);
+            return;
+        }
+
+        // 记录变动前积分
+        int pointsBefore = user.getPoints() != null ? user.getPoints() : 0;
+        int pointsAfter = Math.max(0, pointsBefore - pointsToDeduct); // 确保不会变成负数
+
+        // 更新用户积分
+        user.setPoints(pointsAfter);
+        user.setUpdateTime(LocalDateTime.now());
+        userMapper.updateById(user);
+
+        // 创建积分扣除记录
+        PointsRecord deductRecord = new PointsRecord();
+        deductRecord.setUserId(userId);
+        deductRecord.setPoints(-pointsToDeduct); // 负数表示扣除
+        deductRecord.setType(2); // 2-退款扣除
+        deductRecord.setRelatedOrder(orderNo);
+        deductRecord.setPointsBefore(pointsBefore);
+        deductRecord.setPointsAfter(pointsAfter);
+        deductRecord.setRemark("订单退款扣除积分：订单" + orderNo + "，退款" + amount + "元");
+        deductRecord.setCreateTime(LocalDateTime.now());
+        pointsRecordMapper.insert(deductRecord);
+
+        log.info("扣除退款积分成功: userId={}, points={}, orderNo={}, 剩余积分={}",
+                userId, pointsToDeduct, orderNo, pointsAfter);
+    }
+
+    /**
      * 增加消费积分
      * 规则：消费金额的1%转换为积分（1元=1积分）
      */
@@ -742,6 +976,84 @@ public class BookingServiceImpl extends ServiceImpl<BookingMapper, Booking> impl
     }
 
     /**
+     * 根据会员等级获取折扣
+     */
+    private BigDecimal getMemberDiscount(Integer memberLevel) {
+        if (memberLevel == null || memberLevel <= 0) {
+            return BigDecimal.ONE;
+        }
+        // 会员等级折扣：1级9.5折，2级9折，3级8.5折，4级8折，5级7.5折
+        switch (memberLevel) {
+            case 1: return new BigDecimal("0.95");
+            case 2: return new BigDecimal("0.90");
+            case 3: return new BigDecimal("0.85");
+            case 4: return new BigDecimal("0.80");
+            case 5: return new BigDecimal("0.75");
+            default: return BigDecimal.ONE;
+        }
+    }
+
+    /**
+     * 计算预订价格
+     */
+    @Override
+    public Map<String, Object> calculateBookingPrice(Long userId, Long venueId, LocalDate bookingDate, LocalTime startTime, LocalTime endTime) {
+        Map<String, Object> result = new HashMap<>();
+
+        // 1. 获取用户信息
+        User user = userMapper.selectById(userId);
+        Integer memberLevel = user != null ? user.getMemberLevel() : 0;
+
+        // 2. 计算时长
+        Duration duration = Duration.between(startTime, endTime);
+        int hours = (int) duration.toHours();
+        result.put("duration", hours);
+
+        // 3. 获取标准价格（未应用会员折扣）
+        BigDecimal standardPricePerHour = getVenuePrice(venueId, bookingDate, startTime, 0); // memberLevel=0 获取标准价
+        result.put("standardPricePerHour", standardPricePerHour);
+
+        // 4. 获取会员价格（应用会员等级折扣）
+        BigDecimal pricePerHour = getVenuePrice(venueId, bookingDate, startTime, memberLevel);
+        result.put("pricePerHour", pricePerHour);
+
+        // 5. 计算总价（使用会员价格）
+        BigDecimal totalPrice = pricePerHour.multiply(new BigDecimal(hours));
+        result.put("totalPrice", totalPrice);
+
+        // 6. 检查是否有会员卡折扣
+        BigDecimal actualPrice = totalPrice;
+        BigDecimal discountAmount = BigDecimal.ZERO;
+        BigDecimal discount = BigDecimal.ONE;
+
+        LambdaQueryWrapper<MemberCard> cardQuery = new LambdaQueryWrapper<>();
+        cardQuery.eq(MemberCard::getUserId, userId)
+                .eq(MemberCard::getStatus, 1)
+                .ge(MemberCard::getExpireDate, LocalDate.now())
+                .orderByDesc(MemberCard::getCreateTime)
+                .last("LIMIT 1");
+        MemberCard timeCard = memberCardMapper.selectOne(cardQuery);
+
+        if (timeCard != null) {
+            MemberCardType cardType = memberCardTypeMapper.selectById(timeCard.getCardTypeId());
+            if (cardType != null && cardType.getCardType() == 1) {
+                discount = cardType.getDiscount() != null ? cardType.getDiscount() : BigDecimal.ONE;
+                actualPrice = totalPrice.multiply(discount);
+                discountAmount = totalPrice.subtract(actualPrice);
+                result.put("hasCard", true);
+                result.put("cardName", cardType.getCardName());
+                result.put("discount", discount);
+            }
+        }
+
+        result.put("discountAmount", discountAmount);
+        result.put("actualPrice", actualPrice);
+        result.put("memberLevel", memberLevel);
+
+        return result;
+    }
+
+    /**
      * 获取场地价格
      * 根据日期类型(工作日/周末/节假日)和会员等级返回对应价格
      */
@@ -751,25 +1063,31 @@ public class BookingServiceImpl extends ServiceImpl<BookingMapper, Booking> impl
         int timeType = (dayOfWeek == 6 || dayOfWeek == 7) ? 2 : 1; // 简化处理: 周六日为周末,其他为工作日
 
         // 查询该场地在指定时间类型和时间段的价格
+        // 需要找到包含预订开始时间的价格时段: 价格时段开始时间 <= 预订开始时间 < 价格时段结束时间
         LambdaQueryWrapper<VenuePrice> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(VenuePrice::getVenueId, venueId)
                 .eq(VenuePrice::getTimeType, timeType)
                 .eq(VenuePrice::getStatus, 1) // 启用状态
                 .le(VenuePrice::getStartTime, startTime) // 价格时段开始时间 <= 预订开始时间
+                .gt(VenuePrice::getEndTime, startTime) // 价格时段结束时间 > 预订开始时间
                 .orderByDesc(VenuePrice::getStartTime)
                 .last("LIMIT 1");
 
         VenuePrice venuePrice = venuePriceMapper.selectOne(queryWrapper);
 
         if (venuePrice != null) {
-            // 如果会员等级大于0且有会员价,返回会员价,否则返回标准价
-            if (memberLevel != null && memberLevel > 0 && venuePrice.getMemberPrice() != null) {
-                return venuePrice.getMemberPrice();
+            BigDecimal basePrice = venuePrice.getPrice();
+            // 根据会员等级计算折扣价格
+            if (memberLevel != null && memberLevel > 0) {
+                BigDecimal discount = getMemberDiscount(memberLevel);
+                return basePrice.multiply(discount);
             }
-            return venuePrice.getPrice();
+            return basePrice;
         }
 
         // 如果没有配置价格,返回默认价格100元/小时
+        log.warn("未找到场地价格配置: venueId={}, bookingDate={}, startTime={}, timeType={}",
+                venueId, bookingDate, startTime, timeType);
         return new BigDecimal("100.00");
     }
 }

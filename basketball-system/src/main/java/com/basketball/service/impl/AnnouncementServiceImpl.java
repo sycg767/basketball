@@ -113,4 +113,30 @@ public class AnnouncementServiceImpl extends ServiceImpl<AnnouncementMapper, Ann
 
         return unreadCount;
     }
+
+    @Override
+    public java.util.Map<Long, Boolean> getReadStatusBatch(java.util.List<Long> announcementIds, Long userId) {
+        java.util.Map<Long, Boolean> resultMap = new java.util.HashMap<>();
+
+        if (announcementIds == null || announcementIds.isEmpty()) {
+            return resultMap;
+        }
+
+        // 查询用户已阅读的公告ID
+        LambdaQueryWrapper<AnnouncementRead> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(AnnouncementRead::getUserId, userId)
+                .in(AnnouncementRead::getAnnouncementId, announcementIds);
+
+        var readRecords = announcementReadMapper.selectList(wrapper);
+        var readAnnouncementIds = readRecords.stream()
+                .map(AnnouncementRead::getAnnouncementId)
+                .collect(java.util.stream.Collectors.toSet());
+
+        // 构建结果Map
+        for (Long announcementId : announcementIds) {
+            resultMap.put(announcementId, readAnnouncementIds.contains(announcementId));
+        }
+
+        return resultMap;
+    }
 }

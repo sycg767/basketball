@@ -349,6 +349,7 @@ import { ElMessage, ElMessageBox } from 'element-plus';
 import { Wallet, Refresh, ChatDotRound, CreditCard } from '@element-plus/icons-vue';
 import { useUserStore } from '@/store/modules/user';
 import { payBooking, getMyBookingList } from '@/api/booking';
+import { payEnrollment } from '@/api/course';
 import { getUserBalance, getBalanceRechargeRecords } from '@/api/member';
 import BackButton from '@/components/common/BackButton.vue';
 
@@ -404,8 +405,10 @@ const billSummary = reactive({
 
 onMounted(() => {
   // 检查是否有订单信息，决定显示哪个标签页
-  const { orderNo, amount } = route.query;
-  if (orderNo && amount) {
+  const { type, enrollmentId, orderNo, amount } = route.query;
+
+  // 课程支付或预订支付
+  if ((type === 'course' && enrollmentId && amount) || (orderNo && amount)) {
     showPaymentForm.value = true;
     activeTab.value = 'method';
     loadOrderInfo();
@@ -422,17 +425,26 @@ onMounted(() => {
 
 const loadOrderInfo = () => {
   // 从路由参数获取订单信息
-  const { orderNo, businessNo, businessName, businessType, amount } = route.query;
+  const { type, enrollmentId, orderNo, businessNo, businessName, businessType, amount } = route.query;
 
-  if (!orderNo || !amount) {
+  if (!amount) {
     return;
   }
 
-  orderInfo.orderNo = orderNo;
-  orderInfo.businessNo = businessNo || orderNo;
-  orderInfo.businessName = businessName || '篮球馆服务';
-  orderInfo.businessType = businessType || 'booking';
-  orderInfo.amount = amount;
+  // 支持课程支付
+  if (type === 'course' && enrollmentId) {
+    orderInfo.orderNo = `ENR${enrollmentId}`;
+    orderInfo.businessNo = enrollmentId;
+    orderInfo.businessName = '课程报名';
+    orderInfo.businessType = 'course';
+    orderInfo.amount = amount;
+  } else if (orderNo) {
+    orderInfo.orderNo = orderNo;
+    orderInfo.businessNo = businessNo || orderNo;
+    orderInfo.businessName = businessName || '篮球馆服务';
+    orderInfo.businessType = businessType || 'booking';
+    orderInfo.amount = amount;
+  }
 };
 
 // 加载支付记录
@@ -670,7 +682,42 @@ const handleConfirmPay = () => {
   }
 };
 
-const goToWechatPay = () => {
+const goToWechatPay = async () => {
+  // 课程支付
+  if (orderInfo.businessType === 'course') {
+    loading.value = true;
+    try {
+      const enrollmentId = orderInfo.businessNo;
+      const response = await payEnrollment(enrollmentId, {
+        paymentMethod: 1, // 微信支付
+        paymentType: 'wechat'
+      });
+
+      if (response.code === 200) {
+        ElMessage.success('支付成功！');
+        setTimeout(() => {
+          router.push({
+            path: '/payment/result',
+            query: {
+              status: 'success',
+              orderNo: orderInfo.orderNo,
+              amount: orderInfo.amount,
+              paymentMethod: '微信支付',
+              type: 'course'
+            }
+          });
+        }, 500);
+      } else {
+        ElMessage.error(response.message || '支付失败');
+        loading.value = false;
+      }
+    } catch (error) {
+      ElMessage.error(error.message || '支付失败');
+      loading.value = false;
+    }
+    return;
+  }
+
   router.push({
     path: '/payment/wechat',
     query: {
@@ -682,7 +729,42 @@ const goToWechatPay = () => {
   });
 };
 
-const goToAlipay = () => {
+const goToAlipay = async () => {
+  // 课程支付
+  if (orderInfo.businessType === 'course') {
+    loading.value = true;
+    try {
+      const enrollmentId = orderInfo.businessNo;
+      const response = await payEnrollment(enrollmentId, {
+        paymentMethod: 1, // 支付宝支付
+        paymentType: 'alipay'
+      });
+
+      if (response.code === 200) {
+        ElMessage.success('支付成功！');
+        setTimeout(() => {
+          router.push({
+            path: '/payment/result',
+            query: {
+              status: 'success',
+              orderNo: orderInfo.orderNo,
+              amount: orderInfo.amount,
+              paymentMethod: '支付宝支付',
+              type: 'course'
+            }
+          });
+        }, 500);
+      } else {
+        ElMessage.error(response.message || '支付失败');
+        loading.value = false;
+      }
+    } catch (error) {
+      ElMessage.error(error.message || '支付失败');
+      loading.value = false;
+    }
+    return;
+  }
+
   router.push({
     path: '/payment/alipay',
     query: {
@@ -738,6 +820,33 @@ const payWithBalance = async () => {
               orderNo: orderInfo.orderNo,
               amount: orderInfo.amount,
               paymentMethod: '余额支付'
+            }
+          });
+        }, 500);
+      } else {
+        ElMessage.error(response.message || '支付失败');
+        loading.value = false;
+      }
+    } else if (orderInfo.businessType === 'course') {
+      // 课程支付
+      const enrollmentId = orderInfo.businessNo;
+
+      const response = await payEnrollment(enrollmentId, {
+        paymentMethod: 2, // 余额支付
+        paymentType: ''
+      });
+
+      if (response.code === 200) {
+        ElMessage.success('支付成功！');
+        setTimeout(() => {
+          router.push({
+            path: '/payment/result',
+            query: {
+              status: 'success',
+              orderNo: orderInfo.orderNo,
+              amount: orderInfo.amount,
+              paymentMethod: '余额支付',
+              type: 'course'
             }
           });
         }, 500);
@@ -856,6 +965,10 @@ const removeMethod = async (id) => {
 // 去充值
 const goToRecharge = () => {
   router.push('/member/balance-recharge');
+};
+
+const handleCancel = () => {
+  router.back();
 };
 
 const goBack = () => {

@@ -1,6 +1,7 @@
 C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\controller\admin\AdminCourseController.java
 C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\controller\AdminMemberController.java
 C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\interceptor\JwtAuthenticationInterceptor.java
+C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\vo\CoursePriceVO.java
 C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\dto\request\CardRechargeDTO.java
 C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\service\IUserService.java
 C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\service\IScheduledReminderService.java
@@ -40,6 +41,7 @@ C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\ent
 C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\mapper\LoginLogMapper.java
 C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\config\WechatPayConfig.java
 C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\common\result\Result.java
+C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\dto\request\CoursePriceDTO.java
 C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\service\IOperationLogService.java
 C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\service\IStatisticsService.java
 C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\entity\SystemConfig.java
@@ -59,6 +61,7 @@ C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\dto
 C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\service\impl\SystemConfigServiceImpl.java
 C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\controller\FinancialRecordController.java
 C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\mapper\VenuePriceMapper.java
+C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\dto\request\PointsDeductDTO.java
 C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\mapper\CourseMapper.java
 C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\service\impl\FinancialRecordServiceImpl.java
 C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\mapper\MemberCardRecordMapper.java
@@ -97,6 +100,7 @@ C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\map
 C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\resolver\CurrentUserIdArgumentResolver.java
 C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\dto\response\PaymentResultVO.java
 C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\entity\LoginLog.java
+C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\dto\response\PointsDeductResultVO.java
 C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\entity\StatisticsCache.java
 C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\service\IWechatService.java
 C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\entity\UserRole.java
@@ -149,6 +153,7 @@ C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\dto
 C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\mapper\PaymentOrderMapper.java
 C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\entity\NotificationSubscribe.java
 C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\mapper\CoachInfoMapper.java
+C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\controller\PointsController.java
 C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\common\result\PageResult.java
 C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\entity\Booking.java
 C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\dto\request\BookingCancelDTO.java
@@ -180,9 +185,11 @@ C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\map
 C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\mapper\CourseEnrollmentMapper.java
 C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\service\IAnnouncementService.java
 C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\mapper\UserRoleMapper.java
+C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\service\IPointsService.java
 C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\dto\request\BookingCreateDTO.java
 C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\utils\SmsUtil.java
 C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\entity\MemberCardRecord.java
+C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\service\impl\PointsServiceImpl.java
 C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\dto\request\CourseScheduleCreateDTO.java
 C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\service\impl\ScheduledReminderServiceImpl.java
 C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\vo\VenuePriceVO.java
@@ -191,6 +198,7 @@ C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\ser
 C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\controller\AnnouncementController.java
 C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\mapper\NotificationRecordMapper.java
 C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\mapper\DictionaryMapper.java
+C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\dto\request\CoursePaymentDTO.java
 C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\mapper\UserOauthMapper.java
 C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\entity\VenueUsageAnalysis.java
 C:\Users\X\Desktop\basketball\basketball-system\src\main\java\com\basketball\mapper\MemberCardMapper.java

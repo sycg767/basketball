@@ -42,7 +42,7 @@ public interface ICourseEnrollmentService extends IService<CourseEnrollment> {
     /**
      * 支付报名
      */
-    void payEnrollment(Long id, String orderNo);
+    void payEnrollment(Long id, Integer paymentMethod, String paymentType);
 
     /**
      * 签到

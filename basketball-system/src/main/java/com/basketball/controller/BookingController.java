@@ -111,4 +111,26 @@ public class BookingController {
         );
         return Result.success(available);
     }
+
+    /**
+     * 计算预订价格
+     */
+    @GetMapping("/calculate-price")
+    @Operation(summary = "计算预订价格")
+    public Result<java.util.Map<String, Object>> calculatePrice(
+            @RequestParam Long venueId,
+            @RequestParam String bookingDate,
+            @RequestParam String startTime,
+            @RequestParam String endTime,
+            HttpServletRequest request) {
+        Long userId = jwtTokenProvider.getUserIdFromRequest(request);
+        java.util.Map<String, Object> priceInfo = bookingService.calculateBookingPrice(
+                userId,
+                venueId,
+                java.time.LocalDate.parse(bookingDate),
+                java.time.LocalTime.parse(startTime),
+                java.time.LocalTime.parse(endTime)
+        );
+        return Result.success(priceInfo);
+    }
 }

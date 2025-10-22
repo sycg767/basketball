@@ -44,9 +44,6 @@ public class VenuePrice extends BaseEntity {
     @Schema(description = "标准价格(元/小时)")
     private BigDecimal price;
 
-    @Schema(description = "会员价格(元/小时)")
-    private BigDecimal memberPrice;
-
     @Schema(description = "状态: 0-禁用, 1-启用")
     private Integer status;
 }

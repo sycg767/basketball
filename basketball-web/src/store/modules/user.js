@@ -14,6 +14,7 @@ export const useUserStore = defineStore('user', {
     username: (state) => state.userInfo.username,
     realName: (state) => state.userInfo.realName,
     memberLevel: (state) => state.userInfo.memberLevel || 0,
+    points: (state) => state.userInfo.points || 0,
     role: (state) => state.userInfo.role || 0,
     isAdmin: (state) => state.userInfo.role === 1,
     isLogin: (state) => !!state.token

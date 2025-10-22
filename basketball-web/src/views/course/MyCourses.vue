@@ -175,14 +175,26 @@
         <el-button type="primary" @click="confirmRate">提交评价</el-button>
       </template>
     </el-dialog>
+
+    <!-- 支付弹窗 -->
+    <CoursePaymentDialog
+      v-model="paymentDialogVisible"
+      :enrollment-id="currentEnrollmentId"
+      :order-info="paymentOrderInfo"
+      @success="handlePaymentSuccess"
+    />
   </div>
 </template>
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { getMyEnrollments, cancelEnrollment, rateCourse } from '@/api/course';
 import { Search, Refresh } from '@element-plus/icons-vue';
+import CoursePaymentDialog from '@/components/CoursePaymentDialog.vue';
+
+const router = useRouter();
 
 const activeTab = ref('all');
 
@@ -206,7 +218,7 @@ const rateForm = reactive({
 const loadEnrollmentList = async () => {
   try {
     const { data } = await getMyEnrollments(searchForm);
-    enrollmentList.value = data.list || [];
+    enrollmentList.value = data.records || data.list || [];
     total.value = data.total || 0;
   } catch (error) {
     ElMessage.error('获取报名列表失败');
@@ -244,16 +256,32 @@ const handleTabChange = (tab) => {
   handleSearch();
 };
 
+// 支付弹窗相关
+const paymentDialogVisible = ref(false);
+const paymentOrderInfo = ref({
+  courseName: '',
+  enrollmentNo: '',
+  amount: '0.00'
+});
+const currentEnrollmentId = ref(0); // 初始化为0而不是null
+
 // 支付
 const handlePay = (enrollment) => {
-  ElMessageBox.confirm('确认支付该课程费用?', '支付确认', {
-    confirmButtonText: '确认支付',
-    cancelButtonText: '取消',
-    type: 'warning'
-  }).then(() => {
-    // TODO: 调用支付接口
-    ElMessage.success('支付功能开发中');
-  }).catch(() => {});
+  // 设置支付信息并打开支付弹窗
+  currentEnrollmentId.value = enrollment.id;
+  paymentOrderInfo.value = {
+    courseName: enrollment.courseName,
+    enrollmentNo: enrollment.enrollmentNo,
+    amount: enrollment.price.toFixed(2)
+  };
+  paymentDialogVisible.value = true;
+};
+
+// 支付成功回调
+const handlePaymentSuccess = () => {
+  ElMessage.success('支付成功！');
+  // 刷新报名列表
+  loadEnrollmentList();
 };
 
 // 取消报名

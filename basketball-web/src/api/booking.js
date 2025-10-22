@@ -68,3 +68,14 @@ export function checkVenueAvailable(params) {
     params
   });
 }
+
+/**
+ * 计算预订价格
+ */
+export function calculateBookingPrice(params) {
+  return request({
+    url: '/api/booking/calculate-price',
+    method: 'get',
+    params
+  });
+}

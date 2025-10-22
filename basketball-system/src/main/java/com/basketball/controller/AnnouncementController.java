@@ -66,4 +66,33 @@ public class AnnouncementController {
         result.put("unreadCount", unreadCount);
         return Result.success(result);
     }
+
+    @PostMapping("/read-status")
+    public Result<Map<Long, Boolean>> getReadStatusBatch(@RequestBody Map<String, Object> request) {
+        // 从上下文获取用户ID，这里简化处理
+        Long userId = 1L; // 实际中应该从JWT Token中获取
+
+        @SuppressWarnings("unchecked")
+        java.util.List<Object> rawIds = (java.util.List<Object>) request.get("announcementIds");
+
+        if (rawIds == null || rawIds.isEmpty()) {
+            return Result.success(new HashMap<>());
+        }
+
+        // 将Integer/Long转换为Long类型
+        java.util.List<Long> announcementIds = rawIds.stream()
+                .map(id -> {
+                    if (id instanceof Integer) {
+                        return ((Integer) id).longValue();
+                    } else if (id instanceof Long) {
+                        return (Long) id;
+                    } else {
+                        return Long.valueOf(id.toString());
+                    }
+                })
+                .collect(java.util.stream.Collectors.toList());
+
+        Map<Long, Boolean> readStatusMap = announcementService.getReadStatusBatch(announcementIds, userId);
+        return Result.success(readStatusMap);
+    }
 }

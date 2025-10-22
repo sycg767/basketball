@@ -84,3 +84,28 @@ export function rateCourse(id, data) {
     params: data
   });
 }
+
+/**
+ * 计算课程价格
+ */
+export function calculateCoursePrice(data) {
+  return request({
+    url: '/api/course/calculate-price',
+    method: 'post',
+    data
+  });
+}
+
+/**
+ * 支付课程报名
+ */
+export function payEnrollment(id, paymentData) {
+  return request({
+    url: `/api/course/enrollment/${id}/pay`,
+    method: 'put',
+    data: {
+      paymentMethod: paymentData.paymentMethod,
+      paymentType: paymentData.paymentType || ''
+    }
+  });
+}

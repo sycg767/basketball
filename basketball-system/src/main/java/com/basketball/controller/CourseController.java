@@ -3,12 +3,15 @@ package com.basketball.controller;
 import com.basketball.common.result.PageResult;
 import com.basketball.common.result.Result;
 import com.basketball.dto.request.CourseEnrollmentDTO;
+import com.basketball.dto.request.CoursePaymentDTO;
+import com.basketball.dto.request.CoursePriceDTO;
 import com.basketball.dto.request.CourseQueryDTO;
 import com.basketball.security.JwtTokenProvider;
 import com.basketball.service.ICourseEnrollmentService;
 import com.basketball.service.ICourseScheduleService;
 import com.basketball.service.ICourseService;
 import com.basketball.vo.CourseEnrollmentVO;
+import com.basketball.vo.CoursePriceVO;
 import com.basketball.vo.CourseScheduleVO;
 import com.basketball.vo.CourseVO;
 import io.swagger.v3.oas.annotations.Operation;
@@ -120,6 +123,30 @@ public class CourseController {
             @RequestParam(required = false) String comment
     ) {
         enrollmentService.rateCourse(id, rating, comment);
+        return Result.success();
+    }
+
+    @PostMapping("/calculate-price")
+    @Operation(summary = "计算课程价格")
+    public Result<CoursePriceVO> calculateCoursePrice(
+            @Valid @RequestBody CoursePriceDTO dto,
+            HttpServletRequest request
+    ) {
+        Long userId = jwtTokenProvider.getUserIdFromRequest(request);
+        return Result.success(courseService.calculateCoursePrice(userId, dto));
+    }
+
+    @PutMapping("/enrollment/{id}/pay")
+    @Operation(summary = "支付课程报名")
+    public Result<Void> payEnrollment(
+            @PathVariable Long id,
+            @RequestBody CoursePaymentDTO dto
+    ) {
+        // 手动验证必填字段
+        if (dto.getPaymentMethod() == null) {
+            return Result.error("支付方式不能为空");
+        }
+        enrollmentService.payEnrollment(id, dto.getPaymentMethod(), dto.getPaymentType());
         return Result.success();
     }
 }

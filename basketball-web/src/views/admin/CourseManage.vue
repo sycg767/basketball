@@ -62,7 +62,6 @@
         <el-table-column label="价格" width="120">
           <template #default="{ row }">
             <div>¥{{ row.price }}</div>
-            <div v-if="row.memberPrice" class="member-price">会员¥{{ row.memberPrice }}</div>
           </template>
         </el-table-column>
         <el-table-column prop="duration" label="时长(分钟)" width="100" />
@@ -197,15 +196,21 @@
               <el-input-number v-model="form.totalSessions" :min="1" style="width: 100%" />
             </el-form-item>
           </el-col>
-          <el-col :span="8">
-            <el-form-item label="价格" prop="price">
+          <el-col :span="12">
+            <el-form-item label="课程价格" prop="price">
               <el-input-number v-model="form.price" :min="0" :precision="2" style="width: 100%" />
             </el-form-item>
           </el-col>
-          <el-col :span="8">
-            <el-form-item label="会员价">
-              <el-input-number v-model="form.memberPrice" :min="0" :precision="2" style="width: 100%" />
-            </el-form-item>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-alert
+              title="会员折扣说明"
+              type="info"
+              :closable="false"
+              style="margin-bottom: 15px;">
+              会员价格根据会员等级自动计算：1级9.5折，2级9折，3级8.5折，4级8折，5级7.5折
+            </el-alert>
           </el-col>
         </el-row>
 
@@ -423,7 +428,6 @@ const form = reactive({
   maxStudents: 20,
   minStudents: 10,
   price: 0,
-  memberPrice: 0,
   duration: 90,
   totalSessions: 12,
   difficultyLevel: null,
@@ -712,7 +716,6 @@ const resetForm = () => {
     maxStudents: 20,
     minStudents: 10,
     price: 0,
-    memberPrice: 0,
     duration: 90,
     totalSessions: 12,
     difficultyLevel: null,

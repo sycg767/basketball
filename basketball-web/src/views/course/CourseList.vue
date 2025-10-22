@@ -5,37 +5,50 @@
     <h2 class="page-title">课程列表</h2>
 
     <el-card class="filter-card">
-      <el-form :inline="true" :model="searchForm" class="search-form">
-        <el-form-item label="课程名称">
-          <el-input
-            v-model="searchForm.keyword"
-            placeholder="请输入课程名称"
-            clearable
-            @clear="handleSearch"
-          />
-        </el-form-item>
-        <el-form-item label="课程类型">
-          <el-select v-model="searchForm.courseType" placeholder="请选择类型" clearable>
-            <el-option label="全部" value="" />
-            <el-option label="基础班" :value="1" />
-            <el-option label="提高班" :value="2" />
-            <el-option label="专业班" :value="3" />
-            <el-option label="私教课" :value="4" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="难度等级">
-          <el-select v-model="searchForm.difficultyLevel" placeholder="请选择难度" clearable>
-            <el-option label="全部" value="" />
-            <el-option label="入门" :value="1" />
-            <el-option label="初级" :value="2" />
-            <el-option label="中级" :value="3" />
-            <el-option label="高级" :value="4" />
-          </el-select>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" icon="Search" @click="handleSearch">搜索</el-button>
-          <el-button icon="Refresh" @click="handleReset">重置</el-button>
-        </el-form-item>
+      <el-form :model="searchForm" label-width="80px" class="search-form">
+        <el-row :gutter="16">
+          <el-col :xs="24" :sm="12" :md="8" :lg="7">
+            <el-form-item label="课程名称">
+              <el-input
+                v-model="searchForm.keyword"
+                placeholder="请输入课程名称"
+                clearable
+                @clear="handleSearch"
+              />
+            </el-form-item>
+          </el-col>
+
+          <el-col :xs="24" :sm="12" :md="6" :lg="5">
+            <el-form-item label="课程类型">
+              <el-select v-model="searchForm.courseType" placeholder="请选择类型" clearable>
+                <el-option label="全部" value="" />
+                <el-option label="基础班" :value="1" />
+                <el-option label="提高班" :value="2" />
+                <el-option label="专业班" :value="3" />
+                <el-option label="私教课" :value="4" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+
+          <el-col :xs="24" :sm="12" :md="6" :lg="5">
+            <el-form-item label="难度等级">
+              <el-select v-model="searchForm.difficultyLevel" placeholder="请选择难度" clearable>
+                <el-option label="全部" value="" />
+                <el-option label="入门" :value="1" />
+                <el-option label="初级" :value="2" />
+                <el-option label="中级" :value="3" />
+                <el-option label="高级" :value="4" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+
+          <el-col :xs="24" :sm="24" :md="4" :lg="7">
+            <el-form-item label=" " class="button-group">
+              <el-button type="primary" icon="Search" @click="handleSearch">搜索</el-button>
+              <el-button icon="Refresh" @click="handleReset">重置</el-button>
+            </el-form-item>
+          </el-col>
+        </el-row>
       </el-form>
     </el-card>
 
@@ -104,9 +117,6 @@
           <div class="course-footer">
             <div class="price-info">
               <span class="price">¥{{ course.price }}</span>
-              <span v-if="course.memberPrice" class="member-price">
-                会员价 ¥{{ course.memberPrice }}
-              </span>
             </div>
             <el-button type="primary" size="small" @click.stop="goToDetail(course.id)">
               查看详情
@@ -263,10 +273,8 @@ onMounted(() => {
     }
 
     .search-form {
-      margin-bottom: 0;
-
       .el-form-item {
-        margin-right: $spacing-4;
+        margin-bottom: $spacing-4;
 
         :deep(.el-form-item__label) {
           font-size: $font-size-sm;
@@ -274,10 +282,26 @@ onMounted(() => {
           color: $text-secondary;
         }
 
-        :deep(.el-input__wrapper),
-        :deep(.el-select .el-input__wrapper) {
+        :deep(.el-input__wrapper) {
           @include input-base;
           box-shadow: none;
+          width: 100%;
+        }
+
+        :deep(.el-select) {
+          width: 100%;
+
+          .el-input__wrapper {
+            @include input-base;
+            box-shadow: none;
+          }
+        }
+      }
+
+      .button-group {
+        :deep(.el-form-item__content) {
+          display: flex;
+          gap: $spacing-2;
         }
       }
 

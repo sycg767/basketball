@@ -50,4 +50,9 @@ public interface ICourseService extends IService<Course> {
      * 更新课程状态
      */
     void updateCourseStatus(Long id, Integer status);
+
+    /**
+     * 计算课程价格
+     */
+    com.basketball.vo.CoursePriceVO calculateCoursePrice(Long userId, com.basketball.dto.request.CoursePriceDTO dto);
 }

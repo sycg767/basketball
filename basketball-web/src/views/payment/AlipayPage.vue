@@ -179,7 +179,8 @@ const handlePaymentSuccess = (data) => {
       status: 'success',
       paymentNo: paymentNo.value,
       amount: paymentInfo.amount,
-      businessName: paymentInfo.businessName
+      businessName: paymentInfo.businessName,
+      type: paymentInfo.businessType
     }
   });
 };
@@ -192,7 +193,8 @@ const handlePaymentFailed = (data) => {
     query: {
       status: 'failed',
       paymentNo: paymentNo.value,
-      amount: paymentInfo.amount
+      amount: paymentInfo.amount,
+      type: paymentInfo.businessType
     }
   });
 };

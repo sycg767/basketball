@@ -11,10 +11,11 @@
         <el-form-item label="会员等级">
           <el-select v-model="searchForm.memberLevel" placeholder="请选择会员等级" clearable>
             <el-option label="全部" value="" />
-            <el-option label="普通会员" :value="0" />
+            <el-option label="普通用户" :value="0" />
             <el-option label="银卡会员" :value="1" />
             <el-option label="金卡会员" :value="2" />
-            <el-option label="钻石会员" :value="3" />
+            <el-option label="铂金会员" :value="3" />
+            <el-option label="VIP会员" :value="4" />
           </el-select>
         </el-form-item>
         <el-form-item>
@@ -111,10 +112,11 @@
         </el-form-item>
         <el-form-item label="会员等级" prop="memberLevel">
           <el-select v-model="userForm.memberLevel" placeholder="请选择会员等级">
-            <el-option label="普通会员" :value="0" />
+            <el-option label="普通用户" :value="0" />
             <el-option label="银卡会员" :value="1" />
             <el-option label="金卡会员" :value="2" />
-            <el-option label="钻石会员" :value="3" />
+            <el-option label="铂金会员" :value="3" />
+            <el-option label="VIP会员" :value="4" />
           </el-select>
         </el-form-item>
         <el-form-item label="账户余额" prop="balance">
@@ -219,7 +221,8 @@ const getMemberLevelType = (level) => {
     0: 'info',
     1: '',
     2: 'warning',
-    3: 'danger'
+    3: 'primary',
+    4: 'danger'
   };
   return typeMap[level] || 'info';
 };
@@ -227,10 +230,11 @@ const getMemberLevelType = (level) => {
 // 会员等级文本
 const getMemberLevelText = (level) => {
   const textMap = {
-    0: '普通会员',
+    0: '普通用户',
     1: '银卡会员',
     2: '金卡会员',
-    3: '钻石会员'
+    3: '铂金会员',
+    4: 'VIP会员'
   };
   return textMap[level] || '未知';
 };

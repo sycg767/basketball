@@ -17,4 +17,6 @@ public interface IAnnouncementService extends IService<Announcement> {
     boolean hasReadAnnouncement(Long announcementId, Long userId);
 
     Long countUnreadAnnouncements(Long userId);
+
+    java.util.Map<Long, Boolean> getReadStatusBatch(java.util.List<Long> announcementIds, Long userId);
 }

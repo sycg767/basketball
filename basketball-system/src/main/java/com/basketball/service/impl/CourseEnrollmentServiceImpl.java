@@ -13,6 +13,7 @@ import com.basketball.service.ICourseEnrollmentService;
 import com.basketball.service.ICourseScheduleService;
 import com.basketball.service.INotificationService;
 import com.basketball.dto.request.NotificationSendDTO;
+import com.basketball.utils.NotificationEventPublisher;
 import com.basketball.vo.CourseEnrollmentVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -57,6 +59,12 @@ public class CourseEnrollmentServiceImpl extends ServiceImpl<CourseEnrollmentMap
 
     @Resource
     private INotificationService notificationService;
+
+    @Resource
+    private NotificationEventPublisher notificationEventPublisher;
+
+    @Resource
+    private com.basketball.service.IMemberService memberService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -104,12 +112,14 @@ public class CourseEnrollmentServiceImpl extends ServiceImpl<CourseEnrollmentMap
         String dateStr = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
         enrollment.setEnrollmentNo("ENR" + dateStr + userId % 1000);
 
-        // 设置价格(根据用户会员等级)
+        // 设置价格(根据用户会员等级计算折扣)
         User user = userMapper.selectById(userId);
-        if (user != null && user.getMemberLevel() > 0 && course.getMemberPrice() != null) {
-            enrollment.setPrice(course.getMemberPrice());
+        BigDecimal basePrice = course.getPrice();
+        if (user != null && user.getMemberLevel() > 0) {
+            BigDecimal discount = getMemberDiscount(user.getMemberLevel());
+            enrollment.setPrice(basePrice.multiply(discount));
         } else {
-            enrollment.setPrice(course.getPrice());
+            enrollment.setPrice(basePrice);
         }
 
         enrollment.setPayStatus(0); // 待支付
@@ -144,7 +154,7 @@ public class CourseEnrollmentServiceImpl extends ServiceImpl<CourseEnrollmentMap
             params.put("scheduleDate", schedule.getScheduleDate().toString());
             notificationDTO.setParams(params);
 
-            notificationService.sendNotification(notificationDTO);
+            notificationEventPublisher.publishNotification(notificationDTO);
         } catch (Exception e) {
             log.error("发送课程报名成功通知失败: enrollmentId={}", enrollment.getId(), e);
         }
@@ -193,7 +203,7 @@ public class CourseEnrollmentServiceImpl extends ServiceImpl<CourseEnrollmentMap
             params.put("enrollmentNo", enrollment.getEnrollmentNo());
             notificationDTO.setParams(params);
 
-            notificationService.sendNotification(notificationDTO);
+            notificationEventPublisher.publishNotification(notificationDTO);
         } catch (Exception e) {
             log.error("发送课程报名取消通知失败: enrollmentId={}", id, e);
         }
@@ -247,7 +257,7 @@ public class CourseEnrollmentServiceImpl extends ServiceImpl<CourseEnrollmentMap
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void payEnrollment(Long id, String orderNo) {
+    public void payEnrollment(Long id, Integer paymentMethod, String paymentType) {
         CourseEnrollment enrollment = enrollmentMapper.selectById(id);
         if (enrollment == null) {
             throw new BusinessException("报名记录不存在");
@@ -257,13 +267,77 @@ public class CourseEnrollmentServiceImpl extends ServiceImpl<CourseEnrollmentMap
             throw new BusinessException("该报名已支付");
         }
 
+        Long userId = enrollment.getUserId();
+        BigDecimal payAmount = enrollment.getPrice();
+
+        // 根据支付方式处理扣款
+        if (paymentMethod == 2) {
+            // 余额支付：扣除用户账户余额
+            User user = userMapper.selectById(userId);
+            if (user == null) {
+                throw new BusinessException("用户不存在");
+            }
+
+            BigDecimal currentBalance = user.getBalance() != null ? user.getBalance() : BigDecimal.ZERO;
+            if (currentBalance.compareTo(payAmount) < 0) {
+                throw new BusinessException("账户余额不足");
+            }
+
+            user.setBalance(currentBalance.subtract(payAmount));
+            user.setUpdateTime(LocalDateTime.now());
+            userMapper.updateById(user);
+
+            log.info("扣除用户账户余额: userId={}, amount={}, remainingBalance={}",
+                    userId, payAmount, user.getBalance());
+        } else if (paymentMethod == 3) {
+            // 会员卡支付：扣除会员卡余额
+            // 这里需要传入会员卡ID，暂时从用户的第一张可用会员卡扣除
+            try {
+                com.basketball.dto.request.CardConsumeDTO consumeDTO = new com.basketball.dto.request.CardConsumeDTO();
+                // 获取用户的第一张可用储值卡
+                com.basketball.common.result.PageResult<com.basketball.vo.MemberCardVO> cards =
+                        memberService.getMyCards(userId, 1, 1);
+
+                if (cards.getRecords().isEmpty()) {
+                    throw new BusinessException("没有可用的会员卡");
+                }
+
+                Long cardId = cards.getRecords().get(0).getId();
+                consumeDTO.setCardId(cardId);
+                consumeDTO.setAmount(payAmount);
+                consumeDTO.setOrderNo(enrollment.getEnrollmentNo());
+                consumeDTO.setDescription("课程报名支付：" + enrollment.getEnrollmentNo());
+
+                memberService.consumeCard(userId, consumeDTO);
+
+                log.info("扣除会员卡余额: userId={}, cardId={}, amount={}",
+                        userId, cardId, payAmount);
+            } catch (Exception e) {
+                log.error("扣除会员卡余额失败", e);
+                throw new BusinessException("会员卡支付失败：" + e.getMessage());
+            }
+        }
+
+        // 生成支付订单号
+        String orderNo = "PAY" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + id;
+
         enrollment.setOrderNo(orderNo);
         enrollment.setPayStatus(1); // 已支付
         enrollment.setPayTime(LocalDateTime.now());
         enrollment.setUpdateTime(LocalDateTime.now());
 
         enrollmentMapper.updateById(enrollment);
-        log.info("支付课程报名成功, 报名ID: {}, 订单号: {}", id, orderNo);
+
+        // 支付成功后增加积分：消费1元送1积分
+        try {
+            memberService.addPoints(userId, payAmount, orderNo);
+            log.info("课程支付成功，增加积分: userId={}, amount={}, points={}",
+                    userId, payAmount, payAmount.intValue());
+        } catch (Exception e) {
+            log.error("增加积分失败，但不影响支付流程", e);
+        }
+
+        log.info("支付课程报名成功, 报名ID: {}, 订单号: {}, 支付方式: {}", id, orderNo, paymentMethod);
     }
 
     @Override
@@ -354,5 +428,23 @@ public class CourseEnrollmentServiceImpl extends ServiceImpl<CourseEnrollmentMap
         }
 
         return vo;
+    }
+
+    /**
+     * 根据会员等级获取折扣
+     */
+    private BigDecimal getMemberDiscount(Integer memberLevel) {
+        if (memberLevel == null || memberLevel <= 0) {
+            return BigDecimal.ONE;
+        }
+        // 会员等级折扣：1级9.5折，2级9折，3级8.5折，4级8折，5级7.5折
+        switch (memberLevel) {
+            case 1: return new BigDecimal("0.95");
+            case 2: return new BigDecimal("0.90");
+            case 3: return new BigDecimal("0.85");
+            case 4: return new BigDecimal("0.80");
+            case 5: return new BigDecimal("0.75");
+            default: return BigDecimal.ONE;
+        }
     }
 }

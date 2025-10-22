@@ -34,10 +34,11 @@
             </el-form-item>
 
             <el-form-item label="会员等级">
-              <el-tag v-if="infoForm.memberLevel === 0">普通会员</el-tag>
+              <el-tag v-if="infoForm.memberLevel === 0">普通用户</el-tag>
               <el-tag v-else-if="infoForm.memberLevel === 1" type="info">银卡会员</el-tag>
               <el-tag v-else-if="infoForm.memberLevel === 2" type="warning">金卡会员</el-tag>
-              <el-tag v-else-if="infoForm.memberLevel === 3" type="danger">钻石会员</el-tag>
+              <el-tag v-else-if="infoForm.memberLevel === 3" type="primary">铂金会员</el-tag>
+              <el-tag v-else-if="infoForm.memberLevel === 4" type="danger">VIP会员</el-tag>
             </el-form-item>
 
             <el-form-item label="积分">

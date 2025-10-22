@@ -109,14 +109,16 @@ public class MemberServiceImpl implements IMemberService {
 
         // 根据卡类型设置相应字段
         if (cardType.getCardType() == 1) {
-            // 时间卡
+            // 时间卡：设置有效期 + 初始余额（购卡金额）
             card.setStartDate(LocalDate.now());
             card.setExpireDate(LocalDate.now().plusDays(cardType.getDuration()));
+            card.setBalance(cardType.getPrice()); // 时间卡有余额
         } else if (cardType.getCardType() == 2) {
-            // 次卡
+            // 次卡：只设置次数，没有余额
             card.setRemainingTimes(cardType.getTimes());
+            card.setBalance(BigDecimal.ZERO); // 次卡没有余额
         } else if (cardType.getCardType() == 3) {
-            // 储值卡
+            // 储值卡：设置余额
             card.setBalance(cardType.getPrice());
         }
 
@@ -129,6 +131,23 @@ public class MemberServiceImpl implements IMemberService {
         record.setRecordType(1); // 充值
         record.setChangeAmount(cardType.getPrice());
         record.setDescription("购买会员卡");
+
+        // 设置余额和次数变化
+        if (cardType.getCardType() == 1) {
+            // 时间卡：设置余额
+            record.setBalanceBefore(BigDecimal.ZERO);
+            record.setBalanceAfter(cardType.getPrice());
+        } else if (cardType.getCardType() == 2) {
+            // 次卡：只设置次数，不设置余额
+            record.setTimesBefore(0);
+            record.setTimesAfter(card.getRemainingTimes());
+            record.setChangeTimes(card.getRemainingTimes());
+        } else if (cardType.getCardType() == 3) {
+            // 储值卡：设置余额
+            record.setBalanceBefore(BigDecimal.ZERO);
+            record.setBalanceAfter(cardType.getPrice());
+        }
+
         cardRecordMapper.insert(record);
 
         // 5. 更新用户会员等级（只在购买更高等级会员卡时更新）
@@ -207,8 +226,18 @@ public class MemberServiceImpl implements IMemberService {
         record.setDescription(dto.getDescription());
 
         // 2. 根据卡类型扣除
-        if (cardType.getCardType() == 2) {
-            // 次卡
+        if (cardType.getCardType() == 1 || cardType.getCardType() == 3) {
+            // 时间卡和储值卡：扣除余额
+            BigDecimal currentBalance = card.getBalance() != null ? card.getBalance() : BigDecimal.ZERO;
+            if (currentBalance.compareTo(dto.getAmount()) < 0) {
+                throw new BusinessException("余额不足");
+            }
+            record.setBalanceBefore(currentBalance);
+            record.setChangeAmount(dto.getAmount().negate());
+            card.setBalance(currentBalance.subtract(dto.getAmount()));
+            record.setBalanceAfter(card.getBalance());
+        } else if (cardType.getCardType() == 2) {
+            // 次卡：只扣除次数，不扣除余额
             if (card.getRemainingTimes() < dto.getTimes()) {
                 throw new BusinessException("剩余次数不足");
             }
@@ -216,15 +245,6 @@ public class MemberServiceImpl implements IMemberService {
             record.setChangeTimes(-dto.getTimes());
             card.setRemainingTimes(card.getRemainingTimes() - dto.getTimes());
             record.setTimesAfter(card.getRemainingTimes());
-        } else if (cardType.getCardType() == 3) {
-            // 储值卡
-            if (card.getBalance().compareTo(dto.getAmount()) < 0) {
-                throw new BusinessException("余额不足");
-            }
-            record.setBalanceBefore(card.getBalance());
-            record.setChangeAmount(dto.getAmount().negate());
-            card.setBalance(card.getBalance().subtract(dto.getAmount()));
-            record.setBalanceAfter(card.getBalance());
         }
 
         memberCardMapper.updateById(card);

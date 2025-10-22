@@ -142,13 +142,18 @@ const handleBackHome = () => {
 };
 
 const handleViewOrder = () => {
-  // 跳转到支付记录页面
-  router.push('/payment/method');
+  // 根据支付类型跳转
+  const { type } = route.query;
+  if (type === 'course') {
+    router.push('/my-courses');
+  } else {
+    router.push('/booking');
+  }
 };
 
 const handleRetry = () => {
-  // 返回上一页重新选择支付方式
-  router.back();
+  // 跳转到首页重新预订
+  router.push('/');
 };
 </script>
 

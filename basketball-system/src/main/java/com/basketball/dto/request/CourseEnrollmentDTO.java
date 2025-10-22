@@ -21,4 +21,16 @@ public class CourseEnrollmentDTO {
 
     @Schema(description = "订单编号(支付时使用)")
     private String orderNo;
+
+    @Schema(description = "是否使用积分")
+    private Boolean usePoints;
+
+    @Schema(description = "使用的积分数量")
+    private Integer pointsToUse;
+
+    @Schema(description = "支付方式: 1-在线支付, 2-余额支付, 3-会员卡支付")
+    private Integer paymentMethod;
+
+    @Schema(description = "支付类型: wechat-微信, alipay-支付宝")
+    private String paymentType;
 }

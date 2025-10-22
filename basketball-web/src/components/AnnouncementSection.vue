@@ -159,9 +159,13 @@ const getAnnouncements = async () => {
     })
 
     if (response.code === 200) {
+      // 获取已读状态
+      const announcementIds = response.data.records.map(a => a.id)
+      const readStatusMap = await getReadStatus(announcementIds)
+
       announcements.value = response.data.records.map(announcement => ({
         ...announcement,
-        isRead: false // 默认未读，实际应该从后端获取已读状态
+        isRead: readStatusMap[announcement.id] || false
       }))
     }
   } catch (error) {
@@ -170,6 +174,22 @@ const getAnnouncements = async () => {
   } finally {
     loading.value = false
   }
+}
+
+// 获取公告已读状态
+const getReadStatus = async (announcementIds) => {
+  try {
+    const response = await request.post('/api/announcement/read-status', {
+      announcementIds
+    })
+    if (response.code === 200) {
+      // 返回格式: { announcementId: isRead }
+      return response.data || {}
+    }
+  } catch (error) {
+    console.error('获取已读状态失败:', error)
+  }
+  return {}
 }
 
 // 获取公告类型标签类型
@@ -237,6 +257,8 @@ const markAsRead = async (announcement) => {
     if (response.code === 200) {
       announcement.isRead = true
       ElMessage.success('已标记为已读')
+      // 刷新公告列表以更新已读状态
+      await getAnnouncements()
     }
   } catch (error) {
     console.error('标记已读失败:', error)
@@ -246,7 +268,7 @@ const markAsRead = async (announcement) => {
 
 // 查看全部公告
 const viewAllAnnouncements = () => {
-  router.push('/notification/list')
+  router.push('/announcement/list')
 }
 
 // 自动刷新公告
